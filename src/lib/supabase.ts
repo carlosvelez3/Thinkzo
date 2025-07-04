@@ -13,6 +13,207 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Schema validation utilities
+export const introspectTable = async (tableName: string) => {
+  try {
+    const { data, error } = await supabase.rpc('introspect_columns', {
+      table_name: tableName
+    });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to introspect table:', error.message);
+    return { data: null, error };
+  }
+};
+
+export const getTableInfo = async (tableName: string) => {
+  try {
+    const { data, error } = await supabase.rpc('get_table_info', {
+      table_name: tableName
+    });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to get table info:', error.message);
+    return { data: null, error };
+  }
+};
+
+export const validateUserData = (userData: Partial<User>) => {
+  const allowedFields = [
+    'email', 'full_name', 'role', 'avatar_url', 'phone', 
+    'company', 'job_title', 'bio', 'is_active', 'email_verified'
+  ];
+  
+  const validatedData: Partial<User> = {};
+  
+  Object.keys(userData).forEach(key => {
+    if (allowedFields.includes(key) && userData[key as keyof User] !== undefined) {
+      validatedData[key as keyof User] = userData[key as keyof User];
+    }
+  });
+  
+  return validatedData;
+};
+
+// Enhanced user insertion function using database function
+export const insertUser = async (userData: {
+  email: string;
+  full_name: string;
+  phone?: string;
+  company?: string;
+  job_title?: string;
+  bio?: string;
+  role?: 'user' | 'admin' | 'manager';
+}) => {
+  try {
+    const { data, error } = await supabase.rpc('safe_insert_user', {
+      p_email: userData.email,
+      p_full_name: userData.full_name,
+      p_phone: userData.phone || null,
+      p_company: userData.company || null,
+      p_job_title: userData.job_title || null,
+      p_bio: userData.bio || null,
+      p_role: userData.role || 'user'
+    });
+
+    if (error) throw error;
+
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+
+    return { data: data.data, error: null };
+  } catch (error: any) {
+    console.error('Failed to insert user:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Enhanced contact insertion function using database function
+export const insertContact = async (contactData: {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  subject?: string;
+  message: string;
+  contact_type?: Contact['contact_type'];
+  priority?: Contact['priority'];
+  source?: string;
+}) => {
+  try {
+    const { data, error } = await supabase.rpc('safe_insert_contact', {
+      p_name: contactData.name,
+      p_email: contactData.email,
+      p_phone: contactData.phone || null,
+      p_company: contactData.company || null,
+      p_subject: contactData.subject || null,
+      p_message: contactData.message,
+      p_contact_type: contactData.contact_type || 'general',
+      p_priority: contactData.priority || 'medium',
+      p_source: contactData.source || 'website'
+    });
+
+    if (error) throw error;
+
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+
+    return { data: data.data, error: null };
+  } catch (error: any) {
+    console.error('Failed to insert contact:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Project creation function
+export const createProject = async (projectData: {
+  title: string;
+  description?: string;
+  project_type: Project['project_type'];
+  budget_range?: string;
+  estimated_hours?: number;
+  priority?: Project['priority'];
+  requirements?: Record<string, any>;
+  deliverables?: string[];
+  tags?: string[];
+}) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([{
+        ...projectData,
+        user_id: user.id,
+        status: 'pending',
+        priority: projectData.priority || 'medium',
+        actual_hours: 0,
+        progress_percentage: 0,
+        requirements: projectData.requirements || {},
+        deliverables: projectData.deliverables || [],
+        tags: projectData.tags || [],
+        is_billable: true
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log the project creation
+    await logUsage('project_created', 'project', data.id, { 
+      type: projectData.project_type,
+      title: projectData.title 
+    });
+
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to create project:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Dynamic user insertion with schema validation
+export const insertUserDynamic = async (userData: Record<string, any>) => {
+  try {
+    // First, introspect the users table to see what columns exist
+    const { data: columns, error: introspectError } = await introspectTable('users');
+    
+    if (introspectError) {
+      console.error('Failed to introspect table schema:', introspectError.message);
+      // Fallback to basic insertion
+      return await insertUser(userData as any);
+    }
+
+    const columnNames = columns?.map((col: any) => col.name) || [];
+    
+    // Filter userData to only include existing columns
+    const filteredData: Record<string, any> = {};
+    Object.keys(userData).forEach(key => {
+      if (columnNames.includes(key) && userData[key] !== undefined) {
+        filteredData[key] = userData[key];
+      }
+    });
+
+    // Remove phone if it doesn't exist in the schema
+    if (!columnNames.includes('phone')) {
+      delete filteredData.phone;
+    }
+
+    // Use the safe_insert_user function for better validation
+    return await insertUser(filteredData as any);
+  } catch (error: any) {
+    console.error('Dynamic user insertion failed:', error.message);
+    return { data: null, error };
+  }
+};
+
 // Database Types
 export interface User {
   id: string;
