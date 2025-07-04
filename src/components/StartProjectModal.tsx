@@ -35,14 +35,16 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
   const handleProjectSubmission = async () => {
     try {
       const { error } = await supabase
-        .from('contact_messages')
+        .from('contacts')
         .insert([
           {
-            name: 'Project Inquiry',
-            email: 'project@inquiry.com', // This should be collected in the form
-            service_type: formData.project_type,
-            budget_range: formData.budget,
+            name: 'Project Inquiry', // This should be collected in the form
+            email: 'project@inquiry.com', // This should be collected in the form  
+            contact_type: 'sales',
             message: `Project Goals: ${formData.goals}\n\nTimeline: ${formData.timeline}\n\nAdditional Notes: ${formData.additional_notes}`,
+            source: 'project_modal',
+            priority: 'high',
+            status: 'new'
           },
         ]);
 

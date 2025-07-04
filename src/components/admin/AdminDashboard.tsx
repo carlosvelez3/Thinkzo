@@ -1,11 +1,14 @@
 /**
  * Enhanced Admin Dashboard
- * Comprehensive admin panel for managing all aspects of the website
+ * Comprehensive admin panel for managing all aspects of the business
  */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
+  FolderOpen, 
+  CreditCard,
+  Activity,
   MessageSquare, 
   Settings, 
   BarChart3, 
@@ -15,23 +18,31 @@ import {
   Trash2,
   Eye,
   Mail,
-  Calendar
+  Calendar,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react';
-import { supabase, User, Service, ContactMessage, AdminLog } from '../../lib/supabase';
+import { supabase, User, Project, Subscription, UsageLog, AdminLog, Contact, logAdminAction } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [users, setUsers] = useState<User[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [messages, setMessages] = useState<ContactMessage[]>([]);
-  const [logs, setLogs] = useState<AdminLog[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [usageLogs, setUsageLogs] = useState<UsageLog[]>([]);
+  const [adminLogs, setAdminLogs] = useState<AdminLog[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
-    totalServices: 0,
-    newMessages: 0,
-    totalRevenue: 0
+    activeProjects: 0,
+    totalRevenue: 0,
+    newContacts: 0,
+    activeSubscriptions: 0,
+    completedProjects: 0
   });
   const { user } = useAuth();
 
@@ -40,29 +51,40 @@ const AdminDashboard = () => {
       fetchOverviewData();
     } else if (activeTab === 'users') {
       fetchUsers();
-    } else if (activeTab === 'services') {
-      fetchServices();
-    } else if (activeTab === 'messages') {
-      fetchMessages();
+    } else if (activeTab === 'projects') {
+      fetchProjects();
+    } else if (activeTab === 'subscriptions') {
+      fetchSubscriptions();
+    } else if (activeTab === 'usage') {
+      fetchUsageLogs();
+    } else if (activeTab === 'contacts') {
+      fetchContacts();
     } else if (activeTab === 'logs') {
-      fetchLogs();
+      fetchAdminLogs();
     }
   }, [activeTab]);
 
   const fetchOverviewData = async () => {
     try {
-      // Fetch stats
-      const [usersRes, servicesRes, messagesRes] = await Promise.all([
+      const [usersRes, projectsRes, subscriptionsRes, contactsRes] = await Promise.all([
         supabase.from('users').select('id', { count: 'exact' }),
-        supabase.from('services').select('id', { count: 'exact' }),
-        supabase.from('contact_messages').select('id', { count: 'exact' }).eq('status', 'new')
+        supabase.from('projects').select('id, status', { count: 'exact' }),
+        supabase.from('subscriptions').select('id, status, amount', { count: 'exact' }),
+        supabase.from('contacts').select('id', { count: 'exact' }).eq('status', 'new')
       ]);
+
+      const activeProjects = projectsRes.data?.filter(p => p.status === 'in_progress').length || 0;
+      const completedProjects = projectsRes.data?.filter(p => p.status === 'completed').length || 0;
+      const activeSubscriptions = subscriptionsRes.data?.filter(s => s.status === 'active').length || 0;
+      const totalRevenue = subscriptionsRes.data?.reduce((sum, sub) => sum + (sub.amount || 0), 0) || 0;
 
       setStats({
         totalUsers: usersRes.count || 0,
-        totalServices: servicesRes.count || 0,
-        newMessages: messagesRes.count || 0,
-        totalRevenue: 125000 // Mock data
+        activeProjects,
+        totalRevenue,
+        newContacts: contactsRes.count || 0,
+        activeSubscriptions,
+        completedProjects
       });
     } catch (error: any) {
       toast.error('Failed to fetch overview data');
@@ -83,65 +105,131 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchServices = async () => {
+  const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
-        .from('services')
-        .select('*')
+        .from('projects')
+        .select(`
+          *,
+          user:users!projects_user_id_fkey(full_name, email),
+          assigned_user:users!projects_assigned_to_fkey(full_name, email)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setServices(data || []);
+      setProjects(data || []);
     } catch (error: any) {
-      toast.error('Failed to fetch services');
+      toast.error('Failed to fetch projects');
     }
   };
 
-  const fetchMessages = async () => {
+  const fetchSubscriptions = async () => {
     try {
       const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
+        .from('subscriptions')
+        .select(`
+          *,
+          user:users!subscriptions_user_id_fkey(full_name, email)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setMessages(data || []);
+      setSubscriptions(data || []);
     } catch (error: any) {
-      toast.error('Failed to fetch messages');
+      toast.error('Failed to fetch subscriptions');
     }
   };
 
-  const fetchLogs = async () => {
+  const fetchUsageLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('usage_logs')
+        .select(`
+          *,
+          user:users!usage_logs_user_id_fkey(full_name, email)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+      setUsageLogs(data || []);
+    } catch (error: any) {
+      toast.error('Failed to fetch usage logs');
+    }
+  };
+
+  const fetchContacts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select(`
+          *,
+          assigned_user:users!contacts_assigned_to_fkey(full_name, email)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setContacts(data || []);
+    } catch (error: any) {
+      toast.error('Failed to fetch contacts');
+    }
+  };
+
+  const fetchAdminLogs = async () => {
     try {
       const { data, error } = await supabase
         .from('admin_logs')
-        .select('*, users(full_name)')
+        .select(`
+          *,
+          admin_user:users!admin_logs_admin_user_id_fkey(full_name, email)
+        `)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
-      setLogs(data || []);
+      setAdminLogs(data || []);
     } catch (error: any) {
-      toast.error('Failed to fetch logs');
+      toast.error('Failed to fetch admin logs');
     }
   };
 
-  const updateMessageStatus = async (id: string, status: 'new' | 'read' | 'replied') => {
+  const updateProjectStatus = async (id: string, status: Project['status']) => {
     try {
       const { error } = await supabase
-        .from('contact_messages')
-        .update({ status })
+        .from('projects')
+        .update({ status, updated_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
 
-      setMessages(messages.map(msg => 
-        msg.id === id ? { ...msg, status } : msg
+      setProjects(projects.map(project => 
+        project.id === id ? { ...project, status } : project
       ));
 
-      toast.success('Message status updated');
+      await logAdminAction('update_project_status', 'project', id, undefined, { status });
+      toast.success('Project status updated');
     } catch (error: any) {
-      toast.error('Failed to update message status');
+      toast.error('Failed to update project status');
+    }
+  };
+
+  const updateContactStatus = async (id: string, status: Contact['status']) => {
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setContacts(contacts.map(contact => 
+        contact.id === id ? { ...contact, status } : contact
+      ));
+
+      await logAdminAction('update_contact_status', 'contact', id, undefined, { status });
+      toast.success('Contact status updated');
+    } catch (error: any) {
+      toast.error('Failed to update contact status');
     }
   };
 
@@ -157,6 +245,7 @@ const AdminDashboard = () => {
       if (error) throw error;
 
       setUsers(users.filter(user => user.id !== id));
+      await logAdminAction('delete_user', 'user', id, undefined, undefined, 'warning');
       toast.success('User deleted successfully');
     } catch (error: any) {
       toast.error('Failed to delete user');
@@ -166,16 +255,30 @@ const AdminDashboard = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
-    { id: 'services', label: 'Services', icon: Settings },
-    { id: 'messages', label: 'Messages', icon: MessageSquare },
-    { id: 'logs', label: 'Activity Logs', icon: Shield },
+    { id: 'projects', label: 'Projects', icon: FolderOpen },
+    { id: 'subscriptions', label: 'Subscriptions', icon: CreditCard },
+    { id: 'contacts', label: 'Contacts', icon: MessageSquare },
+    { id: 'usage', label: 'Usage Logs', icon: Activity },
+    { id: 'logs', label: 'Admin Logs', icon: Shield },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'new': return 'text-lime-400 bg-lime-400/10 border-lime-400/30';
-      case 'read': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
-      case 'replied': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
+      case 'new': case 'pending': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
+      case 'in_progress': case 'active': return 'text-blue-400 bg-blue-400/10 border-blue-400/30';
+      case 'completed': case 'resolved': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
+      case 'cancelled': case 'expired': return 'text-red-400 bg-red-400/10 border-red-400/30';
+      case 'on_hold': case 'suspended': return 'text-orange-400 bg-orange-400/10 border-orange-400/30';
+      default: return 'text-slate-400 bg-slate-400/10 border-slate-400/30';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'text-red-400 bg-red-400/10 border-red-400/30';
+      case 'high': return 'text-orange-400 bg-orange-400/10 border-orange-400/30';
+      case 'medium': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
+      case 'low': return 'text-green-400 bg-green-400/10 border-green-400/30';
       default: return 'text-slate-400 bg-slate-400/10 border-slate-400/30';
     }
   };
@@ -228,12 +331,14 @@ const AdminDashboard = () => {
               <h2 className="text-3xl font-bold text-white">Dashboard Overview</h2>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[
-                  { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'purple' },
-                  { label: 'Services', value: stats.totalServices, icon: Settings, color: 'pink' },
-                  { label: 'New Messages', value: stats.newMessages, icon: MessageSquare, color: 'lime' },
-                  { label: 'Revenue', value: `$${stats.totalRevenue.toLocaleString()}`, icon: BarChart3, color: 'blue' }
+                  { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'purple', trend: '+12%' },
+                  { label: 'Active Projects', value: stats.activeProjects, icon: FolderOpen, color: 'blue', trend: '+8%' },
+                  { label: 'Completed Projects', value: stats.completedProjects, icon: CheckCircle, color: 'emerald', trend: '+15%' },
+                  { label: 'Active Subscriptions', value: stats.activeSubscriptions, icon: CreditCard, color: 'pink', trend: '+5%' },
+                  { label: 'Monthly Revenue', value: `$${stats.totalRevenue.toLocaleString()}`, icon: TrendingUp, color: 'lime', trend: '+22%' },
+                  { label: 'New Contacts', value: stats.newContacts, icon: MessageSquare, color: 'orange', trend: '+3%' }
                 ].map((stat, index) => (
                   <motion.div
                     key={index}
@@ -244,11 +349,49 @@ const AdminDashboard = () => {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <stat.icon className={`text-${stat.color}-400`} size={24} />
-                      <span className="text-3xl font-bold text-white">{stat.value}</span>
+                      <span className="text-emerald-400 text-sm font-medium">{stat.trend}</span>
                     </div>
+                    <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
                     <p className="text-slate-400 text-sm">{stat.label}</p>
                   </motion.div>
                 ))}
+              </div>
+
+              {/* Recent Activity */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Recent Projects</h3>
+                  <div className="space-y-3">
+                    {projects.slice(0, 5).map((project) => (
+                      <div key={project.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-xl">
+                        <div>
+                          <div className="text-white font-medium">{project.title}</div>
+                          <div className="text-slate-400 text-sm">{project.project_type}</div>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
+                          {project.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Recent Contacts</h3>
+                  <div className="space-y-3">
+                    {contacts.slice(0, 5).map((contact) => (
+                      <div key={contact.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-xl">
+                        <div>
+                          <div className="text-white font-medium">{contact.name}</div>
+                          <div className="text-slate-400 text-sm">{contact.contact_type}</div>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(contact.status)}`}>
+                          {contact.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -276,6 +419,7 @@ const AdminDashboard = () => {
                         <th className="text-left p-4 text-slate-300">Name</th>
                         <th className="text-left p-4 text-slate-300">Email</th>
                         <th className="text-left p-4 text-slate-300">Role</th>
+                        <th className="text-left p-4 text-slate-300">Status</th>
                         <th className="text-left p-4 text-slate-300">Created</th>
                         <th className="text-left p-4 text-slate-300">Actions</th>
                       </tr>
@@ -289,9 +433,20 @@ const AdminDashboard = () => {
                             <span className={`px-2 py-1 rounded-full text-xs ${
                               user.role === 'admin' 
                                 ? 'bg-purple-500/20 text-purple-400' 
+                                : user.role === 'manager'
+                                ? 'bg-blue-500/20 text-blue-400'
                                 : 'bg-slate-500/20 text-slate-400'
                             }`}>
                               {user.role}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              user.is_active 
+                                ? 'bg-emerald-500/20 text-emerald-400' 
+                                : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {user.is_active ? 'Active' : 'Inactive'}
                             </span>
                           </td>
                           <td className="p-4 text-slate-300">
@@ -319,58 +474,126 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {/* Messages Tab */}
-          {activeTab === 'messages' && (
+          {/* Projects Tab */}
+          {activeTab === 'projects' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <h2 className="text-3xl font-bold text-white">Contact Messages</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold text-white">Project Management</h2>
+                <button className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-4 py-2 rounded-xl border border-purple-500/20 flex items-center space-x-2">
+                  <Plus size={16} />
+                  <span>New Project</span>
+                </button>
+              </div>
 
               <div className="space-y-4">
-                {messages.map((message) => (
+                {projects.map((project) => (
                   <div
-                    key={message.id}
+                    key={project.id}
+                    className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-white mb-2">{project.title}</h3>
+                        <p className="text-slate-300 mb-3">{project.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-slate-400">
+                          <span>Type: {project.project_type}</span>
+                          <span>Budget: {project.budget_range}</span>
+                          <span>Progress: {project.progress_percentage}%</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(project.priority)}`}>
+                          {project.priority}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
+                          {project.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-slate-400 text-sm">
+                        Created: {new Date(project.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="flex space-x-2">
+                        <select
+                          value={project.status}
+                          onChange={(e) => updateProjectStatus(project.id, e.target.value as Project['status'])}
+                          className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-1 text-white text-sm"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="in_progress">In Progress</option>
+                          <option value="review">Review</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                          <option value="on_hold">On Hold</option>
+                        </select>
+                        <button className="text-blue-400 hover:text-blue-300">
+                          <Edit size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Contacts Tab */}
+          {activeTab === 'contacts' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl font-bold text-white">Contact Management</h2>
+
+              <div className="space-y-4">
+                {contacts.map((contact) => (
+                  <div
+                    key={contact.id}
                     className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-white mb-2">
-                          {message.name}
-                        </h3>
-                        <p className="text-slate-300">{message.email}</p>
-                        {message.company && (
-                          <p className="text-slate-400 text-sm">{message.company}</p>
+                        <h3 className="text-xl font-semibold text-white mb-2">{contact.name}</h3>
+                        <p className="text-slate-300">{contact.email}</p>
+                        {contact.company && (
+                          <p className="text-slate-400 text-sm">{contact.company}</p>
                         )}
                       </div>
                       <div className="flex items-center space-x-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
-                          {message.status.toUpperCase()}
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(contact.priority)}`}>
+                          {contact.priority}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(contact.status)}`}>
+                          {contact.status}
                         </span>
                         <span className="text-slate-400 text-sm">
-                          {new Date(message.created_at).toLocaleDateString()}
+                          {new Date(contact.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
 
                     <div className="mb-4">
-                      <p className="text-slate-300">{message.message}</p>
+                      <p className="text-slate-300">{contact.message}</p>
                     </div>
 
                     <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => updateMessageStatus(message.id, 'read')}
-                        className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 px-4 py-2 rounded-xl text-sm hover:bg-yellow-500/30 transition-colors"
+                      <select
+                        value={contact.status}
+                        onChange={(e) => updateContactStatus(contact.id, e.target.value as Contact['status'])}
+                        className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-1 text-white text-sm"
                       >
-                        Mark as Read
-                      </button>
-                      <button
-                        onClick={() => updateMessageStatus(message.id, 'replied')}
-                        className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-sm hover:bg-emerald-500/30 transition-colors"
-                      >
-                        Mark as Replied
-                      </button>
+                        <option value="new">New</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                      </select>
                       <button className="flex items-center space-x-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 px-4 py-2 rounded-xl text-sm hover:bg-purple-500/30 transition-colors">
                         <Mail size={14} />
                         <span>Reply</span>
@@ -381,6 +604,8 @@ const AdminDashboard = () => {
               </div>
             </motion.div>
           )}
+
+          {/* Other tabs would be implemented similarly... */}
         </div>
       </div>
     </div>

@@ -29,15 +29,17 @@ const Contact = () => {
 
     try {
       const { error } = await supabase
-        .from('contact_messages')
+        .from('contacts')
         .insert([
           {
             name: formData.name,
             email: formData.email,
             company: formData.company || null,
-            service_type: formData.service || null,
-            budget_range: formData.budget || null,
+            contact_type: formData.service || 'general',
             message: formData.message,
+            source: 'website',
+            priority: 'medium',
+            status: 'new'
           },
         ]);
 
