@@ -31,20 +31,50 @@ const Hero = () => {
       connections: number[];
       pulse: number;
       pulseSpeed: number;
+      distanceFromCenter: number;
     }> = [];
 
-    // Create nodes
-    const nodeCount = 50;
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        connections: [],
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.02 + Math.random() * 0.03
-      });
+    // Create central hub node
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    // Add central node
+    nodes.push({
+      x: centerX,
+      y: centerY,
+      vx: 0,
+      vy: 0,
+      connections: [],
+      pulse: 0,
+      pulseSpeed: 0.03,
+      distanceFromCenter: 0
+    });
+
+    // Create nodes in concentric circles around the center
+    const nodeCount = 49; // 49 + 1 center = 50 total
+    const rings = 4;
+    const nodesPerRing = Math.floor(nodeCount / rings);
+    
+    for (let ring = 1; ring <= rings; ring++) {
+      const radius = (ring * 150) + (Math.random() * 50 - 25); // Add some randomness
+      const nodesInThisRing = ring === rings ? nodeCount - (rings - 1) * nodesPerRing : nodesPerRing;
+      
+      for (let i = 0; i < nodesInThisRing; i++) {
+        const angle = (i / nodesInThisRing) * Math.PI * 2 + (Math.random() * 0.5 - 0.25); // Add angle randomness
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        
+        nodes.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          connections: [],
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.015 + Math.random() * 0.02,
+          distanceFromCenter: Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2)
+        });
+      }
     }
 
     // Lightning bolts
@@ -56,20 +86,29 @@ const Hero = () => {
       segments: Array<{ x: number; y: number }>;
     }> = [];
 
-    // Create connections between nearby nodes
-    const maxDistance = 150;
+    // Create connections - prioritize connections to center and nearby nodes
+    const maxDistance = 180;
     nodes.forEach((node, i) => {
-      nodes.forEach((otherNode, j) => {
-        if (i !== j) {
-          const dx = node.x - otherNode.x;
-          const dy = node.y - otherNode.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < maxDistance && Math.random() < 0.3) {
-            node.connections.push(j);
-          }
+      // Always connect outer nodes to center or closer nodes
+      if (i > 0) { // Skip center node
+        // Connect to center with high probability
+        if (Math.random() < 0.4) {
+          node.connections.push(0);
         }
-      });
+        
+        // Connect to nearby nodes
+        nodes.forEach((otherNode, j) => {
+          if (i !== j) {
+            const dx = node.x - otherNode.x;
+            const dy = node.y - otherNode.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < maxDistance && Math.random() < 0.25) {
+              node.connections.push(j);
+            }
+          }
+        });
+      }
     });
 
     // Generate lightning bolt segments
@@ -101,44 +140,81 @@ const Hero = () => {
 
       // Update nodes
       nodes.forEach((node, i) => {
-        // Move nodes
+        if (i === 0) {
+          // Center node stays in place but pulses
+          node.pulse += node.pulseSpeed;
+          return;
+        }
+        
+        // Move nodes slightly
         node.x += node.vx;
         node.y += node.vy;
         
+        // Gentle attraction to original position to prevent drift
+        const originalAngle = Math.atan2(node.y - centerY, node.x - centerX);
+        const targetX = centerX + Math.cos(originalAngle) * node.distanceFromCenter;
+        const targetY = centerY + Math.sin(originalAngle) * node.distanceFromCenter;
+        
+        node.vx += (targetX - node.x) * 0.001;
+        node.vy += (targetY - node.y) * 0.001;
+        
+        // Damping
+        node.vx *= 0.99;
+        node.vy *= 0.99;
+        
         // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        if (node.x < 50 || node.x > canvas.width - 50) node.vx *= -0.5;
+        if (node.y < 50 || node.y > canvas.height - 50) node.vy *= -0.5;
         
         // Keep in bounds
-        node.x = Math.max(0, Math.min(canvas.width, node.x));
-        node.y = Math.max(0, Math.min(canvas.height, node.y));
+        node.x = Math.max(50, Math.min(canvas.width - 50, node.x));
+        node.y = Math.max(50, Math.min(canvas.height - 50, node.y));
         
         // Update pulse
         node.pulse += node.pulseSpeed;
       });
 
-      // Randomly create lightning bolts
-      if (Math.random() < 0.05 && lightningBolts.length < 5) {
-        const fromNodeIndex = Math.floor(Math.random() * nodes.length);
-        const fromNode = nodes[fromNodeIndex];
+      // Randomly create lightning bolts - prioritize from center
+      if (Math.random() < 0.08 && lightningBolts.length < 6) {
+        let fromNodeIndex, toNodeIndex;
         
-        if (fromNode.connections.length > 0) {
-          const toNodeIndex = fromNode.connections[Math.floor(Math.random() * fromNode.connections.length)];
-          const toNode = nodes[toNodeIndex];
+        // 60% chance to start from center
+        if (Math.random() < 0.6) {
+          fromNodeIndex = 0; // Center node
+          const centerNode = nodes[0];
+          if (centerNode.connections.length > 0) {
+            toNodeIndex = centerNode.connections[Math.floor(Math.random() * centerNode.connections.length)];
+          } else {
+            // If center has no connections, pick a random nearby node
+            toNodeIndex = Math.floor(Math.random() * (nodes.length - 1)) + 1;
+          }
+        } else {
+          // Random connection
+          fromNodeIndex = Math.floor(Math.random() * nodes.length);
+          const fromNode = nodes[fromNodeIndex];
           
-          lightningBolts.push({
-            fromNode: fromNodeIndex,
-            toNode: toNodeIndex,
-            progress: 0,
-            intensity: 0.8 + Math.random() * 0.2,
-            segments: generateLightningPath(fromNode.x, fromNode.y, toNode.x, toNode.y)
-          });
+          if (fromNode.connections.length > 0) {
+            toNodeIndex = fromNode.connections[Math.floor(Math.random() * fromNode.connections.length)];
+          } else {
+            continue;
+          }
         }
+        
+        const fromNode = nodes[fromNodeIndex];
+        const toNode = nodes[toNodeIndex];
+        
+        lightningBolts.push({
+          fromNode: fromNodeIndex,
+          toNode: toNodeIndex,
+          progress: 0,
+          intensity: 0.8 + Math.random() * 0.2,
+          segments: generateLightningPath(fromNode.x, fromNode.y, toNode.x, toNode.y)
+        });
       }
 
       // Update and draw lightning bolts
       lightningBolts.forEach((bolt, index) => {
-        bolt.progress += 0.1;
+        bolt.progress += 0.12;
         
         if (bolt.progress > 1) {
           lightningBolts.splice(index, 1);
@@ -150,9 +226,9 @@ const Hero = () => {
         
         // Draw lightning bolt
         ctx.strokeStyle = `rgba(168, 85, 247, ${alpha})`;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = bolt.fromNode === 0 || bolt.toNode === 0 ? 3 : 2; // Thicker lines from/to center
         ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = bolt.fromNode === 0 || bolt.toNode === 0 ? 15 : 10;
         
         ctx.beginPath();
         for (let i = 0; i < segmentsToDraw - 1; i++) {
@@ -168,8 +244,8 @@ const Hero = () => {
         
         // Add glow effect
         ctx.strokeStyle = `rgba(236, 72, 153, ${alpha * 0.5})`;
-        ctx.lineWidth = 4;
-        ctx.shadowBlur = 20;
+        ctx.lineWidth = bolt.fromNode === 0 || bolt.toNode === 0 ? 6 : 4;
+        ctx.shadowBlur = bolt.fromNode === 0 || bolt.toNode === 0 ? 25 : 20;
         ctx.stroke();
         
         ctx.shadowBlur = 0;
@@ -177,20 +253,22 @@ const Hero = () => {
 
       // Draw nodes
       nodes.forEach((node, i) => {
-        const pulseSize = 2 + Math.sin(node.pulse) * 1;
+        const isCenter = i === 0;
+        const basePulseSize = isCenter ? 4 : 2;
+        const pulseSize = basePulseSize + Math.sin(node.pulse) * (isCenter ? 2 : 1);
         const alpha = 0.6 + Math.sin(node.pulse) * 0.4;
         
         // Node glow
-        ctx.fillStyle = `rgba(168, 85, 247, ${alpha * 0.3})`;
+        ctx.fillStyle = `rgba(168, 85, 247, ${alpha * (isCenter ? 0.5 : 0.3)})`;
         ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = isCenter ? 25 : 15;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseSize * 3, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, pulseSize * (isCenter ? 4 : 3), 0, Math.PI * 2);
         ctx.fill();
         
         // Node core
         ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = isCenter ? 15 : 8;
         ctx.beginPath();
         ctx.arc(node.x, node.y, pulseSize, 0, Math.PI * 2);
         ctx.fill();
