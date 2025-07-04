@@ -1,497 +1,157 @@
-/**
- * Supabase Client Configuration
- * Handles database connections and authentication
- */
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Brain, Palette, Smartphone, TrendingUp, Shield, Zap } from 'lucide-react';
+import StartProjectModal from './StartProjectModal';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Database Types
-export interface User {
-  id: string;
-  email: string;
-  full_name: string;
-  role: 'user' | 'admin' | 'manager';
-  avatar_url?: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  bio?: string;
-  is_active: boolean;
-  last_login?: string;
-  email_verified: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Project {
-  id: string;
-  user_id: string;
-  title: string;
-  description?: string;
-  project_type: 'website' | 'mobile_app' | 'branding' | 'marketing' | 'consulting' | 'other';
-  status: 'pending' | 'in_progress' | 'review' | 'completed' | 'cancelled' | 'on_hold';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  budget_range?: string;
-  estimated_hours?: number;
-  actual_hours: number;
-  start_date?: string;
-  due_date?: string;
-  completion_date?: string;
-  requirements: Record<string, any>;
-  deliverables: string[];
-  tags: string[];
-  assigned_to?: string;
-  progress_percentage: number;
-  client_feedback?: string;
-  internal_notes?: string;
-  is_billable: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Subscription {
-  id: string;
-  user_id: string;
-  plan_name: string;
-  plan_type: 'free' | 'basic' | 'pro' | 'enterprise';
-  status: 'active' | 'cancelled' | 'expired' | 'suspended' | 'trial';
-  billing_cycle: 'monthly' | 'yearly' | 'one_time';
-  amount: number;
-  currency: string;
-  trial_ends_at?: string;
-  current_period_start?: string;
-  current_period_end?: string;
-  cancelled_at?: string;
-  features: Record<string, any>;
-  usage_limits: Record<string, any>;
-  stripe_subscription_id?: string;
-  stripe_customer_id?: string;
-  auto_renew: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface UsageLog {
-  id: string;
-  user_id?: string;
-  action: string;
-  resource_type?: string;
-  resource_id?: string;
-  details: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  session_id?: string;
-  duration_ms?: number;
-  success: boolean;
-  error_message?: string;
-  metadata: Record<string, any>;
-  created_at: string;
-}
-
-export interface AdminLog {
-  id: string;
-  admin_user_id?: string;
-  action: string;
-  target_type?: string;
-  target_id?: string;
-  old_values?: Record<string, any>;
-  new_values?: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  description?: string;
-  created_at: string;
-}
-
-export interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  subject?: string;
-  message: string;
-  contact_type: 'general' | 'support' | 'sales' | 'feedback' | 'bug_report' | 'feature_request';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'new' | 'in_progress' | 'resolved' | 'closed';
-  assigned_to?: string;
-  source: string;
-  tags: string[];
-  attachments: string[];
-  response_sent: boolean;
-  response_date?: string;
-  satisfaction_rating?: number;
-  follow_up_required: boolean;
-  follow_up_date?: string;
-  internal_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Legacy interface for backward compatibility
-export interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  company?: string;
-  service_type?: string;
-  budget_range?: string;
-  message: string;
-  status: 'new' | 'read' | 'replied';
-  created_at: string;
-}
-
-// Service interface for services page
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  features: string[];
-  price: number;
-  category: string;
-  image_url?: string;
-  is_featured: boolean;
-  meta_title?: string;
-  meta_description?: string;
-  slug?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Schema validation utilities
-export const introspectTable = async (tableName: string) => {
-  try {
-    const { data, error } = await supabase.rpc('introspect_columns', {
-      table_name: tableName
-    });
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to introspect table:', error.message);
-    return { data: null, error };
+const services = [
+  {
+    icon: Brain,
+    title: 'Neural Website Design',
+    description: 'AI-powered websites that learn and adapt to your users\' behavior, optimizing conversion rates automatically.',
+    features: ['Adaptive UI/UX', 'Smart A/B Testing', 'Behavioral Analytics', 'Auto-optimization'],
+    color: 'purple'
+  },
+  {
+    icon: Palette,
+    title: 'Intelligent Branding',
+    description: 'Machine learning algorithms create brand identities that resonate with your target audience.',
+    features: ['AI Logo Generation', 'Color Psychology', 'Brand Voice Analysis', 'Market Positioning'],
+    color: 'pink'
+  },
+  {
+    icon: Smartphone,
+    title: 'Smart Mobile Apps',
+    description: 'Neural-powered mobile applications with predictive features and intelligent user interfaces.',
+    features: ['Predictive UX', 'Smart Notifications', 'Adaptive Performance', 'AI Integration'],
+    color: 'blue'
+  },
+  {
+    icon: TrendingUp,
+    title: 'Neural Marketing',
+    description: 'AI-driven marketing campaigns that optimize themselves for maximum ROI and engagement.',
+    features: ['Predictive Analytics', 'Smart Targeting', 'Auto-optimization', 'Performance AI'],
+    color: 'emerald'
+  },
+  {
+    icon: Shield,
+    title: 'Cognitive Security',
+    description: 'Advanced AI security systems that learn and adapt to protect your digital assets.',
+    features: ['Threat Prediction', 'Adaptive Defense', 'Smart Monitoring', 'Auto-response'],
+    color: 'orange'
+  },
+  {
+    icon: Zap,
+    title: 'Performance AI',
+    description: 'Neural networks that continuously optimize your digital infrastructure for peak performance.',
+    features: ['Smart Caching', 'Load Prediction', 'Auto-scaling', 'Performance ML'],
+    color: 'lime'
   }
+];
+
+const Services = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <>
+      <section id="services" className="py-32 bg-gradient-to-br from-slate-800 to-slate-900">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Neural{' '}
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Services
+              </span>
+            </h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              Harness the power of artificial intelligence to transform your business 
+              with our cutting-edge neural solutions.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 hover:bg-slate-800/70 transition-all duration-300 group"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-${service.color}-500/20 to-${service.color}-600/20 border border-${service.color}-500/30 rounded-2xl mb-6`}
+                >
+                  <service.icon className={`text-${service.color}-400`} size={32} />
+                </motion.div>
+
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                  {service.title}
+                </h3>
+
+                <p className="text-slate-300 mb-6 leading-relaxed">
+                  {service.description}
+                </p>
+
+                <ul className="space-y-3 mb-8">
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
+                      <span className="text-slate-300 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white py-3 rounded-xl font-medium hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-300"
+                >
+                  Learn More
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-center mt-20"
+          >
+            <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Ready to evolve your business?
+              </h3>
+              <p className="text-slate-300 mb-6">
+                Let our neural networks analyze your needs and craft the perfect digital solution.
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsModalOpen(true)}
+                className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 border border-purple-500/20"
+              >
+                Start Neural Assembly
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </>
+  );
 };
 
-export const getTableInfo = async (tableName: string) => {
-  try {
-    const { data, error } = await supabase.rpc('get_table_info', {
-      table_name: tableName
-    });
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to get table info:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Enhanced user insertion function using database function
-export const insertUser = async (userData: {
-  email: string;
-  full_name: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  bio?: string;
-  role?: 'user' | 'admin' | 'manager';
-}) => {
-  try {
-    const { data, error } = await supabase.rpc('safe_insert_user', {
-      p_email: userData.email,
-      p_full_name: userData.full_name,
-      p_phone: userData.phone || null,
-      p_company: userData.company || null,
-      p_job_title: userData.job_title || null,
-      p_bio: userData.bio || null,
-      p_role: userData.role || 'user'
-    });
-
-    if (error) throw error;
-
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    return { data: data.data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert user:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Enhanced contact insertion function using database function
-export const insertContact = async (contactData: {
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  subject?: string;
-  message: string;
-  contact_type?: Contact['contact_type'];
-  priority?: Contact['priority'];
-  source?: string;
-}) => {
-  try {
-    const { data, error } = await supabase.rpc('safe_insert_contact', {
-      p_name: contactData.name,
-      p_email: contactData.email,
-      p_message: contactData.message,
-      p_phone: contactData.phone || null,
-      p_company: contactData.company || null,
-      p_subject: contactData.subject || null,
-      p_contact_type: contactData.contact_type || 'general',
-      p_priority: contactData.priority || 'medium',
-      p_source: contactData.source || 'website'
-    });
-
-    if (error) throw error;
-
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    return { data: data.data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert contact:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Legacy contact message insertion for backward compatibility
-export const insertContactMessage = async (messageData: {
-  name: string;
-  email: string;
-  company?: string;
-  service_type?: string;
-  budget_range?: string;
-  message: string;
-}) => {
-  try {
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .insert([
-        {
-          ...messageData,
-          status: 'new'
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Log the contact creation
-    await logUsage('contact_message_created', 'contact_message', data.id, { 
-      email: messageData.email,
-      service_type: messageData.service_type 
-    });
-
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert contact message:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Project creation function
-export const createProject = async (projectData: {
-  title: string;
-  description?: string;
-  project_type: Project['project_type'];
-  budget_range?: string;
-  estimated_hours?: number;
-  priority?: Project['priority'];
-  requirements?: Record<string, any>;
-  deliverables?: string[];
-  tags?: string[];
-}) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([{
-        ...projectData,
-        user_id: user.id,
-        status: 'pending',
-        priority: projectData.priority || 'medium',
-        actual_hours: 0,
-        progress_percentage: 0,
-        requirements: projectData.requirements || {},
-        deliverables: projectData.deliverables || [],
-        tags: projectData.tags || [],
-        is_billable: true
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Log the project creation
-    await logUsage('project_created', 'project', data.id, { 
-      type: projectData.project_type,
-      title: projectData.title 
-    });
-
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to create project:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Utility functions for logging
-export const logUsage = async (
-  action: string,
-  resourceType?: string,
-  resourceId?: string,
-  details?: Record<string, any>
-) => {
-  try {
-    const { error } = await supabase
-      .from('usage_logs')
-      .insert([
-        {
-          action,
-          resource_type: resourceType,
-          resource_id: resourceId,
-          details: details || {},
-          success: true,
-        },
-      ]);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log usage:', error);
-  }
-};
-
-export const logAdminAction = async (
-  action: string,
-  targetType?: string,
-  targetId?: string,
-  oldValues?: Record<string, any>,
-  newValues?: Record<string, any>,
-  severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
-) => {
-  try {
-    const { error } = await supabase
-      .from('admin_logs')
-      .insert([
-        {
-          action,
-          target_type: targetType,
-          target_id: targetId,
-          old_values: oldValues,
-          new_values: newValues,
-          severity,
-        },
-      ]);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log admin action:', error);
-  }
-};
-
-// Data validation utilities
-export const validateUserData = (userData: Partial<User>) => {
-  const allowedFields = [
-    'email', 'full_name', 'role', 'avatar_url', 'phone', 
-    'company', 'job_title', 'bio', 'is_active', 'email_verified'
-  ];
-  
-  const validatedData: Partial<User> = {};
-  
-  Object.keys(userData).forEach(key => {
-    if (allowedFields.includes(key) && userData[key as keyof User] !== undefined) {
-      validatedData[key as keyof User] = userData[key as keyof User];
-    }
-  });
-  
-  return validatedData;
-};
-
-export const validateContactData = (contactData: Partial<Contact>) => {
-  const allowedFields = [
-    'name', 'email', 'phone', 'company', 'subject', 'message',
-    'contact_type', 'priority', 'source'
-  ];
-  
-  const validatedData: Partial<Contact> = {};
-  
-  Object.keys(contactData).forEach(key => {
-    if (allowedFields.includes(key) && contactData[key as keyof Contact] !== undefined) {
-      validatedData[key as keyof Contact] = contactData[key as keyof Contact];
-    }
-  });
-  
-  return validatedData;
-};
-
-// Error handling utilities
-export const handleSupabaseError = (error: any) => {
-  if (error?.code === 'PGRST116') {
-    return 'No data found';
-  }
-  if (error?.code === '23505') {
-    return 'This record already exists';
-  }
-  if (error?.code === '23503') {
-    return 'Referenced record does not exist';
-  }
-  return error?.message || 'An unexpected error occurred';
-};
-
-// Query builders for common operations
-export const buildUserQuery = (includeInactive = false) => {
-  let query = supabase.from('users').select('*');
-  
-  if (!includeInactive) {
-    query = query.eq('is_active', true);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
-
-export const buildProjectQuery = (userId?: string, status?: Project['status']) => {
-  let query = supabase.from('projects').select(`
-    *,
-    user:users!projects_user_id_fkey(full_name, email),
-    assigned_user:users!projects_assigned_to_fkey(full_name, email)
-  `);
-  
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-  
-  if (status) {
-    query = query.eq('status', status);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
-
-export const buildContactQuery = (status?: Contact['status']) => {
-  let query = supabase.from('contacts').select(`
-    *,
-    assigned_user:users!contacts_assigned_to_fkey(full_name, email)
-  `);
-  
-  if (status) {
-    query = query.eq('status', status);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
+export default Services;
