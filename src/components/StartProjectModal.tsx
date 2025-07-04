@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 interface StartProjectModalProps {
   isOpen: boolean;
@@ -27,21 +29,43 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Project submission:', formData);
-    setIsSubmitted(true);
-    
-    // Reset form after 3 seconds and close modal
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        project_type: '',
-        goals: '',
-        timeline: '',
-        budget: '',
-        additional_notes: ''
-      });
-      onClose();
-    }, 3000);
+    handleProjectSubmission();
+  };
+
+  const handleProjectSubmission = async () => {
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([
+          {
+            name: 'Project Inquiry',
+            email: 'project@inquiry.com', // This should be collected in the form
+            service_type: formData.project_type,
+            budget_range: formData.budget,
+            message: `Project Goals: ${formData.goals}\n\nTimeline: ${formData.timeline}\n\nAdditional Notes: ${formData.additional_notes}`,
+          },
+        ]);
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast.success('Project submitted successfully!');
+      
+      // Reset form after 3 seconds and close modal
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          project_type: '',
+          goals: '',
+          timeline: '',
+          budget: '',
+          additional_notes: ''
+        });
+        onClose();
+      }, 3000);
+    } catch (error: any) {
+      toast.error('Failed to submit project. Please try again.');
+    }
   };
 
   const projectTypes = [
