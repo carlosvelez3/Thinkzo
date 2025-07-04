@@ -1,6 +1,7 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import Header from './components/layout/Header';
+import Hero from './components/Hero';
 import Services from './components/Services';
 import Process from './components/Process';
 import Pricing from './components/Pricing';
@@ -20,6 +21,7 @@ function App() {
       case 'home':
         return (
           <div className="bg-slate-900 min-h-screen">
+            <Hero />
             <Services />
             <Process />
             <Pricing />
@@ -50,6 +52,7 @@ function App() {
       default:
         return (
           <div className="bg-slate-900 min-h-screen">
+            <Hero />
             <Services />
             <Process />
             <Pricing />
