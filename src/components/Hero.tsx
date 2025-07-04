@@ -196,20 +196,24 @@ const Hero = () => {
           if (fromNode.connections.length > 0) {
             toNodeIndex = fromNode.connections[Math.floor(Math.random() * fromNode.connections.length)];
           } else {
-            continue;
+            // Skip creating lightning bolt if no connections found
+            toNodeIndex = undefined;
           }
         }
         
-        const fromNode = nodes[fromNodeIndex];
-        const toNode = nodes[toNodeIndex];
-        
-        lightningBolts.push({
-          fromNode: fromNodeIndex,
-          toNode: toNodeIndex,
-          progress: 0,
-          intensity: 0.8 + Math.random() * 0.2,
-          segments: generateLightningPath(fromNode.x, fromNode.y, toNode.x, toNode.y)
-        });
+        // Only create lightning bolt if we have valid nodes
+        if (toNodeIndex !== undefined) {
+          const fromNode = nodes[fromNodeIndex];
+          const toNode = nodes[toNodeIndex];
+          
+          lightningBolts.push({
+            fromNode: fromNodeIndex,
+            toNode: toNodeIndex,
+            progress: 0,
+            intensity: 0.8 + Math.random() * 0.2,
+            segments: generateLightningPath(fromNode.x, fromNode.y, toNode.x, toNode.y)
+          });
+        }
       }
 
       // Update and draw lightning bolts
