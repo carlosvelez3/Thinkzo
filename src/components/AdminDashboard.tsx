@@ -255,7 +255,7 @@ const AdminDashboard: React.FC = () => {
                   <h3 className="text-xl font-semibold text-white">Homepage Editor</h3>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl"
+                    className="flex items-center space-x-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-4 py-2 rounded-xl border border-purple-500/20"
                   >
                     <ExternalLink size={16} />
                     <span>Preview Changes</span>

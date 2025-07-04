@@ -347,7 +347,7 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="mb-6"
           >
-            <span className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-full px-4 py-2 text-purple-300 text-sm font-medium backdrop-blur-xl">
+            <span className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/7 to-pink-500/7 border border-purple-500/10 rounded-full px-4 py-2 text-purple-300 text-sm font-medium backdrop-blur-xl">
               <Sparkles size={16} />
               <span>Neural-Powered Digital Solutions</span>
             </span>
@@ -386,7 +386,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsModalOpen(true)}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 inline-flex items-center space-x-2 backdrop-blur-xl"
+              className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 inline-flex items-center space-x-2 backdrop-blur-xl border border-purple-500/20"
             >
               <span>Start Your Project</span>
               <ArrowRight size={20} />

@@ -244,7 +244,7 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={onClose}
-                      className="flex-1 border-2 border-slate-600 text-slate-300 px-6 py-3 rounded-xl font-medium hover:bg-slate-700/50 transition-all duration-300"
+                      className="flex-1 border-2 border-slate-600/30 text-slate-300 px-6 py-3 rounded-xl font-medium hover:bg-slate-700/30 transition-all duration-300"
                     >
                       Cancel
                     </motion.button>
@@ -252,7 +252,7 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
                       type="submit"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 flex items-center justify-center space-x-2"
+                      className="flex-1 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-6 py-3 rounded-xl font-medium hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 flex items-center justify-center space-x-2 border border-purple-500/20"
                     >
                       <span>Submit Project Info</span>
                       <ArrowRight size={18} />

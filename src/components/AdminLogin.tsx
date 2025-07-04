@@ -146,7 +146,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-medium hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white py-3 rounded-xl font-medium hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-purple-500/20"
           >
             {isLoading ? (
               <div className="flex items-center justify-center space-x-2">

@@ -73,7 +73,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsModalOpen(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-6 py-2.5 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/8 transition-all duration-300 border border-purple-500/20"
               >
                 Start Project
               </motion.button>
@@ -134,7 +134,7 @@ const Navbar = () => {
                     setIsModalOpen(true);
                     setIsOpen(false);
                   }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-medium w-fit mt-2"
+                  className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-6 py-3 rounded-xl font-medium w-fit mt-2 border border-purple-500/20"
                 >
                   Start Project
                 </motion.button>

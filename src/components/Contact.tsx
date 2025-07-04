@@ -162,7 +162,7 @@ const Contact = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white py-4 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2 border border-purple-500/20"
               >
                 <Send size={20} />
                 <span>Send Message</span>
@@ -243,7 +243,7 @@ const Contact = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="border-2 border-purple-500 text-purple-400 px-8 py-3 rounded-full font-semibold hover:bg-purple-500 hover:text-white transition-all duration-300"
+                className="border-2 border-purple-500/30 text-purple-400 px-8 py-3 rounded-full font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
               >
                 Book a Free Consultation
               </motion.button>

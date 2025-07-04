@@ -127,8 +127,8 @@ const Pricing = () => {
                 whileTap={{ scale: 0.95 }}
                 className={`w-full py-4 rounded-full font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
                   plan.popular
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-2xl'
-                    : 'border-2 border-slate-600 text-white hover:bg-slate-800'
+                    ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white hover:shadow-2xl border border-purple-500/20'
+                    : 'border-2 border-slate-600/30 text-white hover:bg-slate-800/30'
                 }`}
               >
                 <span>Get Started</span>
@@ -155,7 +155,7 @@ const Pricing = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="border-2 border-purple-500 text-purple-400 px-8 py-4 rounded-full font-semibold hover:bg-purple-500 hover:text-white transition-all duration-300"
+              className="border-2 border-purple-500/30 text-purple-400 px-8 py-4 rounded-full font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
             >
               Contact for Custom Quote
             </motion.button>
