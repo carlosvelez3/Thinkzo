@@ -140,9 +140,9 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.3 }}
             className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight"
           >
-            Neural-Powered{' '}
+            Welcome to{' '}
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              Digital Solutions
+              Thinkzo
             </span>
           </motion.h1>
 
