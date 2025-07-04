@@ -52,11 +52,11 @@ const Hero = () => {
 
     // Create nodes in concentric circles around the center
     const nodeCount = 49; // 49 + 1 center = 50 total
-    const rings = 4;
+    const rings = 6;
     const nodesPerRing = Math.floor(nodeCount / rings);
     
     for (let ring = 1; ring <= rings; ring++) {
-      const radius = (ring * 150) + (Math.random() * 50 - 25); // Add some randomness
+      const radius = (ring * Math.min(canvas.width, canvas.height) * 0.08) + (Math.random() * 50 - 25); // Scale with screen size
       const nodesInThisRing = ring === rings ? nodeCount - (rings - 1) * nodesPerRing : nodesPerRing;
       
       for (let i = 0; i < nodesInThisRing; i++) {
@@ -77,6 +77,45 @@ const Hero = () => {
       }
     }
 
+    // Add border nodes to extend synapses to screen edges
+    const borderNodes = 20;
+    for (let i = 0; i < borderNodes; i++) {
+      const side = i % 4; // 0=top, 1=right, 2=bottom, 3=left
+      let x, y;
+      
+      switch (side) {
+        case 0: // Top
+          x = (i / 4) * canvas.width / (borderNodes / 4);
+          y = 0;
+          break;
+        case 1: // Right
+          x = canvas.width;
+          y = ((i - borderNodes / 4) / (borderNodes / 4)) * canvas.height;
+          break;
+        case 2: // Bottom
+          x = canvas.width - ((i - borderNodes / 2) / (borderNodes / 4)) * canvas.width;
+          y = canvas.height;
+          break;
+        case 3: // Left
+          x = 0;
+          y = canvas.height - ((i - 3 * borderNodes / 4) / (borderNodes / 4)) * canvas.height;
+          break;
+        default:
+          x = 0;
+          y = 0;
+      }
+      
+      nodes.push({
+        x: x,
+        y: y,
+        vx: 0,
+        vy: 0,
+        connections: [],
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.01 + Math.random() * 0.015,
+        distanceFromCenter: Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2)
+      });
+    }
     // Lightning bolts
     const lightningBolts: Array<{
       fromNode: number;
@@ -87,12 +126,14 @@ const Hero = () => {
     }> = [];
 
     // Create connections - prioritize connections to center and nearby nodes
-    const maxDistance = 180;
+    const maxDistance = Math.min(canvas.width, canvas.height) * 0.25;
+    const borderStartIndex = 50; // First 50 are center + ring nodes
+    
     nodes.forEach((node, i) => {
       // Always connect outer nodes to center or closer nodes
       if (i > 0) { // Skip center node
         // Connect to center with high probability
-        if (Math.random() < 0.4) {
+        if (Math.random() < (i >= borderStartIndex ? 0.8 : 0.4)) {
           node.connections.push(0);
         }
         
@@ -103,7 +144,7 @@ const Hero = () => {
             const dy = node.y - otherNode.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < maxDistance && Math.random() < 0.25) {
+            if (distance < maxDistance && Math.random() < (i >= borderStartIndex || j >= borderStartIndex ? 0.4 : 0.25)) {
               node.connections.push(j);
             }
           }
@@ -163,31 +204,33 @@ const Hero = () => {
         node.vy *= 0.99;
         
         // Bounce off edges
-        if (node.x < 50 || node.x > canvas.width - 50) node.vx *= -0.5;
-        if (node.y < 50 || node.y > canvas.height - 50) node.vy *= -0.5;
-        
-        // Keep in bounds
-        node.x = Math.max(50, Math.min(canvas.width - 50, node.x));
-        node.y = Math.max(50, Math.min(canvas.height - 50, node.y));
+        if (i < borderStartIndex) { // Only apply edge bouncing to non-border nodes
+          if (node.x < 50 || node.x > canvas.width - 50) node.vx *= -0.5;
+          if (node.y < 50 || node.y > canvas.height - 50) node.vy *= -0.5;
+          
+          // Keep in bounds
+          node.x = Math.max(50, Math.min(canvas.width - 50, node.x));
+          node.y = Math.max(50, Math.min(canvas.height - 50, node.y));
+        }
         
         // Update pulse
         node.pulse += node.pulseSpeed;
       });
 
       // Randomly create lightning bolts - prioritize from center
-      if (Math.random() < 0.08 && lightningBolts.length < 6) {
+      if (Math.random() < 0.12 && lightningBolts.length < 8) {
         let fromNodeIndex, toNodeIndex;
         
-        // 60% chance to start from center
-        if (Math.random() < 0.6) {
+        // 40% chance to start from center, 30% from border nodes
+        const rand = Math.random();
+        if (rand < 0.4) {
           fromNodeIndex = 0; // Center node
-          const centerNode = nodes[0];
-          if (centerNode.connections.length > 0) {
-            toNodeIndex = centerNode.connections[Math.floor(Math.random() * centerNode.connections.length)];
-          } else {
-            // If center has no connections, pick a random nearby node
-            toNodeIndex = Math.floor(Math.random() * (nodes.length - 1)) + 1;
-          }
+          // Prefer border nodes for dramatic effect
+          toNodeIndex = borderStartIndex + Math.floor(Math.random() * borderNodes);
+        } else if (rand < 0.7) {
+          // Start from border node
+          fromNodeIndex = borderStartIndex + Math.floor(Math.random() * borderNodes);
+          toNodeIndex = 0; // Connect to center
         } else {
           // Random connection
           fromNodeIndex = Math.floor(Math.random() * nodes.length);
@@ -258,21 +301,22 @@ const Hero = () => {
       // Draw nodes
       nodes.forEach((node, i) => {
         const isCenter = i === 0;
-        const basePulseSize = isCenter ? 4 : 2;
+        const isBorder = i >= borderStartIndex;
+        const basePulseSize = isCenter ? 4 : (isBorder ? 1.5 : 2);
         const pulseSize = basePulseSize + Math.sin(node.pulse) * (isCenter ? 2 : 1);
-        const alpha = 0.6 + Math.sin(node.pulse) * 0.4;
+        const alpha = (0.6 + Math.sin(node.pulse) * 0.4) * (isBorder ? 0.7 : 1);
         
         // Node glow
-        ctx.fillStyle = `rgba(168, 85, 247, ${alpha * (isCenter ? 0.5 : 0.3)})`;
+        ctx.fillStyle = `rgba(168, 85, 247, ${alpha * (isCenter ? 0.5 : (isBorder ? 0.2 : 0.3))})`;
         ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
-        ctx.shadowBlur = isCenter ? 25 : 15;
+        ctx.shadowBlur = isCenter ? 25 : (isBorder ? 8 : 15);
         ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseSize * (isCenter ? 4 : 3), 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, pulseSize * (isCenter ? 4 : (isBorder ? 2 : 3)), 0, Math.PI * 2);
         ctx.fill();
         
         // Node core
         ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`;
-        ctx.shadowBlur = isCenter ? 15 : 8;
+        ctx.shadowBlur = isCenter ? 15 : (isBorder ? 4 : 8);
         ctx.beginPath();
         ctx.arc(node.x, node.y, pulseSize, 0, Math.PI * 2);
         ctx.fill();
