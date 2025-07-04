@@ -1,364 +1,497 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Globe, Megaphone, Palette, Code, Search, BarChart3 } from 'lucide-react';
-import StartProjectModal from './StartProjectModal';
+/**
+ * Supabase Client Configuration
+ * Handles database connections and authentication
+ */
+import { createClient } from '@supabase/supabase-js';
 
-const services = [
-  {
-    icon: Globe,
-    title: 'AI-Powered Websites',
-    description: 'Intelligent, responsive websites that adapt and learn from user behavior.',
-    features: ['Neural Design', 'Smart SEO', 'Adaptive UI', 'AI Analytics']
-  },
-  {
-    icon: Code,
-    title: 'Neural Development',
-    description: 'Full-stack development with machine learning integration and smart automation.',
-    features: ['React/Next.js', 'AI Integration', 'Smart APIs', 'Auto-Optimization']
-  },
-  {
-    icon: Megaphone,
-    title: 'Intelligent Marketing',
-    description: 'AI-driven marketing campaigns that predict and adapt to audience behavior.',
-    features: ['Predictive Analytics', 'Smart Content', 'Auto-Targeting', 'Neural Insights']
-  },
-  {
-    icon: Palette,
-    title: 'Adaptive Branding',
-    description: 'Dynamic brand identities that evolve with your business and market trends.',
-    features: ['Smart Logos', 'Adaptive Guidelines', 'Neural Colors', 'AI Typography']
-  },
-  {
-    icon: Search,
-    title: 'Neural SEO',
-    description: 'AI-powered SEO that continuously learns and optimizes for better rankings.',
-    features: ['Smart Keywords', 'Auto-Optimization', 'Neural Analysis', 'Predictive SEO']
-  },
-  {
-    icon: BarChart3,
-    title: 'AI Analytics',
-    description: 'Intelligent insights that predict trends and optimize performance automatically.',
-    features: ['Predictive Models', 'Smart Tracking', 'Neural Insights', 'Auto-Reports']
-  }
-];
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const Services = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+// Database Types
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'user' | 'admin' | 'manager';
+  avatar_url?: string;
+  phone?: string;
+  company?: string;
+  job_title?: string;
+  bio?: string;
+  is_active: boolean;
+  last_login?: string;
+  email_verified: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
-    // Set canvas size
-    const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+export interface Project {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  project_type: 'website' | 'mobile_app' | 'branding' | 'marketing' | 'consulting' | 'other';
+  status: 'pending' | 'in_progress' | 'review' | 'completed' | 'cancelled' | 'on_hold';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  budget_range?: string;
+  estimated_hours?: number;
+  actual_hours: number;
+  start_date?: string;
+  due_date?: string;
+  completion_date?: string;
+  requirements: Record<string, any>;
+  deliverables: string[];
+  tags: string[];
+  assigned_to?: string;
+  progress_percentage: number;
+  client_feedback?: string;
+  internal_notes?: string;
+  is_billable: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
-    // Neural network nodes
-    const nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      connections: number[];
-      pulse: number;
-      pulseSpeed: number;
-    }> = [];
+export interface Subscription {
+  id: string;
+  user_id: string;
+  plan_name: string;
+  plan_type: 'free' | 'basic' | 'pro' | 'enterprise';
+  status: 'active' | 'cancelled' | 'expired' | 'suspended' | 'trial';
+  billing_cycle: 'monthly' | 'yearly' | 'one_time';
+  amount: number;
+  currency: string;
+  trial_ends_at?: string;
+  current_period_start?: string;
+  current_period_end?: string;
+  cancelled_at?: string;
+  features: Record<string, any>;
+  usage_limits: Record<string, any>;
+  stripe_subscription_id?: string;
+  stripe_customer_id?: string;
+  auto_renew: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
-    // Create nodes
-    const nodeCount = 30;
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        connections: [],
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.015 + Math.random() * 0.02
-      });
-    }
+export interface UsageLog {
+  id: string;
+  user_id?: string;
+  action: string;
+  resource_type?: string;
+  resource_id?: string;
+  details: Record<string, any>;
+  ip_address?: string;
+  user_agent?: string;
+  session_id?: string;
+  duration_ms?: number;
+  success: boolean;
+  error_message?: string;
+  metadata: Record<string, any>;
+  created_at: string;
+}
 
-    // Lightning bolts
-    const lightningBolts: Array<{
-      fromNode: number;
-      toNode: number;
-      progress: number;
-      intensity: number;
-      segments: Array<{ x: number; y: number }>;
-    }> = [];
+export interface AdminLog {
+  id: string;
+  admin_user_id?: string;
+  action: string;
+  target_type?: string;
+  target_id?: string;
+  old_values?: Record<string, any>;
+  new_values?: Record<string, any>;
+  ip_address?: string;
+  user_agent?: string;
+  severity: 'info' | 'warning' | 'error' | 'critical';
+  description?: string;
+  created_at: string;
+}
 
-    // Create connections between nearby nodes
-    const maxDistance = 120;
-    nodes.forEach((node, i) => {
-      nodes.forEach((otherNode, j) => {
-        if (i !== j) {
-          const dx = node.x - otherNode.x;
-          const dy = node.y - otherNode.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < maxDistance && Math.random() < 0.25) {
-            node.connections.push(j);
-          }
-        }
-      });
+export interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  subject?: string;
+  message: string;
+  contact_type: 'general' | 'support' | 'sales' | 'feedback' | 'bug_report' | 'feature_request';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'new' | 'in_progress' | 'resolved' | 'closed';
+  assigned_to?: string;
+  source: string;
+  tags: string[];
+  attachments: string[];
+  response_sent: boolean;
+  response_date?: string;
+  satisfaction_rating?: number;
+  follow_up_required: boolean;
+  follow_up_date?: string;
+  internal_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Legacy interface for backward compatibility
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  company?: string;
+  service_type?: string;
+  budget_range?: string;
+  message: string;
+  status: 'new' | 'read' | 'replied';
+  created_at: string;
+}
+
+// Service interface for services page
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  price: number;
+  category: string;
+  image_url?: string;
+  is_featured: boolean;
+  meta_title?: string;
+  meta_description?: string;
+  slug?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Schema validation utilities
+export const introspectTable = async (tableName: string) => {
+  try {
+    const { data, error } = await supabase.rpc('introspect_columns', {
+      table_name: tableName
     });
 
-    // Generate lightning bolt segments
-    const generateLightningPath = (fromX: number, fromY: number, toX: number, toY: number) => {
-      const segments = [];
-      const steps = 6;
-      const roughness = 0.25;
-      
-      for (let i = 0; i <= steps; i++) {
-        const t = i / steps;
-        let x = fromX + (toX - fromX) * t;
-        let y = fromY + (toY - fromY) * t;
-        
-        if (i > 0 && i < steps) {
-          x += (Math.random() - 0.5) * roughness * 40;
-          y += (Math.random() - 0.5) * roughness * 40;
-        }
-        
-        segments.push({ x, y });
-      }
-      
-      return segments;
-    };
-
-    // Animation loop
-    const animate = () => {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Update nodes
-      nodes.forEach((node, i) => {
-        // Move nodes
-        node.x += node.vx;
-        node.y += node.vy;
-        
-        // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-        
-        // Keep in bounds
-        node.x = Math.max(0, Math.min(canvas.width, node.x));
-        node.y = Math.max(0, Math.min(canvas.height, node.y));
-        
-        // Update pulse
-        node.pulse += node.pulseSpeed;
-      });
-
-      // Randomly create lightning bolts
-      if (Math.random() < 0.03 && lightningBolts.length < 3) {
-        const fromNodeIndex = Math.floor(Math.random() * nodes.length);
-        const fromNode = nodes[fromNodeIndex];
-        
-        if (fromNode.connections.length > 0) {
-          const toNodeIndex = fromNode.connections[Math.floor(Math.random() * fromNode.connections.length)];
-          const toNode = nodes[toNodeIndex];
-          
-          lightningBolts.push({
-            fromNode: fromNodeIndex,
-            toNode: toNodeIndex,
-            progress: 0,
-            intensity: 0.6 + Math.random() * 0.3,
-            segments: generateLightningPath(fromNode.x, fromNode.y, toNode.x, toNode.y)
-          });
-        }
-      }
-
-      // Update and draw lightning bolts
-      lightningBolts.forEach((bolt, index) => {
-        bolt.progress += 0.08;
-        
-        if (bolt.progress > 1) {
-          lightningBolts.splice(index, 1);
-          return;
-        }
-        
-        const alpha = bolt.intensity * (1 - bolt.progress);
-        const segmentsToDraw = Math.floor(bolt.segments.length * bolt.progress);
-        
-        // Draw lightning bolt
-        ctx.strokeStyle = `rgba(168, 85, 247, ${alpha})`;
-        ctx.lineWidth = 1.5;
-        ctx.shadowColor = 'rgba(168, 85, 247, 0.6)';
-        ctx.shadowBlur = 8;
-        
-        ctx.beginPath();
-        for (let i = 0; i < segmentsToDraw - 1; i++) {
-          const segment = bolt.segments[i];
-          const nextSegment = bolt.segments[i + 1];
-          
-          if (i === 0) {
-            ctx.moveTo(segment.x, segment.y);
-          }
-          ctx.lineTo(nextSegment.x, nextSegment.y);
-        }
-        ctx.stroke();
-        
-        // Add glow effect
-        ctx.strokeStyle = `rgba(236, 72, 153, ${alpha * 0.4})`;
-        ctx.lineWidth = 3;
-        ctx.shadowBlur = 15;
-        ctx.stroke();
-        
-        ctx.shadowBlur = 0;
-      });
-
-      // Draw nodes
-      nodes.forEach((node, i) => {
-        const pulseSize = 1.5 + Math.sin(node.pulse) * 0.8;
-        const alpha = 0.5 + Math.sin(node.pulse) * 0.3;
-        
-        // Node glow
-        ctx.fillStyle = `rgba(168, 85, 247, ${alpha * 0.2})`;
-        ctx.shadowColor = 'rgba(168, 85, 247, 0.6)';
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseSize * 2.5, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Node core
-        ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`;
-        ctx.shadowBlur = 6;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseSize, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.shadowBlur = 0;
-      });
-
-      // Draw static connections (very faint)
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
-      ctx.lineWidth = 0.8;
-      nodes.forEach((node, i) => {
-        node.connections.forEach(connectionIndex => {
-          const connectedNode = nodes[connectionIndex];
-          const dx = node.x - connectedNode.x;
-          const dy = node.y - connectedNode.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < maxDistance) {
-            ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(connectedNode.x, connectedNode.y);
-            ctx.stroke();
-          }
-        });
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-    };
-  }, []);
-
-  return (
-    <>
-      <section id="services" className="relative py-32 overflow-hidden">
-        {/* Neural Network Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full"
-          style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 30%, #0f172a 100%)' }}
-        />
-
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-900/90" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-20"
-          >
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Neural{' '}
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Services
-              </span>
-            </h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              AI-powered digital solutions that think, learn, and evolve with your business needs.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/30 rounded-3xl p-8 hover:bg-slate-800/50 transition-all duration-300 group"
-              >
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6 group-hover:border-purple-400/50 transition-all duration-300"
-                >
-                  <service.icon className="text-purple-400" size={28} />
-                </motion.div>
-
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  {service.title}
-                </h3>
-
-                <p className="text-slate-300 mb-6 leading-relaxed">
-                  {service.description}
-                </p>
-
-                <ul className="space-y-2">
-                  {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
-                      <span className="text-slate-300 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-center mt-16"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsModalOpen(true)}
-              className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 backdrop-blur-xl border border-purple-500/20"
-            >
-              Explore Neural Solutions
-            </motion.button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Start Project Modal */}
-      <StartProjectModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
-    </>
-  );
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to introspect table:', error.message);
+    return { data: null, error };
+  }
 };
 
-export default Services;
+export const getTableInfo = async (tableName: string) => {
+  try {
+    const { data, error } = await supabase.rpc('get_table_info', {
+      table_name: tableName
+    });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to get table info:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Enhanced user insertion function using database function
+export const insertUser = async (userData: {
+  email: string;
+  full_name: string;
+  phone?: string;
+  company?: string;
+  job_title?: string;
+  bio?: string;
+  role?: 'user' | 'admin' | 'manager';
+}) => {
+  try {
+    const { data, error } = await supabase.rpc('safe_insert_user', {
+      p_email: userData.email,
+      p_full_name: userData.full_name,
+      p_phone: userData.phone || null,
+      p_company: userData.company || null,
+      p_job_title: userData.job_title || null,
+      p_bio: userData.bio || null,
+      p_role: userData.role || 'user'
+    });
+
+    if (error) throw error;
+
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+
+    return { data: data.data, error: null };
+  } catch (error: any) {
+    console.error('Failed to insert user:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Enhanced contact insertion function using database function
+export const insertContact = async (contactData: {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  subject?: string;
+  message: string;
+  contact_type?: Contact['contact_type'];
+  priority?: Contact['priority'];
+  source?: string;
+}) => {
+  try {
+    const { data, error } = await supabase.rpc('safe_insert_contact', {
+      p_name: contactData.name,
+      p_email: contactData.email,
+      p_message: contactData.message,
+      p_phone: contactData.phone || null,
+      p_company: contactData.company || null,
+      p_subject: contactData.subject || null,
+      p_contact_type: contactData.contact_type || 'general',
+      p_priority: contactData.priority || 'medium',
+      p_source: contactData.source || 'website'
+    });
+
+    if (error) throw error;
+
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+
+    return { data: data.data, error: null };
+  } catch (error: any) {
+    console.error('Failed to insert contact:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Legacy contact message insertion for backward compatibility
+export const insertContactMessage = async (messageData: {
+  name: string;
+  email: string;
+  company?: string;
+  service_type?: string;
+  budget_range?: string;
+  message: string;
+}) => {
+  try {
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .insert([
+        {
+          ...messageData,
+          status: 'new'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log the contact creation
+    await logUsage('contact_message_created', 'contact_message', data.id, { 
+      email: messageData.email,
+      service_type: messageData.service_type 
+    });
+
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to insert contact message:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Project creation function
+export const createProject = async (projectData: {
+  title: string;
+  description?: string;
+  project_type: Project['project_type'];
+  budget_range?: string;
+  estimated_hours?: number;
+  priority?: Project['priority'];
+  requirements?: Record<string, any>;
+  deliverables?: string[];
+  tags?: string[];
+}) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([{
+        ...projectData,
+        user_id: user.id,
+        status: 'pending',
+        priority: projectData.priority || 'medium',
+        actual_hours: 0,
+        progress_percentage: 0,
+        requirements: projectData.requirements || {},
+        deliverables: projectData.deliverables || [],
+        tags: projectData.tags || [],
+        is_billable: true
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log the project creation
+    await logUsage('project_created', 'project', data.id, { 
+      type: projectData.project_type,
+      title: projectData.title 
+    });
+
+    return { data, error: null };
+  } catch (error: any) {
+    console.error('Failed to create project:', error.message);
+    return { data: null, error };
+  }
+};
+
+// Utility functions for logging
+export const logUsage = async (
+  action: string,
+  resourceType?: string,
+  resourceId?: string,
+  details?: Record<string, any>
+) => {
+  try {
+    const { error } = await supabase
+      .from('usage_logs')
+      .insert([
+        {
+          action,
+          resource_type: resourceType,
+          resource_id: resourceId,
+          details: details || {},
+          success: true,
+        },
+      ]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Failed to log usage:', error);
+  }
+};
+
+export const logAdminAction = async (
+  action: string,
+  targetType?: string,
+  targetId?: string,
+  oldValues?: Record<string, any>,
+  newValues?: Record<string, any>,
+  severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
+) => {
+  try {
+    const { error } = await supabase
+      .from('admin_logs')
+      .insert([
+        {
+          action,
+          target_type: targetType,
+          target_id: targetId,
+          old_values: oldValues,
+          new_values: newValues,
+          severity,
+        },
+      ]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Failed to log admin action:', error);
+  }
+};
+
+// Data validation utilities
+export const validateUserData = (userData: Partial<User>) => {
+  const allowedFields = [
+    'email', 'full_name', 'role', 'avatar_url', 'phone', 
+    'company', 'job_title', 'bio', 'is_active', 'email_verified'
+  ];
+  
+  const validatedData: Partial<User> = {};
+  
+  Object.keys(userData).forEach(key => {
+    if (allowedFields.includes(key) && userData[key as keyof User] !== undefined) {
+      validatedData[key as keyof User] = userData[key as keyof User];
+    }
+  });
+  
+  return validatedData;
+};
+
+export const validateContactData = (contactData: Partial<Contact>) => {
+  const allowedFields = [
+    'name', 'email', 'phone', 'company', 'subject', 'message',
+    'contact_type', 'priority', 'source'
+  ];
+  
+  const validatedData: Partial<Contact> = {};
+  
+  Object.keys(contactData).forEach(key => {
+    if (allowedFields.includes(key) && contactData[key as keyof Contact] !== undefined) {
+      validatedData[key as keyof Contact] = contactData[key as keyof Contact];
+    }
+  });
+  
+  return validatedData;
+};
+
+// Error handling utilities
+export const handleSupabaseError = (error: any) => {
+  if (error?.code === 'PGRST116') {
+    return 'No data found';
+  }
+  if (error?.code === '23505') {
+    return 'This record already exists';
+  }
+  if (error?.code === '23503') {
+    return 'Referenced record does not exist';
+  }
+  return error?.message || 'An unexpected error occurred';
+};
+
+// Query builders for common operations
+export const buildUserQuery = (includeInactive = false) => {
+  let query = supabase.from('users').select('*');
+  
+  if (!includeInactive) {
+    query = query.eq('is_active', true);
+  }
+  
+  return query.order('created_at', { ascending: false });
+};
+
+export const buildProjectQuery = (userId?: string, status?: Project['status']) => {
+  let query = supabase.from('projects').select(`
+    *,
+    user:users!projects_user_id_fkey(full_name, email),
+    assigned_user:users!projects_assigned_to_fkey(full_name, email)
+  `);
+  
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
+  
+  if (status) {
+    query = query.eq('status', status);
+  }
+  
+  return query.order('created_at', { ascending: false });
+};
+
+export const buildContactQuery = (status?: Contact['status']) => {
+  let query = supabase.from('contacts').select(`
+    *,
+    assigned_user:users!contacts_assigned_to_fkey(full_name, email)
+  `);
+  
+  if (status) {
+    query = query.eq('status', status);
+  }
+  
+  return query.order('created_at', { ascending: false });
+};
