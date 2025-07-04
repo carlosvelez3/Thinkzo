@@ -1,216 +1,331 @@
-/**
- * Supabase Client Configuration
- * Handles database connections and authentication
- */
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin, Send, Clock, Users } from 'lucide-react';
+import { insertContact } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+    subject: '',
+    service: '',
+    budget: '',
+    message: ''
+  });
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-// Database Types
-export interface User {
-  id: string;
-  email: string;
-  full_name: string;
-  role: 'user' | 'admin' | 'manager';
-  avatar_url?: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  bio?: string;
-  is_active: boolean;
-  last_login?: string;
-  email_verified: boolean;
-  created_at: string;
-  updated_at: string;
-}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-export interface Project {
-  id: string;
-  user_id: string;
-  title: string;
-  description?: string;
-  project_type: 'website' | 'mobile_app' | 'branding' | 'marketing' | 'consulting' | 'other';
-  status: 'pending' | 'in_progress' | 'review' | 'completed' | 'cancelled' | 'on_hold';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  budget_range?: string;
-  estimated_hours?: number;
-  actual_hours: number;
-  start_date?: string;
-  due_date?: string;
-  completion_date?: string;
-  requirements: Record<string, any>;
-  deliverables: string[];
-  tags: string[];
-  assigned_to?: string;
-  progress_percentage: number;
-  client_feedback?: string;
-  internal_notes?: string;
-  is_billable: boolean;
-  created_at: string;
-  updated_at: string;
-}
+    try {
+      const contactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        company: formData.company || undefined,
+        subject: formData.subject || `${formData.service} Inquiry`,
+        message: `Service: ${formData.service}\nBudget: ${formData.budget}\n\n${formData.message}`,
+        contact_type: 'sales' as const,
+        priority: 'medium' as const,
+        source: 'website'
+      };
 
-export interface Subscription {
-  id: string;
-  user_id: string;
-  plan_name: string;
-  plan_type: 'free' | 'basic' | 'pro' | 'enterprise';
-  status: 'active' | 'cancelled' | 'expired' | 'suspended' | 'trial';
-  billing_cycle: 'monthly' | 'yearly' | 'one_time';
-  amount: number;
-  currency: string;
-  trial_ends_at?: string;
-  current_period_start?: string;
-  current_period_end?: string;
-  cancelled_at?: string;
-  features: Record<string, any>;
-  usage_limits: Record<string, any>;
-  stripe_subscription_id?: string;
-  stripe_customer_id?: string;
-  auto_renew: boolean;
-  created_at: string;
-  updated_at: string;
-}
+      const { data, error } = await insertContact(contactData);
 
-export interface UsageLog {
-  id: string;
-  user_id?: string;
-  action: string;
-  resource_type?: string;
-  resource_id?: string;
-  details: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  session_id?: string;
-  duration_ms?: number;
-  success: boolean;
-  error_message?: string;
-  metadata: Record<string, any>;
-  created_at: string;
-}
+      if (error) throw error;
 
-export interface AdminLog {
-  id: string;
-  admin_user_id?: string;
-  action: string;
-  target_type?: string;
-  target_id?: string;
-  old_values?: Record<string, any>;
-  new_values?: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  description?: string;
-  created_at: string;
-}
+      toast.success('Message sent successfully! We\'ll get back to you soon.');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        phone: '',
+        subject: '',
+        service: '',
+        budget: '',
+        message: ''
+      });
+    } catch (error: any) {
+      toast.error('Failed to send message. Please try again.');
+      console.error('Contact form error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-export interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  subject?: string;
-  message: string;
-  contact_type: 'general' | 'support' | 'sales' | 'feedback' | 'bug_report' | 'feature_request';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'new' | 'in_progress' | 'resolved' | 'closed';
-  assigned_to?: string;
-  source: string;
-  tags: string[];
-  attachments: string[];
-  response_sent: boolean;
-  response_date?: string;
-  satisfaction_rating?: number;
-  follow_up_required: boolean;
-  follow_up_date?: string;
-  internal_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+  return (
+    <section id="contact" className="py-32 bg-gradient-to-br from-slate-800 to-slate-900">
+      <div className="max-w-7xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            Let's{' '}
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Work Together
+            </span>
+          </h2>
+          <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            Ready to transform your digital presence? Get in touch and let's discuss your project.
+          </p>
+        </motion.div>
 
-// Utility functions for logging
-export const logUsage = async (
-  action: string,
-  resourceType?: string,
-  resourceId?: string,
-  details?: Record<string, any>
-) => {
-  try {
-    const { error } = await supabase
-      .from('usage_logs')
-      .insert([
-        {
-          action,
-          resource_type: resourceType,
-          resource_id: resourceId,
-          details: details || {},
-          success: true,
-        },
-      ]);
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8"
+          >
+            <h3 className="text-2xl font-bold text-white mb-6">
+              Send us a message
+            </h3>
 
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log usage:', error);
-  }
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                    placeholder="Your Company"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Service Needed
+                  </label>
+                  <select
+                    name="service"
+                    value={formData.service}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                  >
+                    <option value="">Select a service</option>
+                    <option value="website-design">Website Design</option>
+                    <option value="web-development">Web Development</option>
+                    <option value="digital-marketing">Digital Marketing</option>
+                    <option value="brand-identity">Brand Identity</option>
+                    <option value="seo">SEO Optimization</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Budget Range
+                  </label>
+                  <select
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                  >
+                    <option value="">Select budget range</option>
+                    <option value="under-5k">Under $5,000</option>
+                    <option value="5k-10k">$5,000 - $10,000</option>
+                    <option value="10k-25k">$10,000 - $25,000</option>
+                    <option value="25k-50k">$25,000 - $50,000</option>
+                    <option value="over-50k">Over $50,000</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                  placeholder="Project inquiry"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
+                  Project Details *
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  rows={5}
+                  className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors resize-none"
+                  placeholder="Tell us about your project, goals, and timeline..."
+                />
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white py-4 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2 border border-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send size={20} />
+                <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+              </motion.button>
+            </form>
+          </motion.div>
+
+          {/* Contact Information */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="space-y-8"
+          >
+            <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                Get in touch
+              </h3>
+
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
+                    <Mail className="text-purple-400" size={20} />
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold">Email</div>
+                    <div className="text-slate-400">team@thinkzo.ai</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
+                    <Phone className="text-purple-400" size={20} />
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold">Phone</div>
+                    <div className="text-slate-400">+1 (555) 123-4567</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
+                    <MapPin className="text-purple-400" size={20} />
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold">Office</div>
+                    <div className="text-slate-400">123 Design Street, Creative City, CC 12345</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-white mb-6">
+                Why choose us?
+              </h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Clock className="text-purple-400" size={20} />
+                  <span className="text-slate-300">Fast turnaround times</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Users className="text-purple-400" size={20} />
+                  <span className="text-slate-300">Dedicated project manager</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Send className="text-purple-400" size={20} />
+                  <span className="text-slate-300">24/7 support available</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-slate-400 mb-4">
+                Prefer to schedule a call?
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="border-2 border-purple-500/30 text-purple-400 px-8 py-3 rounded-full font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
+              >
+                Book a Free Consultation
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
-export const logAdminAction = async (
-  action: string,
-  targetType?: string,
-  targetId?: string,
-  oldValues?: Record<string, any>,
-  newValues?: Record<string, any>,
-  severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
-) => {
-  try {
-    const { error } = await supabase
-      .from('admin_logs')
-      .insert([
-        {
-          action,
-          target_type: targetType,
-          target_id: targetId,
-          old_values: oldValues,
-          new_values: newValues,
-          severity,
-        },
-      ]);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log admin action:', error);
-  }
-};
-
-// Contact insertion function
-export const insertContact = async (contactData: Omit<Contact, 'id' | 'created_at' | 'updated_at' | 'tags' | 'attachments' | 'response_sent' | 'follow_up_required'>) => {
-  try {
-    const { data, error } = await supabase
-      .from('contacts')
-      .insert([
-        {
-          ...contactData,
-          tags: [],
-          attachments: [],
-          response_sent: false,
-          follow_up_required: false,
-          status: 'new'
-        }
-      ])
-      .select()
-      .single();
-
-    return { data, error };
-  } catch (error) {
-    console.error('Failed to insert contact:', error);
-    return { data: null, error };
-  }
-};
+export default Contact;
