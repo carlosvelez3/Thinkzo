@@ -1,497 +1,252 @@
-/**
- * Supabase Client Configuration
- * Handles database connections and authentication
- */
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Brain, Sparkles, ArrowRight, Zap, Cpu, Network } from 'lucide-react';
+import StartProjectModal from './StartProjectModal';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const Hero = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+  // Neural network animation points
+  const neuralPoints = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 2,
+  }));
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  return (
+    <>
+      <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex items-center justify-center overflow-hidden">
+        {/* Neural Network Background */}
+        <div className="absolute inset-0 opacity-30">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Neural connections */}
+            {neuralPoints.map((point, index) => (
+              <g key={point.id}>
+                {neuralPoints.slice(index + 1).map((targetPoint, targetIndex) => {
+                  const distance = Math.sqrt(
+                    Math.pow(targetPoint.x - point.x, 2) + Math.pow(targetPoint.y - point.y, 2)
+                  );
+                  if (distance < 25) {
+                    return (
+                      <motion.line
+                        key={`${point.id}-${targetPoint.id}`}
+                        x1={point.x}
+                        y1={point.y}
+                        x2={targetPoint.x}
+                        y2={targetPoint.y}
+                        stroke="url(#neuralGradient)"
+                        strokeWidth="0.1"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ 
+                          pathLength: [0, 1, 0], 
+                          opacity: [0, 0.6, 0] 
+                        }}
+                        transition={{
+                          duration: 3,
+                          delay: point.delay + targetIndex * 0.1,
+                          repeat: Infinity,
+                          repeatDelay: 2,
+                        }}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+                {/* Neural nodes */}
+                <motion.circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.3"
+                  fill="url(#nodeGradient)"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ 
+                    scale: [0, 1.2, 1], 
+                    opacity: [0, 1, 0.8] 
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: point.delay,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                  }}
+                />
+              </g>
+            ))}
+            
+            {/* Gradients */}
+            <defs>
+              <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#a855f7" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#ec4899" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.4" />
+              </linearGradient>
+              <radialGradient id="nodeGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#fbbf24" stopOpacity="1" />
+                <stop offset="100%" stopColor="#a855f7" stopOpacity="0.8" />
+              </radialGradient>
+            </defs>
+          </svg>
+        </div>
 
-// Database Types
-export interface User {
-  id: string;
-  email: string;
-  full_name: string;
-  role: 'user' | 'admin' | 'manager';
-  avatar_url?: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  bio?: string;
-  is_active: boolean;
-  last_login?: string;
-  email_verified: boolean;
-  created_at: string;
-  updated_at: string;
-}
+        {/* Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[Brain, Cpu, Network, Zap].map((Icon, index) => (
+            <motion.div
+              key={index}
+              className="absolute text-purple-400/20"
+              style={{
+                left: `${20 + index * 20}%`,
+                top: `${30 + index * 10}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 4 + index,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: index * 0.5,
+              }}
+            >
+              <Icon size={40 + index * 10} />
+            </motion.div>
+          ))}
+        </div>
 
-export interface Project {
-  id: string;
-  user_id: string;
-  title: string;
-  description?: string;
-  project_type: 'website' | 'mobile_app' | 'branding' | 'marketing' | 'consulting' | 'other';
-  status: 'pending' | 'in_progress' | 'review' | 'completed' | 'cancelled' | 'on_hold';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  budget_range?: string;
-  estimated_hours?: number;
-  actual_hours: number;
-  start_date?: string;
-  due_date?: string;
-  completion_date?: string;
-  requirements: Record<string, any>;
-  deliverables: string[];
-  tags: string[];
-  assigned_to?: string;
-  progress_percentage: number;
-  client_feedback?: string;
-  internal_notes?: string;
-  is_billable: boolean;
-  created_at: string;
-  updated_at: string;
-}
+        {/* Main Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mb-8"
+          >
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 1, delay: 0.2, type: "spring" }}
+              className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-3xl mb-8"
+            >
+              <Brain className="text-purple-400" size={40} />
+            </motion.div>
+          </motion.div>
 
-export interface Subscription {
-  id: string;
-  user_id: string;
-  plan_name: string;
-  plan_type: 'free' | 'basic' | 'pro' | 'enterprise';
-  status: 'active' | 'cancelled' | 'expired' | 'suspended' | 'trial';
-  billing_cycle: 'monthly' | 'yearly' | 'one_time';
-  amount: number;
-  currency: string;
-  trial_ends_at?: string;
-  current_period_start?: string;
-  current_period_end?: string;
-  cancelled_at?: string;
-  features: Record<string, any>;
-  usage_limits: Record<string, any>;
-  stripe_subscription_id?: string;
-  stripe_customer_id?: string;
-  auto_renew: boolean;
-  created_at: string;
-  updated_at: string;
-}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight"
+          >
+            Neural-Powered{' '}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+              Digital Solutions
+            </span>
+          </motion.h1>
 
-export interface UsageLog {
-  id: string;
-  user_id?: string;
-  action: string;
-  resource_type?: string;
-  resource_id?: string;
-  details: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  session_id?: string;
-  duration_ms?: number;
-  success: boolean;
-  error_message?: string;
-  metadata: Record<string, any>;
-  created_at: string;
-}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto mb-12 leading-relaxed"
+          >
+            Transform your business with AI-powered websites, intelligent marketing, 
+            and neural design systems that adapt and evolve with your needs.
+          </motion.p>
 
-export interface AdminLog {
-  id: string;
-  admin_user_id?: string;
-  action: string;
-  target_type?: string;
-  target_id?: string;
-  old_values?: Record<string, any>;
-  new_values?: Record<string, any>;
-  ip_address?: string;
-  user_agent?: string;
-  severity: 'info' | 'warning' | 'error' | 'critical';
-  description?: string;
-  created_at: string;
-}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsModalOpen(true)}
+              className="group bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 backdrop-blur-xl border border-purple-500/20 flex items-center space-x-3"
+            >
+              <Sparkles className="group-hover:rotate-12 transition-transform duration-300" size={20} />
+              <span>Start Neural Assembly</span>
+              <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
+            </motion.button>
 
-export interface Contact {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  subject?: string;
-  message: string;
-  contact_type: 'general' | 'support' | 'sales' | 'feedback' | 'bug_report' | 'feature_request';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'new' | 'in_progress' | 'resolved' | 'closed';
-  assigned_to?: string;
-  source: string;
-  tags: string[];
-  attachments: string[];
-  response_sent: boolean;
-  response_date?: string;
-  satisfaction_rating?: number;
-  follow_up_required: boolean;
-  follow_up_date?: string;
-  internal_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="border-2 border-slate-600/30 text-slate-300 px-8 py-4 rounded-full text-lg font-semibold hover:bg-slate-800/30 hover:text-white transition-all duration-300"
+            >
+              Explore Intelligence
+            </motion.button>
+          </motion.div>
 
-// Legacy interface for backward compatibility
-export interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  company?: string;
-  service_type?: string;
-  budget_range?: string;
-  message: string;
-  status: 'new' | 'read' | 'replied';
-  created_at: string;
-}
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.9 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+          >
+            {[
+              { label: 'Neural Networks Deployed', value: '50+' },
+              { label: 'AI Models Trained', value: '200+' },
+              { label: 'Businesses Transformed', value: '100+' },
+              { label: 'Intelligence Quotient', value: '∞' },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/30 rounded-2xl p-6 hover:bg-slate-800/50 transition-all duration-300"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.8, delay: 1.2 + index * 0.1, type: "spring" }}
+                  className="text-3xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-2"
+                >
+                  {stat.value}
+                </motion.div>
+                <div className="text-slate-400 text-sm">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
 
-// Service interface for services page
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  features: string[];
-  price: number;
-  category: string;
-  image_url?: string;
-  is_featured: boolean;
-  meta_title?: string;
-  meta_description?: string;
-  slug?: string;
-  created_at: string;
-  updated_at: string;
-}
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-slate-600 rounded-full flex justify-center"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-gradient-to-b from-purple-400 to-pink-400 rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
+      </section>
 
-// Schema validation utilities
-export const introspectTable = async (tableName: string) => {
-  try {
-    const { data, error } = await supabase.rpc('introspect_columns', {
-      table_name: tableName
-    });
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to introspect table:', error.message);
-    return { data: null, error };
-  }
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </>
+  );
 };
 
-export const getTableInfo = async (tableName: string) => {
-  try {
-    const { data, error } = await supabase.rpc('get_table_info', {
-      table_name: tableName
-    });
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to get table info:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Enhanced user insertion function using database function
-export const insertUser = async (userData: {
-  email: string;
-  full_name: string;
-  phone?: string;
-  company?: string;
-  job_title?: string;
-  bio?: string;
-  role?: 'user' | 'admin' | 'manager';
-}) => {
-  try {
-    const { data, error } = await supabase.rpc('safe_insert_user', {
-      p_email: userData.email,
-      p_full_name: userData.full_name,
-      p_phone: userData.phone || null,
-      p_company: userData.company || null,
-      p_job_title: userData.job_title || null,
-      p_bio: userData.bio || null,
-      p_role: userData.role || 'user'
-    });
-
-    if (error) throw error;
-
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    return { data: data.data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert user:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Enhanced contact insertion function using database function
-export const insertContact = async (contactData: {
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  subject?: string;
-  message: string;
-  contact_type?: Contact['contact_type'];
-  priority?: Contact['priority'];
-  source?: string;
-}) => {
-  try {
-    const { data, error } = await supabase.rpc('safe_insert_contact', {
-      p_name: contactData.name,
-      p_email: contactData.email,
-      p_message: contactData.message,
-      p_phone: contactData.phone || null,
-      p_company: contactData.company || null,
-      p_subject: contactData.subject || null,
-      p_contact_type: contactData.contact_type || 'general',
-      p_priority: contactData.priority || 'medium',
-      p_source: contactData.source || 'website'
-    });
-
-    if (error) throw error;
-
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    return { data: data.data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert contact:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Legacy contact message insertion for backward compatibility
-export const insertContactMessage = async (messageData: {
-  name: string;
-  email: string;
-  company?: string;
-  service_type?: string;
-  budget_range?: string;
-  message: string;
-}) => {
-  try {
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .insert([
-        {
-          ...messageData,
-          status: 'new'
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Log the contact creation
-    await logUsage('contact_message_created', 'contact_message', data.id, { 
-      email: messageData.email,
-      service_type: messageData.service_type 
-    });
-
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert contact message:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Project creation function
-export const createProject = async (projectData: {
-  title: string;
-  description?: string;
-  project_type: Project['project_type'];
-  budget_range?: string;
-  estimated_hours?: number;
-  priority?: Project['priority'];
-  requirements?: Record<string, any>;
-  deliverables?: string[];
-  tags?: string[];
-}) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([{
-        ...projectData,
-        user_id: user.id,
-        status: 'pending',
-        priority: projectData.priority || 'medium',
-        actual_hours: 0,
-        progress_percentage: 0,
-        requirements: projectData.requirements || {},
-        deliverables: projectData.deliverables || [],
-        tags: projectData.tags || [],
-        is_billable: true
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Log the project creation
-    await logUsage('project_created', 'project', data.id, { 
-      type: projectData.project_type,
-      title: projectData.title 
-    });
-
-    return { data, error: null };
-  } catch (error: any) {
-    console.error('Failed to create project:', error.message);
-    return { data: null, error };
-  }
-};
-
-// Utility functions for logging
-export const logUsage = async (
-  action: string,
-  resourceType?: string,
-  resourceId?: string,
-  details?: Record<string, any>
-) => {
-  try {
-    const { error } = await supabase
-      .from('usage_logs')
-      .insert([
-        {
-          action,
-          resource_type: resourceType,
-          resource_id: resourceId,
-          details: details || {},
-          success: true,
-        },
-      ]);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log usage:', error);
-  }
-};
-
-export const logAdminAction = async (
-  action: string,
-  targetType?: string,
-  targetId?: string,
-  oldValues?: Record<string, any>,
-  newValues?: Record<string, any>,
-  severity: 'info' | 'warning' | 'error' | 'critical' = 'info'
-) => {
-  try {
-    const { error } = await supabase
-      .from('admin_logs')
-      .insert([
-        {
-          action,
-          target_type: targetType,
-          target_id: targetId,
-          old_values: oldValues,
-          new_values: newValues,
-          severity,
-        },
-      ]);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Failed to log admin action:', error);
-  }
-};
-
-// Data validation utilities
-export const validateUserData = (userData: Partial<User>) => {
-  const allowedFields = [
-    'email', 'full_name', 'role', 'avatar_url', 'phone', 
-    'company', 'job_title', 'bio', 'is_active', 'email_verified'
-  ];
-  
-  const validatedData: Partial<User> = {};
-  
-  Object.keys(userData).forEach(key => {
-    if (allowedFields.includes(key) && userData[key as keyof User] !== undefined) {
-      validatedData[key as keyof User] = userData[key as keyof User];
-    }
-  });
-  
-  return validatedData;
-};
-
-export const validateContactData = (contactData: Partial<Contact>) => {
-  const allowedFields = [
-    'name', 'email', 'phone', 'company', 'subject', 'message',
-    'contact_type', 'priority', 'source'
-  ];
-  
-  const validatedData: Partial<Contact> = {};
-  
-  Object.keys(contactData).forEach(key => {
-    if (allowedFields.includes(key) && contactData[key as keyof Contact] !== undefined) {
-      validatedData[key as keyof Contact] = contactData[key as keyof Contact];
-    }
-  });
-  
-  return validatedData;
-};
-
-// Error handling utilities
-export const handleSupabaseError = (error: any) => {
-  if (error?.code === 'PGRST116') {
-    return 'No data found';
-  }
-  if (error?.code === '23505') {
-    return 'This record already exists';
-  }
-  if (error?.code === '23503') {
-    return 'Referenced record does not exist';
-  }
-  return error?.message || 'An unexpected error occurred';
-};
-
-// Query builders for common operations
-export const buildUserQuery = (includeInactive = false) => {
-  let query = supabase.from('users').select('*');
-  
-  if (!includeInactive) {
-    query = query.eq('is_active', true);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
-
-export const buildProjectQuery = (userId?: string, status?: Project['status']) => {
-  let query = supabase.from('projects').select(`
-    *,
-    user:users!projects_user_id_fkey(full_name, email),
-    assigned_user:users!projects_assigned_to_fkey(full_name, email)
-  `);
-  
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-  
-  if (status) {
-    query = query.eq('status', status);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
-
-export const buildContactQuery = (status?: Contact['status']) => {
-  let query = supabase.from('contacts').select(`
-    *,
-    assigned_user:users!contacts_assigned_to_fkey(full_name, email)
-  `);
-  
-  if (status) {
-    query = query.eq('status', status);
-  }
-  
-  return query.order('created_at', { ascending: false });
-};
+export default Hero;
