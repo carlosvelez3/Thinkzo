@@ -110,9 +110,9 @@ const ServicesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative">
       {/* Hero Section */}
-      <section className="pt-32 pb-20">
+      <section className="pt-32 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -171,7 +171,7 @@ const ServicesPage = () => {
       </section>
 
       {/* Services Grid */}
-      <section className="pb-20">
+      <section className="pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           {filteredServices.length === 0 ? (
             <div className="text-center py-20">

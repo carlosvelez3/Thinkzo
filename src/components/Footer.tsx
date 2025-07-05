@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Twitter, Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 import Logo from './ui/Logo';
+import StartProjectModal from './StartProjectModal';
 
 const Footer = () => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const footerLinks = {
     'Services': [
       'Website Design',

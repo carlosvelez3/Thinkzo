@@ -68,13 +68,13 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-32 bg-gradient-to-br from-slate-800 to-slate-900">
+    <section id="contact" className="py-32 bg-gradient-to-br from-slate-800 to-slate-900 relative">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-20 relative z-10"
         >
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
             Let's{' '}
@@ -87,7 +87,7 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
           {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
