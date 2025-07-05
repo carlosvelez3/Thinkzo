@@ -9,7 +9,9 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AboutPage from './components/pages/AboutPage';
 import ServicesPage from './components/pages/ServicesPage';
+import ChatPage from './components/pages/ChatPage';
 import AdminDashboard from './components/admin/AdminDashboard';
+import ChatWidget from './components/chat/ChatWidget';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
         return <AboutPage />;
       case 'services':
         return <ServicesPage />;
+      case 'chat':
+        return <ChatPage />;
       case 'contact':
         return (
           <div className="bg-slate-900 min-h-screen">
@@ -81,7 +85,16 @@ function App() {
       
       {renderPage()}
       
-      {currentPage !== 'admin' && <Footer />}
+      {currentPage !== 'admin' && currentPage !== 'chat' && <Footer />}
+      
+      {/* Chat Widget - appears on all pages except chat and admin */}
+      {currentPage !== 'chat' && currentPage !== 'admin' && (
+        <ChatWidget 
+          position="bottom-right"
+          theme="dark"
+          initialMessage="Hi! I'm your AI assistant. I can help you learn about Thinkzo's services, answer technical questions, or discuss how AI can transform your business. What would you like to know?"
+        />
+      )}
     </div>
   );
 }
