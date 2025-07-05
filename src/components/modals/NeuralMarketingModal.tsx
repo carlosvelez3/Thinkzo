@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp } from 'lucide-react';
+import { X, TrendingUp, Target, Settings, Zap, BarChart3 } from 'lucide-react';
 
 interface NeuralMarketingModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       ],
       whyItWorks: 'Lets you act before users click, bounce, or disappear.',
       color: 'purple',
-      emoji: '🔮'
+      icon: BarChart3
     },
     {
       title: 'Smart Targeting',
@@ -31,7 +31,7 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       ],
       whyItWorks: 'Targets the right person at the right time with the right message.',
       color: 'pink',
-      emoji: '🎯'
+      icon: Target
     },
     {
       title: 'Auto-optimization',
@@ -43,7 +43,7 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       ],
       whyItWorks: 'Reduces wasted ad spend and boosts conversions while you sleep.',
       color: 'blue',
-      emoji: '⚙️'
+      icon: Settings
     },
     {
       title: 'Performance AI',
@@ -55,7 +55,7 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       ],
       whyItWorks: 'Keeps your campaigns always-on, always-optimized—even without a full team.',
       color: 'emerald',
-      emoji: '🤖'
+      icon: Zap
     }
   ];
 
@@ -150,7 +150,9 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
                 >
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-3xl">{feature.emoji}</div>
+                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
+                      <feature.icon className={`text-${feature.color}-400`} size={24} />
+                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 

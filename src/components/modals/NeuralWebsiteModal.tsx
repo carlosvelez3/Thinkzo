@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Brain } from 'lucide-react';
+import { X, Brain, Zap, BarChart3, Settings, Eye } from 'lucide-react';
 
 interface NeuralWebsiteModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       ],
       impact: 'Delivers a tailored experience for each visitor—boosting usability and satisfaction.',
       color: 'purple',
-      emoji: '🔄'
+      icon: Zap
     },
     {
       title: 'Smart A/B Testing (Auto-Driven)',
@@ -31,7 +31,7 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       ],
       impact: 'Faster optimization cycles, higher ROI, and better user experience over time.',
       color: 'pink',
-      emoji: '🧪'
+      icon: BarChart3
     },
     {
       title: 'Behavioral Analytics',
@@ -43,7 +43,7 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       ],
       impact: 'Understand why users behave the way they do—not just what they do.',
       color: 'blue',
-      emoji: '📊'
+      icon: Eye
     },
     {
       title: 'Auto-Optimization Engine',
@@ -55,7 +55,7 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       ],
       impact: 'Hands-off optimization that improves conversion rates automatically.',
       color: 'emerald',
-      emoji: '⚙️'
+      icon: Settings
     }
   ];
 
@@ -123,7 +123,9 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
                 >
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-3xl">{feature.emoji}</div>
+                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
+                      <feature.icon className={`text-${feature.color}-400`} size={24} />
+                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 

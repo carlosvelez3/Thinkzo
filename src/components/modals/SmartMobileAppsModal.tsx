@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Smartphone } from 'lucide-react';
+import { X, Smartphone, Brain, Bell, Zap, Bot } from 'lucide-react';
 
 interface SmartMobileAppsModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       ],
       whyItMatters: 'Removes friction and anticipates user needs before they tap.',
       color: 'purple',
-      emoji: '🔮',
+      icon: Brain,
     },
     {
       title: 'Smart Notifications',
@@ -31,7 +31,7 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       ],
       whyItMatters: 'Boosts retention and reduces notification fatigue.',
       color: 'pink',
-      emoji: '🔔',
+      icon: Bell,
     },
     {
       title: 'Adaptive Performance',
@@ -43,7 +43,7 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       ],
       whyItMatters: 'Ensures smooth, responsive experiences across all devices and conditions.',
       color: 'blue',
-      emoji: '⚡',
+      icon: Zap,
     },
     {
       title: 'AI Integration (Core Layer)',
@@ -55,7 +55,7 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       ],
       whyItMatters: 'Makes the app feel alive, intelligent, and helpful—transforming utility into experience.',
       color: 'emerald',
-      emoji: '🤖',
+      icon: Bot,
     }
   ];
 
@@ -123,7 +123,9 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
                 >
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-3xl">{feature.emoji}</div>
+                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
+                      <feature.icon className={`text-${feature.color}-400`} size={24} />
+                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 

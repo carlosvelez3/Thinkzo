@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Brain } from 'lucide-react';
+import { X, Brain, Palette, Eye, Type, TrendingUp } from 'lucide-react';
 
 interface IntelligentBrandingModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const IntelligentBrandingModal: React.FC<IntelligentBrandingModalProps> = ({ isO
       ],
       whyItMatters: 'Ensures brand consistency while improving usability and aesthetics across all touchpoints (e.g., website, social media, packaging).',
       color: 'purple',
-      emoji: '🔄'
+      icon: Palette
     },
     {
       title: 'Smart Color Palettes',
@@ -31,7 +31,7 @@ const IntelligentBrandingModal: React.FC<IntelligentBrandingModalProps> = ({ isO
       ],
       whyItMatters: 'Helps brands stay fresh, context-aware, and inclusive without manual redesigns.',
       color: 'pink',
-      emoji: '🎨'
+      icon: Eye
     },
     {
       title: 'AI Typography',
@@ -43,7 +43,7 @@ const IntelligentBrandingModal: React.FC<IntelligentBrandingModalProps> = ({ isO
       ],
       whyItMatters: 'Enhances communication effectiveness and elevates the visual identity using real-time optimization.',
       color: 'blue',
-      emoji: '🔤'
+      icon: Type
     },
     {
       title: 'Brand Evolution Tracking',
@@ -55,7 +55,7 @@ const IntelligentBrandingModal: React.FC<IntelligentBrandingModalProps> = ({ isO
       ],
       whyItMatters: 'Maintains brand integrity, identifies what works, and supports data-informed decisions during rebranding or scaling.',
       color: 'emerald',
-      emoji: '📈'
+      icon: TrendingUp
     }
   ];
 
@@ -123,7 +123,9 @@ const IntelligentBrandingModal: React.FC<IntelligentBrandingModalProps> = ({ isO
                 >
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-3xl">{feature.emoji}</div>
+                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
+                      <feature.icon className={`text-${feature.color}-400`} size={24} />
+                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 
