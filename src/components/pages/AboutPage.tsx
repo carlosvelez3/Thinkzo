@@ -298,7 +298,7 @@ const AboutPage = () => {
           </motion.div>
         </div>
       </section>
-    </div>
+    </>
 
     {/* Start Project Modal */}
     <StartProjectModal 
