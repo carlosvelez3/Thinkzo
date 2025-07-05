@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Palette, Smartphone, TrendingUp, Shield, Zap } from 'lucide-react';
 import StartProjectModal from './StartProjectModal';
+import IntelligentBrandingModal from './modals/IntelligentBrandingModal';
 
 const services = [
   {
@@ -50,6 +51,7 @@ const services = [
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBrandingModalOpen, setIsBrandingModalOpen] = useState(false);
 
   return (
     <>
@@ -110,7 +112,13 @@ const Services = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    if (service.title === 'Intelligent Branding') {
+                      setIsBrandingModalOpen(true);
+                    } else {
+                      setIsModalOpen(true);
+                    }
+                  }}
                   className="w-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white py-3 rounded-xl font-medium hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-300"
                 >
                   Learn More
@@ -149,6 +157,12 @@ const Services = () => {
       <StartProjectModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+
+      {/* Intelligent Branding Modal */}
+      <IntelligentBrandingModal 
+        isOpen={isBrandingModalOpen} 
+        onClose={() => setIsBrandingModalOpen(false)} 
       />
     </>
   );
