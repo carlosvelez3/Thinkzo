@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp, Target, Settings, Zap, BarChart3, Users, Brain, Coffee, Shirt, Monitor, Video } from 'lucide-react';
+import { X, TrendingUp } from 'lucide-react';
 
 interface NeuralMarketingModalProps {
   isOpen: boolean;
@@ -10,7 +10,6 @@ interface NeuralMarketingModalProps {
 const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onClose }) => {
   const marketingFeatures = [
     {
-      icon: BarChart3,
       title: 'Predictive Analytics',
       definition: 'Uses historical and real-time data to forecast customer behavior, trends, and campaign performance.',
       keyFunctions: [
@@ -23,7 +22,6 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       emoji: '🔮'
     },
     {
-      icon: Target,
       title: 'Smart Targeting',
       definition: 'AI segments your audience automatically based on behavior, demographics, psychographics, and live data.',
       keyFunctions: [
@@ -36,7 +34,6 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       emoji: '🎯'
     },
     {
-      icon: Settings,
       title: 'Auto-optimization',
       definition: 'The marketing engine adjusts ad spend, copy, visuals, and channel distribution in real time—based on what\'s working best.',
       keyFunctions: [
@@ -49,7 +46,6 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
       emoji: '⚙️'
     },
     {
-      icon: Zap,
       title: 'Performance AI',
       definition: 'A real-time AI layer that monitors marketing KPIs and acts on them automatically.',
       keyFunctions: [
@@ -65,28 +61,28 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
 
   const perfectForExamples = [
     {
-      icon: Coffee,
       business: 'Coffee Shops',
       description: 'Personalized promo SMS/email just before peak hours',
-      color: 'amber'
+      color: 'amber',
+      emoji: '☕'
     },
     {
-      icon: Shirt,
       business: 'Apparel Brands',
       description: 'Dynamic retargeting ads with trending product designs',
-      color: 'rose'
+      color: 'rose',
+      emoji: '👕'
     },
     {
-      icon: Monitor,
       business: 'SaaS Platforms',
       description: 'AI emails based on user journey drop-offs',
-      color: 'blue'
+      color: 'blue',
+      emoji: '💻'
     },
     {
-      icon: Video,
       business: 'Content Creators',
       description: 'Auto-posting at optimal engagement hours',
-      color: 'purple'
+      color: 'purple',
+      emoji: '🎥'
     }
   ];
 
@@ -155,9 +151,6 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
                     <div className="text-3xl">{feature.emoji}</div>
-                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
-                      <feature.icon className={`text-${feature.color}-400`} size={24} />
-                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 
@@ -215,8 +208,8 @@ const NeuralMarketingModal: React.FC<NeuralMarketingModalProps> = ({ isOpen, onC
                     whileHover={{ y: -5, scale: 1.02 }}
                     className="bg-slate-700/30 backdrop-blur-xl border border-slate-600/50 rounded-xl p-6 text-center hover:bg-slate-700/40 transition-all duration-300"
                   >
-                    <div className={`w-12 h-12 bg-gradient-to-br from-${example.color}-500/20 to-${example.color}-600/20 border border-${example.color}-500/30 rounded-xl flex items-center justify-center mx-auto mb-4`}>
-                      <example.icon className={`text-${example.color}-400`} size={24} />
+                    <div className="text-3xl mb-4">
+                      {example.emoji}
                     </div>
                     <h4 className="text-lg font-bold text-white mb-2">{example.business}</h4>
                     <p className="text-slate-300 text-sm leading-relaxed">{example.description}</p>

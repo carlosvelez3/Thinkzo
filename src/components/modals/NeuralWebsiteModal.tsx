@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Brain, Zap, BarChart3, Settings, Eye, Target, TrendingUp, Users } from 'lucide-react';
+import { X, Brain } from 'lucide-react';
 
 interface NeuralWebsiteModalProps {
   isOpen: boolean;
@@ -10,7 +10,6 @@ interface NeuralWebsiteModalProps {
 const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose }) => {
   const websiteFeatures = [
     {
-      icon: Zap,
       title: 'Adaptive UI/UX',
       definition: 'Interfaces that evolve based on user behavior, device type, and preferences.',
       features: [
@@ -23,7 +22,6 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       emoji: '🔄'
     },
     {
-      icon: Target,
       title: 'Smart A/B Testing (Auto-Driven)',
       definition: 'AI dynamically creates and tests variations (not just A vs. B) and allocates traffic to the best performers.',
       features: [
@@ -36,7 +34,6 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       emoji: '🧪'
     },
     {
-      icon: BarChart3,
       title: 'Behavioral Analytics',
       definition: 'AI interprets how users interact with your site, then translates that into actionable design intelligence.',
       features: [
@@ -49,7 +46,6 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
       emoji: '📊'
     },
     {
-      icon: Settings,
       title: 'Auto-Optimization Engine',
       definition: 'An AI backend that constantly tunes site components—content, layout, forms—for peak performance.',
       features: [
@@ -128,9 +124,6 @@ const NeuralWebsiteModal: React.FC<NeuralWebsiteModalProps> = ({ isOpen, onClose
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
                     <div className="text-3xl">{feature.emoji}</div>
-                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
-                      <feature.icon className={`text-${feature.color}-400`} size={24} />
-                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 

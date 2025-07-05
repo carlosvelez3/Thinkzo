@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Smartphone, Brain, Bell, Zap, Bot, Eye, Clock, Battery } from 'lucide-react';
+import { X, Smartphone } from 'lucide-react';
 
 interface SmartMobileAppsModalProps {
   isOpen: boolean;
@@ -10,7 +10,6 @@ interface SmartMobileAppsModalProps {
 const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onClose }) => {
   const mobileFeatures = [
     {
-      icon: Eye,
       title: 'Predictive UX',
       definition: 'The interface and user flows adjust based on past behavior, location, time, or intent.',
       examples: [
@@ -21,10 +20,8 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       whyItMatters: 'Removes friction and anticipates user needs before they tap.',
       color: 'purple',
       emoji: '🔮',
-      icons: [Clock, Eye, Brain, Zap]
     },
     {
-      icon: Bell,
       title: 'Smart Notifications',
       definition: 'Notifications that are timed, personalized, and context-aware to increase engagement.',
       examples: [
@@ -35,10 +32,8 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       whyItMatters: 'Boosts retention and reduces notification fatigue.',
       color: 'pink',
       emoji: '🔔',
-      icons: [Bell, Clock, Brain, Eye]
     },
     {
-      icon: Zap,
       title: 'Adaptive Performance',
       definition: 'Real-time optimization of the app\'s performance based on device, network, and battery status.',
       examples: [
@@ -49,10 +44,8 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       whyItMatters: 'Ensures smooth, responsive experiences across all devices and conditions.',
       color: 'blue',
       emoji: '⚡',
-      icons: [Zap, Battery, Smartphone, Brain]
     },
     {
-      icon: Bot,
       title: 'AI Integration (Core Layer)',
       definition: 'Core functionality is enhanced with embedded AI models or external AI APIs.',
       examples: [
@@ -63,7 +56,6 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
       whyItMatters: 'Makes the app feel alive, intelligent, and helpful—transforming utility into experience.',
       color: 'emerald',
       emoji: '🤖',
-      icons: [Bot, Brain, Eye, Zap]
     }
   ];
 
@@ -132,9 +124,6 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
                   {/* Feature Header */}
                   <div className="flex items-center space-x-4 mb-6">
                     <div className="text-3xl">{feature.emoji}</div>
-                    <div className={`w-12 h-12 bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-600/20 border border-${feature.color}-500/30 rounded-xl flex items-center justify-center`}>
-                      <feature.icon className={`text-${feature.color}-400`} size={24} />
-                    </div>
                     <h3 className="text-2xl font-bold text-white">{feature.title}</h3>
                   </div>
 
@@ -155,28 +144,6 @@ const SmartMobileAppsModal: React.FC<SmartMobileAppsModalProps> = ({ isOpen, onC
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  {/* Feature Icons */}
-                  <div className="mb-6">
-                    <h4 className="text-lg font-semibold text-blue-300 mb-3">Key Components:</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {feature.icons.map((IconComponent, iconIndex) => (
-                        <div key={iconIndex} className="flex items-center space-x-2 bg-slate-800/50 rounded-lg p-3">
-                          <IconComponent className={`text-${feature.color}-400`} size={16} />
-                          <span className="text-slate-300 text-xs">
-                            {IconComponent === Clock && 'Timing'}
-                            {IconComponent === Eye && 'Behavior'}
-                            {IconComponent === Brain && 'Intelligence'}
-                            {IconComponent === Zap && 'Performance'}
-                            {IconComponent === Bell && 'Notifications'}
-                            {IconComponent === Battery && 'Optimization'}
-                            {IconComponent === Smartphone && 'Mobile'}
-                            {IconComponent === Bot && 'AI Core'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
                   </div>
 
                   {/* Why It Matters */}
