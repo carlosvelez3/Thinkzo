@@ -66,10 +66,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
     setIsLoading(true);
 
     try {
-      // Call your backend API endpoint that handles OpenAI requests
-      const response = await fetch('/api/chat', {
+      // Call the Supabase Edge Function for ChatGPT
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -77,11 +80,11 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
             role: msg.role,
             content: msg.content
           }))
-        }),
+        })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        throw new Error('Failed to get AI response');
       }
 
       const data = await response.json();
@@ -98,7 +101,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
       console.error('Chat error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Sorry, I\'m having trouble connecting right now. Please try again later.',
+        content: 'Sorry, I\'m having trouble connecting right now. Please try again later or contact our team at team@thinkzo.ai.',
         role: 'assistant',
         timestamp: new Date()
       };

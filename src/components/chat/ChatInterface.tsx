@@ -59,13 +59,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ fullScreen = false, class
     setIsLoading(true);
 
     try {
-      // Simulate API call to ChatGPT
-      // In production, this would call your backend API
-      const response = await simulateChatGPTResponse(userMessage.content, messages);
+      // Call the Supabase Edge Function for ChatGPT
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: response,
+        content: data.message || 'Sorry, I encountered an error. Please try again.',
         role: 'assistant',
         timestamp: new Date()
       };
@@ -75,7 +94,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ fullScreen = false, class
       console.error('Chat error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'I apologize, but I\'m experiencing some technical difficulties right now. Please try again in a moment, or contact our support team if the issue persists.',
+        content: 'I apologize, but I\'m experiencing some technical difficulties right now. Please try again in a moment, or contact our support team at team@thinkzo.ai if the issue persists.',
         role: 'assistant',
         timestamp: new Date()
       };
@@ -83,50 +102,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ fullScreen = false, class
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Simulate ChatGPT response (replace with actual API call)
-  const simulateChatGPTResponse = async (userInput: string, chatHistory: Message[]): Promise<string> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-
-    const lowerInput = userInput.toLowerCase();
-
-    // Context-aware responses based on your business
-    if (lowerInput.includes('service') || lowerInput.includes('what do you do')) {
-      return "I'd be happy to tell you about Thinkzo's services! We specialize in AI-powered digital solutions including:\n\n🧠 **Neural Website Design** - Websites that learn and adapt to user behavior\n🎨 **Intelligent Branding** - AI-driven brand identities that resonate with your audience\n📱 **Smart Mobile Apps** - Apps with predictive features and intelligent interfaces\n📈 **Neural Marketing** - AI-optimized campaigns that improve automatically\n🛡️ **Cognitive Security** - Advanced AI security that adapts to threats\n⚡ **Performance AI** - Systems that continuously optimize themselves\n\nWhich of these interests you most? I can provide more detailed information about any service.";
-    }
-
-    if (lowerInput.includes('pricing') || lowerInput.includes('cost') || lowerInput.includes('price')) {
-      return "Great question about pricing! Our AI-powered solutions are competitively priced with transparent, moderate rates. Here are our main packages:\n\n💡 **Startup Bundle** - $500\n• Perfect for new businesses\n• 5-page responsive website with basic AI features\n\n🧠 **Smart Business AI Bundle** - $950 (Most Popular)\n• Everything in Startup plus AI chatbot integration\n• Performance monitoring and booking systems\n\n🚀 **Enterprise Neural Suite** - $1,850\n• Complete AI-powered business solution\n• Advanced integrations and 3 months maintenance\n\nWe also offer individual services starting from $30-$400 depending on complexity. Would you like me to help you find the perfect solution for your needs?";
-    }
-
-    if (lowerInput.includes('ai') || lowerInput.includes('artificial intelligence') || lowerInput.includes('neural')) {
-      return "Excellent question about our AI capabilities! At Thinkzo, we integrate cutting-edge artificial intelligence into every solution:\n\n🤖 **Machine Learning** - Our systems learn from user behavior to optimize performance\n🧠 **Neural Networks** - Advanced pattern recognition for predictive features\n📊 **Predictive Analytics** - Forecast user needs and market trends\n🎯 **Smart Automation** - Automate repetitive tasks intelligently\n🔄 **Adaptive Systems** - Solutions that evolve and improve over time\n\nOur AI isn't just a buzzword - it's practical intelligence that delivers real business value. What specific AI capabilities are you most interested in for your project?";
-    }
-
-    if (lowerInput.includes('contact') || lowerInput.includes('get started') || lowerInput.includes('begin')) {
-      return "I'm excited to help you get started with Thinkzo! Here are the best ways to begin:\n\n📞 **Schedule a Consultation**\n• Free 30-45 minute session to discuss your goals\n• We'll analyze your needs and recommend solutions\n\n💬 **Start a Project**\n• Use our project submission form for detailed planning\n• Get a custom quote within 24 hours\n\n📧 **Direct Contact**\n• Email: team@thinkzo.ai\n• Phone: +1 (555) 123-4567\n\nWould you like me to help you start a project submission, or do you have specific questions about our process first?";
-    }
-
-    if (lowerInput.includes('team') || lowerInput.includes('who') || lowerInput.includes('about')) {
-      return "I'd love to tell you about the brilliant minds behind Thinkzo! Our team consists of:\n\n👩‍💼 **Sarah Chen** - CEO & Founder\n• Former Google AI researcher with 10+ years in neural networks\n• Passionate about democratizing AI for businesses\n\n👨‍💻 **Marcus Rodriguez** - CTO\n• Full-stack architect specializing in scalable AI systems\n• Previously led engineering teams at Tesla and SpaceX\n\n👩‍🎨 **Emily Watson** - Head of Design\n• Award-winning UX designer with expertise in neural interface design\n• Creates intuitive experiences that bridge human and AI interaction\n\n👨‍🔬 **David Kim** - AI Research Lead\n• PhD in Computer Science from MIT\n• Specializes in natural language processing and computer vision\n\nWe're a passionate team dedicated to making AI accessible and transformative for every business. What would you like to know about our approach or experience?";
-    }
-
-    // Default responses for general conversation
-    const responses = [
-      "That's an interesting question! Based on what you've shared, I'd recommend exploring our AI-powered solutions that can adapt to your specific needs. Could you tell me more about what you're looking to achieve?",
-      
-      "I understand what you're asking about. At Thinkzo, we believe in creating intelligent solutions that grow with your business. What's the main challenge you're facing that brought you here today?",
-      
-      "Great point! Our neural-powered approach means we can create solutions that learn and improve over time. This is particularly valuable for businesses looking to stay ahead of the curve. What industry are you in?",
-      
-      "That's exactly the kind of forward-thinking approach we love to see! Our AI systems are designed to anticipate needs and optimize performance automatically. Would you like to explore how this could work for your specific situation?",
-      
-      "I appreciate you sharing that with me. Our team has experience working with businesses of all sizes to implement AI solutions that deliver real results. What's your timeline for implementing new technology solutions?"
-    ];
-
-    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
