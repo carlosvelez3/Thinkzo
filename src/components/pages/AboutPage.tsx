@@ -298,13 +298,13 @@ const AboutPage = () => {
           </motion.div>
         </div>
       </section>
-    </>
 
-    {/* Start Project Modal */}
-    <StartProjectModal 
-      isOpen={isModalOpen} 
-      onClose={() => setIsModalOpen(false)} 
-    />
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </div>
   );
 };
 
