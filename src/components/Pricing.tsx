@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Star, ArrowRight, Zap, Brain, Smartphone, TrendingUp, Shield, Settings } from 'lucide-react';
+import StartProjectModal from './StartProjectModal';
 
 const coreServices = [
   {
@@ -171,6 +172,7 @@ const packages = [
 const Pricing = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [showAddOns, setShowAddOns] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categories = [
     { id: 'all', label: 'All Services', icon: Settings },
@@ -272,6 +274,7 @@ const Pricing = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsModalOpen(true)}
                   className={`w-full py-4 rounded-full font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
                     pkg.popular
                       ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white hover:shadow-2xl border border-purple-500/20'
@@ -426,6 +429,7 @@ const Pricing = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 border border-purple-500/20"
               >
                 Get Custom Quote
@@ -433,6 +437,7 @@ const Pricing = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setIsModalOpen(true)}
                 className="border-2 border-purple-500/30 text-purple-400 px-8 py-4 rounded-full font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
               >
                 Schedule Consultation
@@ -441,6 +446,12 @@ const Pricing = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </section>
   );
 };
