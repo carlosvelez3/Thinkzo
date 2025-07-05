@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { Brain, Palette, Smartphone, TrendingUp, Shield, Zap } from 'lucide-react';
 import StartProjectModal from './StartProjectModal';
 import IntelligentBrandingModal from './modals/IntelligentBrandingModal';
+import NeuralWebsiteModal from './modals/NeuralWebsiteModal';
+import SmartMobileAppsModal from './modals/SmartMobileAppsModal';
+import NeuralMarketingModal from './modals/NeuralMarketingModal';
 
 const services = [
   {
@@ -52,6 +55,9 @@ const services = [
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBrandingModalOpen, setIsBrandingModalOpen] = useState(false);
+  const [isWebsiteModalOpen, setIsWebsiteModalOpen] = useState(false);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+  const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
 
   return (
     <>
@@ -115,6 +121,12 @@ const Services = () => {
                   onClick={() => {
                     if (service.title === 'Intelligent Branding') {
                       setIsBrandingModalOpen(true);
+                    } else if (service.title === 'Neural Website Design') {
+                      setIsWebsiteModalOpen(true);
+                    } else if (service.title === 'Smart Mobile Apps') {
+                      setIsMobileModalOpen(true);
+                    } else if (service.title === 'Neural Marketing') {
+                      setIsMarketingModalOpen(true);
                     } else {
                       setIsModalOpen(true);
                     }
@@ -163,6 +175,24 @@ const Services = () => {
       <IntelligentBrandingModal 
         isOpen={isBrandingModalOpen} 
         onClose={() => setIsBrandingModalOpen(false)} 
+      />
+
+      {/* Neural Website Design Modal */}
+      <NeuralWebsiteModal 
+        isOpen={isWebsiteModalOpen} 
+        onClose={() => setIsWebsiteModalOpen(false)} 
+      />
+
+      {/* Smart Mobile Apps Modal */}
+      <SmartMobileAppsModal 
+        isOpen={isMobileModalOpen} 
+        onClose={() => setIsMobileModalOpen(false)} 
+      />
+
+      {/* Neural Marketing Modal */}
+      <NeuralMarketingModal 
+        isOpen={isMarketingModalOpen} 
+        onClose={() => setIsMarketingModalOpen(false)} 
       />
     </>
   );
