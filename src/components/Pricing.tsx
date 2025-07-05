@@ -396,23 +396,18 @@ const Pricing = () => {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
-                    className="w-full"
-                    <span className="text-lg font-bold text-pink-400">
-                    <CheckoutButton
-                      planType={
-                        pkg.name === 'Startup Bundle' ? 'startup' :
-                        pkg.name === 'Smart Business AI Bundle' ? 'smart_business' :
-                        'enterprise'
-                      }
-                      variant={pkg.popular ? 'primary' : 'secondary'}
-                      className="w-full"
-                      additionalMetadata={{
-                        source: 'pricing_page',
-                        package_type: 'bundle'
-                      }}
-                    >
-                      Get Started
-                    </CheckoutButton>
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-800/70 transition-all duration-300"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <h4 className="text-lg font-bold text-white">{addon.name}</h4>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-purple-400">
+                        ${addon.priceRange || addon.price}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
