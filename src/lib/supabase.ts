@@ -209,11 +209,11 @@ export const insertUser = async (userData: {
     const { data, error } = await supabase.rpc('safe_insert_user', {
       p_email: userData.email,
       p_full_name: userData.full_name,
-      p_phone: userData.phone || null,
-      p_company: userData.company || null,
-      p_job_title: userData.job_title || null,
-      p_bio: userData.bio || null,
-      p_role: userData.role || 'user'
+      p_phone: userData.phone,
+      p_company: userData.company,
+      p_job_title: userData.job_title,
+      p_bio: userData.bio,
+      p_role: userData.role
     });
 
     if (error) throw error;
@@ -246,12 +246,12 @@ export const insertContact = async (contactData: {
       p_name: contactData.name,
       p_email: contactData.email,
       p_message: contactData.message,
-      p_phone: contactData.phone || null,
-      p_company: contactData.company || null,
-      p_subject: contactData.subject || null,
-      p_contact_type: contactData.contact_type || 'general',
-      p_priority: contactData.priority || 'medium',
-      p_source: contactData.source || 'website'
+      p_phone: contactData.phone,
+      p_company: contactData.company,
+      p_subject: contactData.subject,
+      p_contact_type: contactData.contact_type,
+      p_priority: contactData.priority,
+      p_source: contactData.source
     });
 
     if (error) throw error;
