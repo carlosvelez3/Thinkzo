@@ -12,6 +12,7 @@ import ServicesPage from './components/pages/ServicesPage';
 import ChatPage from './components/pages/ChatPage';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ChatWidget from './components/chat/ChatWidget';
+import SuccessPage from './components/pages/SuccessPage';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -36,6 +37,16 @@ function App() {
         return <ServicesPage />;
       case 'chat':
         return <ChatPage />;
+      case 'success':
+        return <SuccessPage />;
+      case 'pricing':
+        return (
+          <div className="bg-slate-900 min-h-screen">
+            <div className="pt-32">
+              <Pricing />
+            </div>
+          </div>
+        );
       case 'contact':
         return (
           <div className="bg-slate-900 min-h-screen">

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Star, ArrowRight, Zap, Brain, Smartphone, TrendingUp, Shield, Settings } from 'lucide-react';
+import CheckoutButton from './checkout/CheckoutButton';
 import StartProjectModal from './StartProjectModal';
+import { PlanType } from '../lib/stripe';
 
 const coreServices = [
   {
@@ -394,15 +396,23 @@ const Pricing = () => {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: showAddOns ? 1 : 0, y: showAddOns ? 0 : 20 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/30 rounded-xl p-4 hover:bg-slate-800/50 transition-all duration-300"
-                >
-                  <div className="flex items-center justify-between">
-                    <h5 className="text-white font-medium">{addon.name}</h5>
+                    className="w-full"
                     <span className="text-lg font-bold text-pink-400">
-                      ${addon.priceRange || addon.price}
-                    </span>
+                    <CheckoutButton
+                      planType={
+                        pkg.name === 'Startup Bundle' ? 'startup' :
+                        pkg.name === 'Smart Business AI Bundle' ? 'smart_business' :
+                        'enterprise'
+                      }
+                      variant={pkg.popular ? 'primary' : 'secondary'}
+                      className="w-full"
+                      additionalMetadata={{
+                        source: 'pricing_page',
+                        package_type: 'bundle'
+                      }}
+                    >
+                      Get Started
+                    </CheckoutButton>
                   </div>
                 </motion.div>
               ))}
