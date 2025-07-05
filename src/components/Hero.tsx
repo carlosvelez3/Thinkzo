@@ -255,42 +255,6 @@ const Hero = () => {
               Explore Intelligence
             </motion.button>
           </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-          >
-            {[
-              { label: 'Neural Networks Deployed', value: '50+' },
-              { label: 'AI Models Trained', value: '200+' },
-              { label: 'Businesses Transformed', value: '100+' },
-              { label: 'Intelligence Quotient', value: '∞' },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/30 rounded-2xl p-6 hover:bg-slate-800/50 transition-all duration-300"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.8, delay: 1.2 + index * 0.1, type: "spring" }}
-                  className="text-3xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-2"
-                >
-                  {stat.value}
-                </motion.div>
-                <div className="text-slate-400 text-sm">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
 
         {/* Scroll Indicator */}

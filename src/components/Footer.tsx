@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Twitter, Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import Logo from './ui/Logo';
 
 const Footer = () => {
   const footerLinks = {
@@ -36,11 +37,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                <Palette className="text-white" size={20} />
-              </div>
-              <span className="text-white font-bold text-xl">Thinkzo</span>
+            <div className="mb-6">
+              <Logo variant="full" size="lg" animated={true} />
             </div>
             <p className="text-slate-400 mb-6 leading-relaxed max-w-md">
               We're a creative digital agency specializing in website design, 

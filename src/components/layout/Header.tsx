@@ -4,9 +4,10 @@
  */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X, Palette, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import AuthModal from '../auth/AuthModal';
+import Logo from '../ui/Logo';
 
 interface HeaderProps {
   currentPage: string;
@@ -53,10 +54,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
               onClick={() => onNavigate('home')}
               className="flex items-center space-x-3"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                <Palette className="text-white" size={16} />
-              </div>
-              <span className="text-white font-bold text-lg">Thinkzo</span>
+              <Logo variant="header" animated={true} />
             </motion.button>
 
             {/* Desktop Navigation */}
