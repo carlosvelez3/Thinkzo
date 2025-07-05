@@ -549,6 +549,101 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
+          {/* Content Management Tab */}
+          {activeTab === 'content' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold text-white">Content Management</h2>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Team Section Control */}
+                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
+                    <Users size={20} />
+                    <span>Team Section</span>
+                  </h3>
+                  <p className="text-slate-400 mb-6">Control the visibility of the "Meet Your Team" section on the About page.</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-white">Show Team Section</span>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setShowTeamSection(!showTeamSection)}
+                      className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                        showTeamSection ? 'bg-emerald-500' : 'bg-slate-600'
+                      }`}
+                    >
+                      <motion.div
+                        animate={{ x: showTeamSection ? 24 : 2 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        className="absolute top-1 w-4 h-4 bg-white rounded-full"
+                      />
+                    </motion.button>
+                  </div>
+                  
+                  <div className="mt-4 flex items-center space-x-2 text-sm">
+                    {showTeamSection ? (
+                      <>
+                        <Eye className="text-emerald-400" size={16} />
+                        <span className="text-emerald-400">Team section is visible</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="text-red-400" size={16} />
+                        <span className="text-red-400">Team section is hidden</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Other Content Controls */}
+                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+                  <h3 className="text-xl font-semibold text-white mb-4">Other Controls</h3>
+                  <div className="space-y-4">
+                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
+                      Edit Homepage Content
+                    </button>
+                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
+                      Manage Services Content
+                    </button>
+                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
+                      Update Pricing Information
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Image Management Tab */}
+          {activeTab === 'images' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold text-white">Image Management</h2>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setEditingImages(!editingImages)}
+                  className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
+                    editingImages
+                      ? 'bg-red-500/20 border border-red-500/30 text-red-400'
+                      : 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
+                  }`}
+                >
+                  <Edit size={16} />
+                  <span>{editingImages ? 'Stop Editing' : 'Start Editing'}</span>
+                </motion.button>
+              </div>
           {/* Contacts Tab */}
           {activeTab === 'contacts' && (
             <motion.div
@@ -604,101 +699,6 @@ const AdminDashboard = () => {
                         <Mail size={14} />
                         <span>Reply</span>
                       </button>
-          {activeTab === 'content' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold text-white">Content Management</h2>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Team Section Control */}
-                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
-                    <Users size={20} />
-                    <span>Team Section</span>
-                  </h3>
-                  <p className="text-slate-400 mb-6">Control the visibility of the "Meet Your Team" section on the About page.</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-white">Show Team Section</span>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowTeamSection(!showTeamSection)}
-                      className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
-                        showTeamSection ? 'bg-emerald-500' : 'bg-slate-600'
-                      }`}
-                    >
-                      <motion.div
-                        animate={{ x: showTeamSection ? 24 : 2 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        className="absolute top-1 w-4 h-4 bg-white rounded-full"
-                      />
-                    </motion.button>
-                  </div>
-                  
-                  <div className="mt-4 flex items-center space-x-2 text-sm">
-                    {showTeamSection ? (
-                      <>
-                        <Eye className="text-emerald-400" size={16} />
-                        <span className="text-emerald-400">Team section is visible</span>
-                      </>
-                    ) : (
-                      <>
-                        <EyeOff className="text-red-400" size={16} />
-                        <span className="text-red-400">Team section is hidden</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                    </div>
-                {/* Other Content Controls */}
-                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Other Controls</h3>
-                  <div className="space-y-4">
-                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
-                      Edit Homepage Content
-                    </button>
-                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
-                      Manage Services Content
-                    </button>
-                    <button className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white hover:bg-slate-700 transition-colors text-left">
-                      Update Pricing Information
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-                  </div>
-          {/* Image Management Tab */}
-          {activeTab === 'images' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold text-white">Image Management</h2>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setEditingImages(!editingImages)}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 ${
-                    editingImages
-                      ? 'bg-red-500/20 border border-red-500/30 text-red-400'
-                      : 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'
-                  }`}
-                >
-                  <Edit size={16} />
-                  <span>{editingImages ? 'Stop Editing' : 'Start Editing'}</span>
-                </motion.button>
-              </div>
-                ))}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Hero Images */}
                 <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
@@ -721,7 +721,7 @@ const AdminDashboard = () => {
                     <p className="text-slate-400 text-sm">Main hero background</p>
                   </div>
                 </div>
-              </div>
+
                 {/* Team Images */}
                 <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-white mb-4">Team Photos</h3>
@@ -748,7 +748,7 @@ const AdminDashboard = () => {
                     ))}
                   </div>
                 </div>
-            </motion.div>
+
                 {/* Service Images */}
                 <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-white mb-4">Service Icons</h3>
@@ -770,7 +770,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
-          )}
+
               {editingImages && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -793,6 +793,7 @@ const AdminDashboard = () => {
                 </motion.div>
               )}
             </motion.div>
+          )}
           )}
 
           {/* Other tabs would be implemented similarly... */}
