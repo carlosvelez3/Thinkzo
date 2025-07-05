@@ -6,28 +6,28 @@ import StartProjectModal from './StartProjectModal';
 const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Neural network animation points
-  const neuralPoints = Array.from({ length: 12 }, (_, i) => ({
+  // Enhanced neural network animation points - more coverage
+  const neuralPoints = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    delay: Math.random() * 2,
+    delay: Math.random() * 3,
   }));
 
   return (
     <>
       <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 flex items-center justify-center overflow-hidden">
-        {/* Neural Network Background */}
-        <div className="absolute inset-0 opacity-30">
+        {/* Enhanced Neural Network Background */}
+        <div className="absolute inset-0 opacity-60">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Neural connections */}
+            {/* Neural connections with enhanced brightness */}
             {neuralPoints.map((point, index) => (
               <g key={point.id}>
                 {neuralPoints.slice(index + 1).map((targetPoint, targetIndex) => {
                   const distance = Math.sqrt(
                     Math.pow(targetPoint.x - point.x, 2) + Math.pow(targetPoint.y - point.y, 2)
                   );
-                  if (distance < 25) {
+                  if (distance < 35) {
                     return (
                       <motion.line
                         key={`${point.id}-${targetPoint.id}`}
@@ -36,83 +36,157 @@ const Hero = () => {
                         x2={targetPoint.x}
                         y2={targetPoint.y}
                         stroke="url(#neuralGradient)"
-                        strokeWidth="0.1"
+                        strokeWidth="0.15"
                         initial={{ pathLength: 0, opacity: 0 }}
                         animate={{ 
                           pathLength: [0, 1, 0], 
-                          opacity: [0, 0.6, 0] 
+                          opacity: [0, 1, 0.3, 0] 
                         }}
                         transition={{
-                          duration: 3,
-                          delay: point.delay + targetIndex * 0.1,
+                          duration: 2,
+                          delay: point.delay + targetIndex * 0.05,
                           repeat: Infinity,
-                          repeatDelay: 2,
+                          repeatDelay: 1,
+                          ease: "easeInOut"
                         }}
                       />
                     );
                   }
                   return null;
                 })}
-                {/* Neural nodes */}
+                {/* Enhanced neural nodes with brighter flashing */}
                 <motion.circle
                   cx={point.x}
                   cy={point.y}
-                  r="0.3"
+                  r="0.4"
                   fill="url(#nodeGradient)"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ 
-                    scale: [0, 1.2, 1], 
-                    opacity: [0, 1, 0.8] 
+                    scale: [0, 1.5, 1, 1.2, 1], 
+                    opacity: [0, 1, 0.8, 1, 0.6] 
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 1.5,
                     delay: point.delay,
                     repeat: Infinity,
+                    repeatDelay: 2,
+                    ease: "easeInOut"
+                  }}
+                />
+                {/* Additional bright flash effect */}
+                <motion.circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="0.8"
+                  fill="url(#flashGradient)"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ 
+                    scale: [0, 2, 0], 
+                    opacity: [0, 0.8, 0] 
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    delay: point.delay + 1,
+                    repeat: Infinity,
                     repeatDelay: 3,
+                    ease: "easeOut"
                   }}
                 />
               </g>
             ))}
             
-            {/* Gradients */}
+            {/* Enhanced gradients with brighter colors */}
             <defs>
               <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#ec4899" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.4" />
+                <stop offset="0%" stopColor="#a855f7" stopOpacity="0.9" />
+                <stop offset="25%" stopColor="#ec4899" stopOpacity="1" />
+                <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.9" />
+                <stop offset="75%" stopColor="#10b981" stopOpacity="1" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.8" />
               </linearGradient>
               <radialGradient id="nodeGradient" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#fbbf24" stopOpacity="1" />
-                <stop offset="100%" stopColor="#a855f7" stopOpacity="0.8" />
+                <stop offset="30%" stopColor="#f59e0b" stopOpacity="1" />
+                <stop offset="70%" stopColor="#a855f7" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="0.7" />
+              </radialGradient>
+              <radialGradient id="flashGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+                <stop offset="30%" stopColor="#fbbf24" stopOpacity="0.7" />
+                <stop offset="70%" stopColor="#a855f7" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="0" />
               </radialGradient>
             </defs>
           </svg>
         </div>
 
-        {/* Floating Elements */}
+        {/* Additional pulsing overlay for more coverage */}
+        <div className="absolute inset-0 opacity-20">
+          <motion.div
+            className="w-full h-full bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-blue-500/30"
+            animate={{
+              opacity: [0.1, 0.3, 0.1],
+              scale: [1, 1.02, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+
+        {/* Enhanced floating elements with more dynamic movement */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[Brain, Cpu, Network, Zap].map((Icon, index) => (
+          {[Brain, Cpu, Network, Zap, Sparkles, Brain].map((Icon, index) => (
             <motion.div
               key={index}
-              className="absolute text-purple-400/20"
+              className="absolute text-purple-400/30"
               style={{
-                left: `${20 + index * 20}%`,
-                top: `${30 + index * 10}%`,
+                left: `${10 + index * 15}%`,
+                top: `${20 + (index % 3) * 25}%`,
               }}
               animate={{
-                y: [0, -20, 0],
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1],
+                y: [0, -30, 0],
+                x: [0, 10, 0],
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.7, 0.3]
               }}
               transition={{
-                duration: 4 + index,
+                duration: 5 + index,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: index * 0.5,
+                delay: index * 0.3,
               }}
             >
-              <Icon size={40 + index * 10} />
+              <Icon size={30 + index * 8} />
             </motion.div>
+          ))}
+        </div>
+
+        {/* Bright synapse flashes across the screen */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {Array.from({ length: 8 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-full bg-gradient-to-b from-transparent via-purple-400/80 to-transparent"
+              style={{
+                left: `${12.5 * i}%`,
+                transform: 'rotate(15deg)',
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scaleY: [0, 1, 0],
+              }}
+              transition={{
+                duration: 0.5,
+                delay: i * 0.2,
+                repeat: Infinity,
+                repeatDelay: 4,
+                ease: "easeInOut"
+              }}
+            />
           ))}
         </div>
 
