@@ -79,14 +79,6 @@ const Pricing = () => {
                 <span>Start Your Project</span>
                 <ArrowRight size={20} />
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsModalOpen(true)}
-                className="border-2 border-purple-500/30 text-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
-              >
-                Schedule Consultation
-              </motion.button>
             </div>
           </div>
         </motion.div>
