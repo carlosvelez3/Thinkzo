@@ -6,7 +6,6 @@ import IntelligentBrandingModal from './modals/IntelligentBrandingModal';
 import NeuralWebsiteModal from './modals/NeuralWebsiteModal';
 import SmartMobileAppsModal from './modals/SmartMobileAppsModal';
 import NeuralMarketingModal from './modals/NeuralMarketingModal';
-import CognitiveSecurityModal from './modals/CognitiveSecurityModal';
 import PerformanceAIModal from './modals/PerformanceAIModal';
 
 const services = [
@@ -39,13 +38,6 @@ const services = [
     color: 'emerald'
   },
   {
-    icon: Shield,
-    title: 'Cognitive Security',
-    description: 'Advanced AI security systems that learn and adapt to protect your digital assets.',
-    features: ['Threat Prediction', 'Adaptive Defense', 'Smart Monitoring', 'Auto-response'],
-    color: 'orange'
-  },
-  {
     icon: Zap,
     title: 'Performance AI',
     description: 'Neural networks that continuously optimize your digital infrastructure for peak performance.',
@@ -60,7 +52,6 @@ const Services = () => {
   const [isWebsiteModalOpen, setIsWebsiteModalOpen] = useState(false);
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
   const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
-  const [isCognitiveSecurityModalOpen, setIsCognitiveSecurityModalOpen] = useState(false);
   const [isPerformanceAIModalOpen, setIsPerformanceAIModalOpen] = useState(false);
 
   return (
@@ -131,8 +122,6 @@ const Services = () => {
                       setIsMobileModalOpen(true);
                     } else if (service.title === 'Neural Marketing') {
                       setIsMarketingModalOpen(true);
-                    } else if (service.title === 'Cognitive Security') {
-                      setIsCognitiveSecurityModalOpen(true);
                     } else if (service.title === 'Performance AI') {
                       setIsPerformanceAIModalOpen(true);
                     } else {
@@ -201,12 +190,6 @@ const Services = () => {
       <NeuralMarketingModal 
         isOpen={isMarketingModalOpen} 
         onClose={() => setIsMarketingModalOpen(false)} 
-      />
-
-      {/* Cognitive Security Modal */}
-      <CognitiveSecurityModal 
-        isOpen={isCognitiveSecurityModalOpen} 
-        onClose={() => setIsCognitiveSecurityModalOpen(false)} 
       />
 
       {/* Performance AI Modal */}
