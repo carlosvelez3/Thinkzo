@@ -17,6 +17,7 @@ import {
   Image,
   Navigation,
   Palette,
+  TestTube,
   LogOut
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -24,12 +25,14 @@ import { useContent } from '../../hooks/useContent';
 import ContentEditor from './ContentEditor';
 import TeamManager from './TeamManager';
 import SiteSettings from './SiteSettings';
+import TestingPanel from '../TestingPanel';
 
 const EnhancedAdminDashboard = () => {
   const { user, signOut } = useAuth();
   const { contentSections, teamMembers, navigationItems, loading } = useContent();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedContentSection, setSelectedContentSection] = useState<string | null>(null);
+  const [showTestingPanel, setShowTestingPanel] = useState(false);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -38,7 +41,8 @@ const EnhancedAdminDashboard = () => {
     { id: 'navigation', label: 'Navigation', icon: Navigation },
     { id: 'settings', label: 'Site Settings', icon: Settings },
     { id: 'users', label: 'Users', icon: Users },
-    { id: 'messages', label: 'Messages', icon: MessageSquare }
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'testing', label: 'System Testing', icon: TestTube }
   ];
 
   const contentSectionsList = [
@@ -224,6 +228,15 @@ const EnhancedAdminDashboard = () => {
                     <Settings className="text-green-400" size={20} />
                     <span className="text-white">Site Settings</span>
                   </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    onClick={() => setShowTestingPanel(true)}
+                    className="flex items-center space-x-3 p-4 bg-slate-700/30 rounded-xl hover:bg-slate-700/50 transition-colors"
+                  >
+                    <TestTube className="text-orange-400" size={20} />
+                    <span className="text-white">Test System</span>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -287,8 +300,38 @@ const EnhancedAdminDashboard = () => {
               </div>
             </motion.div>
           )}
+
+          {activeTab === 'testing' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">System Testing</h2>
+                <p className="text-slate-400">Test core functionality and integrations</p>
+              </div>
+              <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowTestingPanel(true)}
+                  className="flex items-center space-x-3 bg-green-500/20 border border-green-500/30 text-green-400 px-6 py-3 rounded-xl hover:bg-green-500/30 transition-colors"
+                >
+                  <TestTube size={20} />
+                  <span>Open Testing Panel</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
+
+      {/* Testing Panel */}
+      <TestingPanel 
+        isOpen={showTestingPanel} 
+        onClose={() => setShowTestingPanel(false)} 
+      />
     </div>
   );
 };
