@@ -177,14 +177,14 @@ const PerformanceAIModal: React.FC<PerformanceAIModalProps> = ({ isOpen, onClose
                   whileTap={{ scale: 0.95 }}
                   className="bg-gradient-to-r from-lime-500/30 to-emerald-500/30 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 border border-lime-500/20"
                 >
-                  Start Performance Analysis
+                  Get Started
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="border-2 border-slate-600/30 text-slate-300 px-8 py-3 rounded-xl font-medium hover:bg-slate-700/30 hover:text-white transition-all duration-300"
                 >
-                  View Benchmarks
+                  Learn More
                 </motion.button>
               </div>
             </motion.div>
