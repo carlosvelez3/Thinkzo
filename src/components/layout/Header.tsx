@@ -25,7 +25,6 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
     { name: 'Home', href: 'home' },
     { name: 'About', href: 'about' },
     { name: 'Services', href: 'services' },
-    { name: 'Pricing', href: 'pricing' },
     { name: 'AI Chat', href: 'chat' },
     { name: 'Contact', href: 'contact' },
   ];
