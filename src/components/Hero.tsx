@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, Zap, Cpu, Network } from 'lucide-react';
+import { useContent } from '../hooks/useContent';
 import StartProjectModal from './StartProjectModal';
 
 const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { getContentSection } = useContent();
+  
+  // Get hero content from CMS
+  const heroContent = getContentSection('hero')?.content || {
+    title: 'Welcome to Thinkzo',
+    subtitle: 'Transform your business with AI-powered websites, intelligent marketing, and neural design systems that adapt and evolve with your needs.',
+    primaryButton: 'Start Neural Assembly',
+    secondaryButton: 'Explore Intelligence'
+  };
 
   // Enhanced neural network animation points - more coverage
   const neuralPoints = Array.from({ length: 20 }, (_, i) => ({
@@ -214,7 +224,86 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.3 }}
             className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight"
           >
-            Welcome to{' '}
+            {heroContent.title.includes('Thinkzo') ? (
+              <>
+                {heroContent.title.split('Thinkzo')[0]}
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  Thinkzo
+                </span>
+                {heroContent.title.split('Thinkzo')[1]}
+              </>
+            ) : (
+              heroContent.title
+            )}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto mb-12 leading-relaxed"
+          >
+            {heroContent.subtitle}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsModalOpen(true)}
+              className="group bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 backdrop-blur-xl border border-purple-500/20 flex items-center space-x-3"
+            >
+              <Sparkles className="group-hover:rotate-12 transition-transform duration-300" size={20} />
+              <span>{heroContent.primaryButton}</span>
+              <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="border-2 border-slate-600/30 text-slate-300 px-8 py-4 rounded-full text-lg font-semibold hover:bg-slate-800/30 hover:text-white transition-all duration-300"
+            >
+              {heroContent.secondaryButton}
+            </motion.button>
+          </motion.div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-slate-600 rounded-full flex justify-center"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-gradient-to-b from-purple-400 to-pink-400 rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </>
+  );
+};
+
+export default Hero;
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               Thinkzo
             </span>

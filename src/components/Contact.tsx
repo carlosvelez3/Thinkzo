@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Clock, Users } from 'lucide-react';
+import { useContent } from '../hooks/useContent';
 import { insertContact } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 const Contact = () => {
+  const { getContentSection } = useContent();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,6 +19,14 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Get contact info from CMS
+  const contactInfo = getContentSection('contact_info')?.content || {
+    email: 'team@thinkzo.ai',
+    phone: '+1 (555) 123-4567',
+    address: '123 Design Street, Creative City, CC 12345',
+    hours: 'Monday - Friday: 9AM - 6PM PST'
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -262,7 +272,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <div className="text-white font-semibold">Email</div>
-                    <div className="text-slate-400">team@thinkzo.ai</div>
+                    <div className="text-slate-400">{contactInfo.email}</div>
                   </div>
                 </div>
 
@@ -272,7 +282,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <div className="text-white font-semibold">Phone</div>
-                    <div className="text-slate-400">+1 (555) 123-4567</div>
+                    <div className="text-slate-400">{contactInfo.phone}</div>
                   </div>
                 </div>
 
@@ -282,7 +292,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <div className="text-white font-semibold">Office</div>
-                    <div className="text-slate-400">123 Design Street, Creative City, CC 12345</div>
+                    <div className="text-slate-400">{contactInfo.address}</div>
                   </div>
                 </div>
               </div>

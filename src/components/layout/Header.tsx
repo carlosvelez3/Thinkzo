@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useContent } from '../../hooks/useContent';
 import AuthModal from '../auth/AuthModal';
 import Logo from '../ui/Logo';
 
@@ -20,14 +21,18 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { navigationItems } = useContent();
 
-  const navigation = [
-    { name: 'Home', href: 'home' },
-    { name: 'About', href: 'about' },
-    { name: 'Services', href: 'services' },
-    { name: 'AI Chat', href: 'chat' },
-    { name: 'Contact', href: 'contact' },
-  ];
+  // Use navigation from CMS or fallback to default
+  const navigation = navigationItems.length > 0 
+    ? navigationItems.map(item => ({ name: item.label, href: item.href }))
+    : [
+        { name: 'Home', href: 'home' },
+        { name: 'About', href: 'about' },
+        { name: 'Services', href: 'services' },
+        { name: 'AI Chat', href: 'chat' },
+        { name: 'Contact', href: 'contact' },
+      ];
 
   const handleAuthClick = (mode: 'signin' | 'signup') => {
     setAuthMode(mode);

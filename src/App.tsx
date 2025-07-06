@@ -1,5 +1,6 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
+import { useContent } from './hooks/useContent';
 import Header from './components/layout/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -10,7 +11,7 @@ import Footer from './components/Footer';
 import AboutPage from './components/pages/AboutPage';
 import ServicesPage from './components/pages/ServicesPage';
 import ChatPage from './components/pages/ChatPage';
-import AdminDashboard from './components/admin/AdminDashboard';
+import EnhancedAdminDashboard from './components/admin/EnhancedAdminDashboard';
 import ChatWidget from './components/chat/ChatWidget';
 import SuccessPage from './components/pages/SuccessPage';
 import { useAuth } from './hooks/useAuth';
@@ -18,6 +19,19 @@ import { useAuth } from './hooks/useAuth';
 function App() {
   const [currentPage, setCurrentPage] = React.useState('home');
   const { user } = useAuth();
+  const { loading: contentLoading } = useContent();
+
+  // Show loading screen while content is loading
+  if (contentLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-white text-lg">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   const renderPage = () => {
     switch (currentPage) {
@@ -56,7 +70,7 @@ function App() {
           </div>
         );
       case 'admin':
-        return user ? <AdminDashboard /> : (
+        return user ? <EnhancedAdminDashboard /> : (
           <div className="min-h-screen bg-slate-900 flex items-center justify-center">
             <div className="text-white text-center">
               <h1 className="text-3xl font-bold mb-4">Access Denied</h1>

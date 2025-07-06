@@ -1,37 +1,47 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Lightbulb, Code, Rocket } from 'lucide-react';
+import { useContent } from '../hooks/useContent';
 import StartProjectModal from './StartProjectModal';
-
-const processSteps = [
-  {
-    icon: MessageSquare,
-    title: 'Neural Discovery',
-    description: 'AI-powered analysis of your business, goals, and market intelligence.',
-    details: ['Smart consultation', 'AI requirements gathering', 'Neural market research', 'Intelligent competitor analysis']
-  },
-  {
-    icon: Lightbulb,
-    title: 'Adaptive Strategy',
-    description: 'Machine learning algorithms develop personalized strategies for your needs.',
-    details: ['AI project planning', 'Neural design concepts', 'Smart architecture', 'Predictive timeline creation']
-  },
-  {
-    icon: Code,
-    title: 'Intelligent Development',
-    description: 'Our neural network brings your vision to life with self-optimizing code.',
-    details: ['AI-assisted implementation', 'Smart development sprints', 'Neural quality assurance', 'Adaptive client feedback']
-  },
-  {
-    icon: Rocket,
-    title: 'Smart Launch',
-    description: 'Automated deployment with continuous learning and intelligent optimization.',
-    details: ['Neural testing', 'Smart deployment', 'AI training & handover', 'Continuous learning support']
-  }
-];
 
 const Process = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { getContentSection } = useContent();
+  
+  // Get process steps from CMS
+  const processContent = getContentSection('process_steps')?.content || { steps: [] };
+  
+  // Icon mapping for process steps
+  const iconMap: Record<string, any> = {
+    'Neural Discovery': MessageSquare,
+    'Adaptive Strategy': Lightbulb,
+    'Intelligent Development': Code,
+    'Smart Launch': Rocket
+  };
+  
+  // Use CMS content or fallback to default
+  const processSteps = processContent.steps.length > 0 ? processContent.steps : [
+    {
+      title: 'Neural Discovery',
+      description: 'AI-powered analysis of your business, goals, and market intelligence.',
+      details: ['Smart consultation', 'AI requirements gathering', 'Neural market research', 'Intelligent competitor analysis']
+    },
+    {
+      title: 'Adaptive Strategy',
+      description: 'Machine learning algorithms develop personalized strategies for your needs.',
+      details: ['AI project planning', 'Neural design concepts', 'Smart architecture', 'Predictive timeline creation']
+    },
+    {
+      title: 'Intelligent Development',
+      description: 'Our neural network brings your vision to life with self-optimizing code.',
+      details: ['AI-assisted implementation', 'Smart development sprints', 'Neural quality assurance', 'Adaptive client feedback']
+    },
+    {
+      title: 'Smart Launch',
+      description: 'Automated deployment with continuous learning and intelligent optimization.',
+      details: ['Neural testing', 'Smart deployment', 'AI training & handover', 'Continuous learning support']
+    }
+  ];
 
   return (
     <>
@@ -60,6 +70,9 @@ const Process = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               {processSteps.map((step, index) => (
+                (() => {
+                  const IconComponent = iconMap[step.title] || MessageSquare;
+                  return (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 50 }}
@@ -80,7 +93,7 @@ const Process = () => {
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6"
                     >
-                      <step.icon className="text-purple-400" size={32} />
+                      <IconComponent className="text-purple-400" size={32} />
                     </motion.div>
 
                     <h3 className="text-2xl font-bold text-white mb-4">
@@ -101,6 +114,8 @@ const Process = () => {
                     </ul>
                   </motion.div>
                 </motion.div>
+                  );
+                })()
               ))}
             </div>
           </div>
