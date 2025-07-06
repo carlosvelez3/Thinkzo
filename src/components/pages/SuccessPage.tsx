@@ -1,25 +1,23 @@
 /**
  * Success Page Component
- * Displays after successful Stripe checkout
+ * Displays after successful project submission
  */
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Download, Mail, ArrowRight } from 'lucide-react';
+import { CheckCircle, Mail, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 const SuccessPage = () => {
   const { user } = useAuth();
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get session ID from URL parameters
+    // Get project ID from URL parameters if available
     const urlParams = new URLSearchParams(window.location.search);
-    const sessionIdParam = urlParams.get('session_id');
+    const projectIdParam = urlParams.get('project_id');
     
-    if (sessionIdParam) {
-      setSessionId(sessionIdParam);
-      // You could fetch order details here if needed
+    if (projectIdParam) {
+      setProjectId(projectIdParam);
     }
   }, []);
 
@@ -49,21 +47,21 @@ const SuccessPage = () => {
           className="mb-8"
         >
           <h1 className="text-4xl font-bold text-white mb-4">
-            Payment Successful! 🎉
+            Project Submitted Successfully! 🎉
           </h1>
           <p className="text-xl text-slate-300 mb-6">
-            Thank you for choosing Thinkzo! Your neural-powered solution is being prepared.
+            Thank you for choosing Thinkzo! Our neural networks are analyzing your requirements.
           </p>
           
           {user && (
             <div className="bg-slate-700/30 rounded-2xl p-6 mb-6">
-              <h3 className="text-lg font-semibold text-white mb-2">Order Confirmation</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">What's Next?</h3>
               <p className="text-slate-400">
-                A confirmation email has been sent to <span className="text-purple-400">{user.email}</span>
+                We'll review your project details and contact you at <span className="text-purple-400">{user.email}</span> within 24 hours with a custom proposal.
               </p>
-              {sessionId && (
+              {projectId && (
                 <p className="text-slate-500 text-sm mt-2">
-                  Session ID: {sessionId}
+                  Reference ID: {projectId}
                 </p>
               )}
             </div>
@@ -83,24 +81,24 @@ const SuccessPage = () => {
             {[
               {
                 step: '1',
-                title: 'Project Setup',
-                description: 'Our AI analyzes your requirements and sets up your project',
+                title: 'AI Analysis',
+                description: 'Our neural networks analyze your requirements and market data',
                 icon: '🧠',
-                time: 'Within 24 hours'
+                time: 'Within 2 hours'
               },
               {
                 step: '2',
-                title: 'Development Begins',
-                description: 'Our neural networks start crafting your solution',
-                icon: '⚡',
-                time: '1-3 business days'
+                title: 'Custom Proposal',
+                description: 'We create a personalized solution and pricing proposal',
+                icon: '📋',
+                time: 'Within 24 hours'
               },
               {
                 step: '3',
-                title: 'Delivery & Launch',
-                description: 'Your intelligent solution goes live',
+                title: 'Project Kickoff',
+                description: 'Once approved, we begin neural assembly of your solution',
                 icon: '🚀',
-                time: 'Based on package'
+                time: 'Upon approval'
               }
             ].map((item, index) => (
               <motion.div
@@ -129,17 +127,8 @@ const SuccessPage = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 border border-purple-500/20"
-          >
-            <Download size={20} />
-            <span>Download Receipt</span>
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => window.location.href = 'mailto:team@thinkzo.ai'}
-            className="flex items-center space-x-2 border-2 border-slate-600/30 text-slate-300 px-6 py-3 rounded-xl font-medium hover:bg-slate-700/30 hover:text-white transition-all duration-300"
+            className="flex items-center space-x-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 border border-purple-500/20"
           >
             <Mail size={20} />
             <span>Contact Team</span>
