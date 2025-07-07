@@ -25,6 +25,8 @@ import { useContent } from '../../hooks/useContent';
 import ContentEditor from './ContentEditor';
 import TeamManager from './TeamManager';
 import SiteSettings from './SiteSettings';
+import SystemHealthCheck from './SystemHealthCheck';
+import PublishReadinessCheck from './PublishReadinessCheck';
 import TestingPanel from '../TestingPanel';
 
 const EnhancedAdminDashboard = () => {
@@ -42,7 +44,8 @@ const EnhancedAdminDashboard = () => {
     { id: 'settings', label: 'Site Settings', icon: Settings },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
-    { id: 'testing', label: 'System Testing', icon: TestTube }
+    { id: 'testing', label: 'System Testing', icon: TestTube },
+    { id: 'publish', label: 'Publish Ready', icon: Globe }
   ];
 
   const contentSectionsList = [
@@ -307,21 +310,17 @@ const EnhancedAdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2">System Testing</h2>
-                <p className="text-slate-400">Test core functionality and integrations</p>
-              </div>
-              <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowTestingPanel(true)}
-                  className="flex items-center space-x-3 bg-green-500/20 border border-green-500/30 text-green-400 px-6 py-3 rounded-xl hover:bg-green-500/30 transition-colors"
-                >
-                  <TestTube size={20} />
-                  <span>Open Testing Panel</span>
-                </motion.button>
-              </div>
+              <SystemHealthCheck />
+            </motion.div>
+          )}
+
+          {activeTab === 'publish' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <PublishReadinessCheck />
             </motion.div>
           )}
         </div>
