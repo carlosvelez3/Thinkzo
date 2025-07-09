@@ -37,6 +37,7 @@ interface QualifiedLead {
   ai_qualification?: any;
   metadata?: any;
   created_at: string;
+  priority_order?: number;
   qualified_at?: string;
 }
 
@@ -331,6 +332,11 @@ const LeadQualificationDashboard: React.FC = () => {
                         <span className="text-purple-400 font-medium text-sm">AI Analysis</span>
                       </div>
                       
+                      <div>
+                        <span className="text-slate-400">Recommended Action: </span>
+                        <span className="text-slate-300">{lead.ai_qualification.recommended_action}</span>
+                      </div>
+                      
                       <div className="space-y-2 text-sm">
                         <div>
                           <span className="text-slate-400">Summary: </span>
@@ -352,6 +358,17 @@ const LeadQualificationDashboard: React.FC = () => {
                             </ul>
                           </div>
                         )}
+                      
+                      {lead.ai_qualification.next_steps && (
+                        <div>
+                          <span className="text-slate-400">Next Steps: </span>
+                          <ul className="list-disc list-inside text-slate-300 ml-4">
+                            {lead.ai_qualification.next_steps.map((step: string, i: number) => (
+                              <li key={i}>{step}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       </div>
                     </div>
                   )}

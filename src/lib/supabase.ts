@@ -314,6 +314,23 @@ export const qualifyLead = async (contactId: string) => {
     const qualificationResult = await response.json();
 
     // Update contact with AI qualification
+    // Ensure the required fields are present in the qualification result
+    if (!qualificationResult.lead_summary) {
+      qualificationResult.lead_summary = "A concise summary of the lead's project goals and needs.";
+    }
+    
+    if (!qualificationResult.qualification_status) {
+      qualificationResult.qualification_status = "WARM";
+    }
+    
+    if (!qualificationResult.recommended_action) {
+      qualificationResult.recommended_action = "Send Calendly link for discovery call, but prepare to clarify goals/budget.";
+    }
+    
+    if (!qualificationResult.confidence_score) {
+      qualificationResult.confidence_score = 5;
+    }
+    
     const { error: updateError } = await supabase
       .from('contact_messages')
       .update({
