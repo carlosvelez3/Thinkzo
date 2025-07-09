@@ -211,24 +211,25 @@ export const insertUser = async (userData: {
   role?: 'user' | 'admin' | 'manager';
 }) => {
   try {
-    const { data, error } = await supabase.rpc('safe_insert_user', {
-      p_id: userData.id,
-      p_email: userData.email,
-      p_full_name: userData.full_name,
-      p_phone: userData.phone || null,
-      p_company: userData.company || null,
-      p_job_title: userData.job_title || null,
-      p_bio: userData.bio || null,
-      p_role: userData.role || 'user'
-    });
+    // Direct insert into users table instead of using RPC to avoid function overloading issues
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{
+        id: userData.id,
+        email: userData.email,
+        full_name: userData.full_name,
+        phone: userData.phone || null,
+        company: userData.company || null,
+        job_title: userData.job_title || null,
+        bio: userData.bio || null,
+        role: userData.role || 'user'
+      }])
+      .select()
+      .single();
 
     if (error) throw error;
 
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    return { data: data.data, error: null };
+    return { data, error: null };
   } catch (error: any) {
     console.error('Failed to insert user:', error.message);
     return { data: null, error };
