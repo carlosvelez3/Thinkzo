@@ -46,6 +46,7 @@ export const useAuth = () => {
       // Insert user profile
       if (data.user) {
         const { error: profileError } = await insertUser({
+          id: data.user.id,
           email: data.user.email!,
           full_name: fullName,
           role: 'user',

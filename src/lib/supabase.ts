@@ -201,6 +201,7 @@ export const getTableInfo = async (tableName: string) => {
 
 // Enhanced user insertion function using database function
 export const insertUser = async (userData: {
+  id: string;
   email: string;
   full_name: string;
   phone?: string;
@@ -211,6 +212,7 @@ export const insertUser = async (userData: {
 }) => {
   try {
     const { data, error } = await supabase.rpc('safe_insert_user', {
+      p_id: userData.id,
       p_email: userData.email,
       p_full_name: userData.full_name,
       p_phone: userData.phone,
