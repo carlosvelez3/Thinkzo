@@ -132,6 +132,10 @@ export interface Contact {
   follow_up_required: boolean;
   follow_up_date?: string;
   internal_notes?: string;
+  metadata?: Record<string, any>;
+  ai_qualification?: Record<string, any>;
+  qualification_status?: 'HOT' | 'WARM' | 'COLD';
+  qualification_score?: number;
   created_at: string;
   updated_at: string;
 }
@@ -240,6 +244,7 @@ export const insertContact = async (contactData: {
   contact_type?: Contact['contact_type'];
   priority?: Contact['priority'];
   source?: string;
+  metadata?: Record<string, any>;
 }) => {
   try {
     const { data, error } = await supabase.rpc('safe_insert_contact', {
@@ -251,7 +256,8 @@ export const insertContact = async (contactData: {
       p_subject: contactData.subject,
       p_contact_type: contactData.contact_type,
       p_priority: contactData.priority,
-      p_source: contactData.source
+      p_source: contactData.source,
+      p_metadata: contactData.metadata
     });
 
     if (error) throw error;
@@ -263,6 +269,69 @@ export const insertContact = async (contactData: {
     return { data: data.data, error: null };
   } catch (error: any) {
     console.error('Failed to insert contact:', error.message);
+    return { data: null, error };
+  }
+};
+
+// AI Lead Qualification function
+export const qualifyLead = async (contactId: string) => {
+  try {
+    // Get contact data
+    const { data: contact, error: contactError } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .eq('id', contactId)
+      .single();
+
+    if (contactError) throw contactError;
+
+    // Prepare lead data for AI qualification
+    const leadData = {
+      lead_name: contact.name,
+      lead_email: contact.email,
+      company_name: contact.company,
+      company_website: contact.metadata?.company_website,
+      project_goals: contact.metadata?.project_goals || contact.message,
+      budget: contact.metadata?.budget_range || 'Not specified',
+      timeline: contact.metadata?.timeline || 'Not specified',
+      service_type: contact.metadata?.service_type,
+      additional_notes: contact.message,
+      source: 'contact_form'
+    };
+
+    // Call AI qualification function
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lead-qualifier`;
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(leadData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const qualificationResult = await response.json();
+
+    // Update contact with AI qualification
+    const { error: updateError } = await supabase
+      .from('contact_messages')
+      .update({
+        ai_qualification: qualificationResult,
+        qualification_status: qualificationResult.qualification_status,
+        qualification_score: qualificationResult.confidence_score
+      })
+      .eq('id', contactId);
+
+    if (updateError) throw updateError;
+
+    return { data: qualificationResult, error: null };
+  } catch (error: any) {
+    console.error('Lead qualification error:', error);
     return { data: null, error };
   }
 };

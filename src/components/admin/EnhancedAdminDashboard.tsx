@@ -18,7 +18,8 @@ import {
   Navigation,
   Palette,
   TestTube,
-  LogOut
+  LogOut,
+  Target
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useContent } from '../../hooks/useContent';
@@ -28,6 +29,7 @@ import SiteSettings from './SiteSettings';
 import SystemHealthCheck from './SystemHealthCheck';
 import PublishReadinessCheck from './PublishReadinessCheck';
 import TestingPanel from '../TestingPanel';
+import LeadQualificationDashboard from './LeadQualificationDashboard';
 
 const EnhancedAdminDashboard = () => {
   const { user, signOut } = useAuth();
@@ -38,6 +40,7 @@ const EnhancedAdminDashboard = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'leads', label: 'Lead Qualification', icon: Target },
     { id: 'content', label: 'Content Editor', icon: Edit3 },
     { id: 'team', label: 'Team Management', icon: UserCheck },
     { id: 'navigation', label: 'Navigation', icon: Navigation },
@@ -244,6 +247,8 @@ const EnhancedAdminDashboard = () => {
               </div>
             </motion.div>
           )}
+
+          {activeTab === 'leads' && <LeadQualificationDashboard />}
 
           {activeTab === 'content' && (
             <ContentEditor 

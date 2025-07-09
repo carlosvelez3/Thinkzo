@@ -11,10 +11,12 @@ const Contact = () => {
     name: '',
     email: '',
     company: '',
+    website: '',
     phone: '',
     subject: '',
     service: '',
     budget: '',
+    timeline: '',
     message: ''
   });
 
@@ -46,10 +48,17 @@ const Contact = () => {
         phone: formData.phone || undefined,
         company: formData.company || undefined,
         subject: formData.subject || `${formData.service} Inquiry`,
-        message: `Service: ${formData.service}\nBudget: ${formData.budget}\n\n${formData.message}`,
+        message: `Service: ${formData.service}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\nWebsite: ${formData.website}\n\n${formData.message}`,
         contact_type: 'sales' as const,
-        priority: 'medium' as const,
-        source: 'website'
+        priority: 'high' as const,
+        source: 'contact_form',
+        metadata: {
+          service_type: formData.service,
+          budget_range: formData.budget,
+          timeline: formData.timeline,
+          company_website: formData.website,
+          project_goals: formData.message
+        }
       };
 
       const { data, error } = await insertContact(contactData);
@@ -63,10 +72,12 @@ const Contact = () => {
         name: '',
         email: '',
         company: '',
+        website: '',
         phone: '',
         subject: '',
         service: '',
         budget: '',
+        timeline: '',
         message: ''
       });
     } catch (error: any) {
@@ -155,6 +166,21 @@ const Contact = () => {
                     placeholder="Your Company"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-slate-400 text-sm mb-2">
+                    Company Website
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                    placeholder="https://yourcompany.com"
+                  />
+                </div>
+
                 <div>
                   <label className="block text-slate-400 text-sm mb-2">
                     Phone Number
@@ -213,6 +239,25 @@ const Contact = () => {
 
               <div>
                 <label className="block text-slate-400 text-sm mb-2">
+                  Project Timeline
+                </label>
+                <select
+                  name="timeline"
+                  value={formData.timeline}
+                  onChange={handleChange}
+                  className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
+                >
+                  <option value="">Select timeline</option>
+                  <option value="asap">ASAP</option>
+                  <option value="1-month">Within 1 month</option>
+                  <option value="1-3-months">1-3 months</option>
+                  <option value="3-6-months">3-6 months</option>
+                  <option value="flexible">Flexible</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
                   Subject
                 </label>
                 <input
@@ -227,7 +272,7 @@ const Contact = () => {
 
               <div>
                 <label className="block text-slate-400 text-sm mb-2">
-                  Project Details *
+                  Project Goals & Details *
                 </label>
                 <textarea
                   name="message"
@@ -236,7 +281,7 @@ const Contact = () => {
                   required
                   rows={5}
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors resize-none"
-                  placeholder="Tell us about your project, goals, and timeline..."
+                  placeholder="Describe your project goals, specific requirements, and what success looks like for your business..."
                 />
               </div>
 

@@ -14,6 +14,7 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
     name: '',
     email: '',
     company: '',
+    website: '',
     phone: '',
     project_type: '',
     goals: '',
@@ -47,12 +48,20 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
 Goals: ${formData.goals}
 Timeline: ${formData.timeline}
 Budget: ${formData.budget}
+Website: ${formData.website}
 
 Additional Notes:
 ${formData.additional_notes}`,
         contact_type: 'sales' as const,
         priority: 'high' as const,
-        source: 'project_modal'
+        source: 'project_modal',
+        metadata: {
+          project_type: formData.project_type,
+          project_goals: formData.goals,
+          budget_range: formData.budget,
+          timeline: formData.timeline,
+          company_website: formData.website
+        }
       };
 
       const { data, error } = await insertContact(contactData);
@@ -69,6 +78,7 @@ ${formData.additional_notes}`,
           name: '',
           email: '',
           company: '',
+          website: '',
           phone: '',
           project_type: '',
           goals: '',
@@ -224,11 +234,21 @@ ${formData.additional_notes}`,
                       />
                     </motion.div>
 
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.35 }}
-                    >
+                    <div>
+                      <label className="block text-slate-300 text-sm font-medium mb-3">
+                        Company Website
+                      </label>
+                      <input
+                        type="url"
+                        name="website"
+                        value={formData.website}
+                        onChange={handleChange}
+                        className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors placeholder-slate-400"
+                        placeholder="https://yourcompany.com"
+                      />
+                    </div>
+
+                    <div>
                       <label className="block text-slate-300 text-sm font-medium mb-3">
                         Phone Number
                       </label>
@@ -240,7 +260,7 @@ ${formData.additional_notes}`,
                         className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors placeholder-slate-400"
                         placeholder="+1 (555) 123-4567"
                       />
-                    </motion.div>
+                    </div>
                   </div>
 
                   {/* Project Details */}
@@ -274,7 +294,7 @@ ${formData.additional_notes}`,
                     transition={{ delay: 0.45 }}
                   >
                     <label className="block text-slate-300 text-sm font-medium mb-3">
-                      What is the main goal of this project? *
+                      What are your main project goals? *
                     </label>
                     <input
                       type="text"
@@ -282,7 +302,7 @@ ${formData.additional_notes}`,
                       value={formData.goals}
                       onChange={handleChange}
                       required
-                      placeholder="e.g. Generate leads, improve design, increase conversions..."
+                      placeholder="e.g. Generate more leads, improve brand presence, increase conversions, expand market reach..."
                       className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors placeholder-slate-400"
                     />
                   </motion.div>
