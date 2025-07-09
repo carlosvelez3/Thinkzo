@@ -480,8 +480,8 @@ export const logAdminAction = async (
 // Data validation utilities
 export const validateUserData = (userData: Partial<User>) => {
   const allowedFields = [
-    'email', 'full_name', 'role', 'avatar_url', 'phone', 
-    'company', 'job_title', 'bio', 'is_active', 'email_verified'
+    'email', 'full_name', 'role', 'phone', 
+    'company', 'job_title', 'bio'
   ];
   
   const validatedData: Partial<User> = {};
