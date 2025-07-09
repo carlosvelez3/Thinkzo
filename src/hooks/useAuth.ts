@@ -73,7 +73,14 @@ export const useAuth = () => {
       toast.success('Account created successfully! Please check your email to verify your account.');
       return { data, error: null };
     } catch (error: any) {
-      toast.error(error.message);
+      const errorMessage = error.message || 'An error occurred during sign up';
+      if (errorMessage.includes('already registered')) {
+        toast.error('This email is already registered. Please sign in instead.');
+      } else if (errorMessage.includes('Password should be')) {
+        toast.error('Password must be at least 6 characters long.');
+      } else {
+        toast.error(errorMessage);
+      }
       return { data: null, error };
     }
   };
@@ -90,7 +97,14 @@ export const useAuth = () => {
       toast.success('Signed in successfully!');
       return { data, error: null };
     } catch (error: any) {
-      toast.error(error.message);
+      const errorMessage = error.message || 'An error occurred during sign in';
+      if (errorMessage.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password. Please check your credentials and try again.');
+      } else if (errorMessage.includes('Email not confirmed')) {
+        toast.error('Please check your email and click the confirmation link before signing in.');
+      } else {
+        toast.error(errorMessage);
+      }
       return { data: null, error };
     }
   };
@@ -101,7 +115,7 @@ export const useAuth = () => {
       if (error) throw error;
       toast.success('Signed out successfully!');
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || 'An error occurred during sign out');
     }
   };
 
@@ -116,7 +130,12 @@ export const useAuth = () => {
       toast.success('Password reset email sent!');
       return { error: null };
     } catch (error: any) {
-      toast.error(error.message);
+      const errorMessage = error.message || 'An error occurred while sending reset email';
+      if (errorMessage.includes('User not found')) {
+        toast.error('No account found with this email address.');
+      } else {
+        toast.error(errorMessage);
+      }
       return { error };
     }
   };

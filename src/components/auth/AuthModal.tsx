@@ -62,6 +62,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setLoading(false);
     if (!error) {
       onClose();
+    } else {
+      // Reset form on error to allow retry
+      signInForm.setError('root', { 
+        type: 'manual', 
+        message: 'Please check your credentials and try again' 
+      });
     }
   };
 
@@ -71,6 +77,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setLoading(false);
     if (!error) {
       onClose();
+    } else {
+      // Reset form on error to allow retry
+      signUpForm.setError('root', { 
+        type: 'manual', 
+        message: 'Please check your information and try again' 
+      });
     }
   };
 
@@ -80,6 +92,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setLoading(false);
     if (!error) {
       setMode('signin');
+    } else {
+      // Reset form on error to allow retry
+      resetForm.setError('root', { 
+        type: 'manual', 
+        message: 'Please check your email and try again' 
+      });
     }
   };
 
@@ -189,6 +207,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
                 </button>
+
+                {signInForm.formState.errors.root && (
+                  <p className="text-red-400 text-sm text-center">{signInForm.formState.errors.root.message}</p>
+                )}
 
                 <div className="text-center space-y-2">
                   <button
@@ -302,6 +324,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                   {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
 
+                {signUpForm.formState.errors.root && (
+                  <p className="text-red-400 text-sm text-center">{signUpForm.formState.errors.root.message}</p>
+                )}
+
                 <div className="text-center">
                   <div className="text-slate-400 text-sm">
                     Already have an account?{' '}
@@ -345,6 +371,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 >
                   {loading ? 'Sending...' : 'Send Reset Email'}
                 </button>
+
+                {resetForm.formState.errors.root && (
+                  <p className="text-red-400 text-sm text-center">{resetForm.formState.errors.root.message}</p>
+                )}
 
                 <div className="text-center">
                   <button
