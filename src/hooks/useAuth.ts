@@ -21,6 +21,30 @@ export const useAuth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Check if user profile exists, if not create it
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!existingUser) {
+            // Create user profile after successful authentication
+            const { error: profileError } = await insertUser({
+              id: session.user.id,
+              email: session.user.email!,
+              full_name: session.user.user_metadata?.full_name || session.user.email!.split('@')[0],
+              role: 'user',
+            });
+
+            if (profileError) {
+              console.error('Failed to create user profile:', profileError);
+              toast.error('Failed to create user profile. Please contact support.');
+            }
+          }
+        }
+
         setUser(session?.user ?? null);
         setLoading(false);
       }
@@ -43,17 +67,8 @@ export const useAuth = () => {
 
       if (error) throw error;
 
-      // Insert user profile
-      if (data.user) {
-        const { error: profileError } = await insertUser({
-          id: data.user.id,
-          email: data.user.email!,
-          full_name: fullName,
-          role: 'user',
-        });
-
-        if (profileError) throw profileError;
-      }
+      // User profile will be created automatically via trigger or after email confirmation
+      // The insertUser function should be called after the user is properly authenticated
 
       toast.success('Account created successfully! Please check your email to verify your account.');
       return { data, error: null };
