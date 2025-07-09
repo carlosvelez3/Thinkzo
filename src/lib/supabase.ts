@@ -19,14 +19,9 @@ export interface User {
   email: string;
   full_name: string;
   role: 'user' | 'admin' | 'manager';
-  avatar_url?: string;
-  phone?: string;
+  bio?: string;
   company?: string;
   job_title?: string;
-  bio?: string;
-  is_active: boolean;
-  last_login?: string;
-  email_verified: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -204,10 +199,9 @@ export const insertUser = async (userData: {
   id: string;
   email: string;
   full_name: string;
-  phone?: string;
+  bio?: string;
   company?: string;
   job_title?: string;
-  bio?: string;
   role?: 'user' | 'admin' | 'manager';
 }) => {
   try {
@@ -218,10 +212,9 @@ export const insertUser = async (userData: {
         id: userData.id,
         email: userData.email,
         full_name: userData.full_name,
-        phone: userData.phone || null,
+        bio: userData.bio || null,
         company: userData.company || null,
         job_title: userData.job_title || null,
-        bio: userData.bio || null,
         role: userData.role || 'user'
       }])
       .select()
@@ -480,8 +473,8 @@ export const logAdminAction = async (
 // Data validation utilities
 export const validateUserData = (userData: Partial<User>) => {
   const allowedFields = [
-    'email', 'full_name', 'role', 'phone', 
-    'company', 'job_title', 'bio'
+    'email', 'full_name', 'role', 'bio', 
+    'company', 'job_title'
   ];
   
   const validatedData: Partial<User> = {};
