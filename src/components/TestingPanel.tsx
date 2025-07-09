@@ -4,8 +4,9 @@
  */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { TestTube, MessageCircle, Mail, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { TestTube, MessageCircle, Mail, CheckCircle, AlertTriangle, X, Users } from 'lucide-react';
 import { insertContact } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 interface TestingPanelProps {
@@ -17,6 +18,8 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
   const [activeTest, setActiveTest] = useState<'contact' | 'chat' | null>(null);
   const [testResults, setTestResults] = useState<Record<string, any>>({});
   const [testing, setTesting] = useState(false);
+  const [testEmail, setTestEmail] = useState(`test${Date.now()}@example.com`);
+  const [testPassword, setTestPassword] = useState('Test123!');
 
   const testContactForm = async () => {
     setTesting(true);
@@ -126,6 +129,145 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const testUserRegistration = async () => {
+    setTesting(true);
+    
+    try {
+      // Test user registration
+      const { data: { session } } = await supabase.auth.signUp({
+        email: testEmail,
+        password: testPassword,
+        options: {
+          data: {
+            full_name: 'Test User',
+          },
+        },
+      });
+      
+      if (!session) {
+        setTestResults(prev => ({
+          ...prev,
+          registration: {
+            success: true,
+            message: 'User registration successful! Check email for confirmation.',
+            data: { email: testEmail }
+          }
+        }));
+        
+        toast.success('User registration test passed!');
+      } else {
+        // User was auto-confirmed (development mode)
+        setTestResults(prev => ({
+          ...prev,
+          registration: {
+            success: true,
+            message: 'User registration and auto-confirmation successful!',
+            data: { email: testEmail, userId: session.user.id }
+          }
+        }));
+        
+        toast.success('User registration and auto-login test passed!');
+      }
+    } catch (error: any) {
+      setTestResults(prev => ({
+        ...prev,
+        registration: {
+          success: false,
+          message: error.message || 'User registration test failed',
+          error: error
+        }
+      }));
+
+      toast.error('User registration test failed');
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const testUserLogin = async () => {
+    setTesting(true);
+    
+    try {
+      // Test user login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: testEmail,
+        password: testPassword,
+      });
+
+      if (error) throw error;
+
+      setTestResults(prev => ({
+        ...prev,
+        login: {
+          success: true,
+          message: 'User login successful!',
+          data: { email: testEmail, userId: data.user?.id }
+        }
+      }));
+
+      toast.success('User login test passed!');
+    } catch (error: any) {
+      setTestResults(prev => ({
+        ...prev,
+        login: {
+          success: false,
+          message: error.message || 'User login test failed',
+          error: error
+        }
+      }));
+
+      toast.error('User login test failed');
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const testUserProfile = async () => {
+    setTesting(true);
+    
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+      
+      // Get user profile from users table
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      setTestResults(prev => ({
+        ...prev,
+        profile: {
+          success: true,
+          message: 'User profile retrieved successfully!',
+          data: profile
+        }
+      }));
+
+      toast.success('User profile test passed!');
+    } catch (error: any) {
+      setTestResults(prev => ({
+        ...prev,
+        profile: {
+          success: false,
+          message: error.message || 'User profile test failed',
+          error: error
+        }
+      }));
+
+      toast.error('User profile test failed');
+    } finally {
+      setTesting(false);
+    }
+  };
+
   const testSupabaseConnection = async () => {
     setTesting(true);
     
@@ -214,14 +356,14 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
           <h3 className="text-lg font-semibold text-white mb-4">Environment Variables</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${import.meta.env.VITE_SUPABASE_URL ? 'bg-green-400' : 'bg-red-400'}`} />
+              <div className={`w-3 h-3 rounded-full ${import.meta.env.VITE_SUPABASE_URL ? 'bg-green-400' : 'bg-red-400'}`}></div>
               <span className="text-slate-300">VITE_SUPABASE_URL</span>
               <span className="text-xs text-slate-500">
                 {import.meta.env.VITE_SUPABASE_URL ? '✓ Set' : '✗ Missing'}
               </span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${import.meta.env.VITE_SUPABASE_ANON_KEY ? 'bg-green-400' : 'bg-red-400'}`} />
+              <div className={`w-3 h-3 rounded-full ${import.meta.env.VITE_SUPABASE_ANON_KEY ? 'bg-green-400' : 'bg-red-400'}`}></div>
               <span className="text-slate-300">VITE_SUPABASE_ANON_KEY</span>
               <span className="text-xs text-slate-500">
                 {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing'}
@@ -231,7 +373,7 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Test Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -246,6 +388,76 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
             <span className="text-slate-400 text-sm text-center">Check database connection</span>
           </motion.button>
 
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={testUserRegistration}
+            disabled={testing}
+            className="flex flex-col items-center space-y-3 p-6 bg-slate-700/30 rounded-2xl hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+          >
+            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+              <Users className="text-emerald-400" size={24} />
+            </div>
+            <span className="text-white font-medium">Test Registration</span>
+            <span className="text-slate-400 text-sm text-center">Create test user account</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={testUserLogin}
+            disabled={testing}
+            className="flex flex-col items-center space-y-3 p-6 bg-slate-700/30 rounded-2xl hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+          >
+            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <Users className="text-blue-400" size={24} />
+            </div>
+            <span className="text-white font-medium">Test Login</span>
+            <span className="text-slate-400 text-sm text-center">Sign in with test account</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={testUserProfile}
+            disabled={testing}
+            className="flex flex-col items-center space-y-3 p-6 bg-slate-700/30 rounded-2xl hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+          >
+            <div className="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center">
+              <Users className="text-pink-400" size={24} />
+            </div>
+            <span className="text-white font-medium">Test User Profile</span>
+            <span className="text-slate-400 text-sm text-center">Verify user data in database</span>
+          </motion.button>
+        </div>
+
+        {/* Test Credentials */}
+        <div className="bg-slate-700/30 rounded-2xl p-6 mb-8">
+          <h3 className="text-lg font-semibold text-white mb-4">Test Credentials</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-slate-400 text-sm mb-2">Test Email</label>
+              <input
+                type="email"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                className="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-2 text-white text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 text-sm mb-2">Test Password</label>
+              <input
+                type="text"
+                value={testPassword}
+                onChange={(e) => setTestPassword(e.target.value)}
+                className="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-2 text-white text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Form Test */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -301,8 +513,17 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
                 <p className="text-slate-300 mb-2">{result.message}</p>
                 {result.response && (
                   <div className="bg-slate-800/50 rounded-lg p-3 mt-2">
-                    <p className="text-slate-400 text-sm">AI Response:</p>
+                    <p className="text-slate-400 text-sm">Response:</p>
                     <p className="text-slate-300 text-sm mt-1">{result.response.substring(0, 200)}...</p>
+                  </div>
+                )}
+                {result.data && (
+                  <div className="bg-slate-800/50 rounded-lg p-3 mt-2">
+                    <p className="text-slate-400 text-sm">Data:</p>
+                    <pre className="text-slate-300 text-sm mt-1 overflow-x-auto">
+                      {JSON.stringify(result.data, null, 2).substring(0, 300)}
+                      {JSON.stringify(result.data, null, 2).length > 300 ? '...' : ''}
+                    </pre>
                   </div>
                 )}
                 {result.error && (
@@ -321,7 +542,7 @@ const TestingPanel: React.FC<TestingPanelProps> = ({ isOpen, onClose }) => {
           <div className="text-center py-8">
             <div className="w-8 h-8 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-slate-400">
-              Testing {activeTest === 'contact' ? 'contact form' : activeTest === 'chat' ? 'AI chat' : 'connection'}...
+              Testing {activeTest === 'contact' ? 'contact form' : activeTest === 'chat' ? 'AI chat' : 'system'}...
             </p>
           </div>
         )}
