@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, insertUser } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 export const useAuth = () => {
@@ -45,16 +45,11 @@ export const useAuth = () => {
 
       // Insert user profile
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: data.user.email,
-              full_name: fullName,
-              role: 'user',
-            },
-          ]);
+        const { error: profileError } = await insertUser({
+          email: data.user.email!,
+          full_name: fullName,
+          role: 'user',
+        });
 
         if (profileError) throw profileError;
       }
