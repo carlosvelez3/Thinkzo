@@ -3,34 +3,44 @@ import { motion } from 'framer-motion';
 import { Twitter, Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 import Logo from './ui/Logo';
 import StartProjectModal from './StartProjectModal';
+import IntelligentBrandingModal from './modals/IntelligentBrandingModal';
+import NeuralWebsiteModal from './modals/NeuralWebsiteModal';
+import SmartMobileAppsModal from './modals/SmartMobileAppsModal';
+import NeuralMarketingModal from './modals/NeuralMarketingModal';
+import PerformanceAIModal from './modals/PerformanceAIModal';
 
 const Footer = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isBrandingModalOpen, setIsBrandingModalOpen] = React.useState(false);
+  const [isWebsiteModalOpen, setIsWebsiteModalOpen] = React.useState(false);
+  const [isMobileModalOpen, setIsMobileModalOpen] = React.useState(false);
+  const [isMarketingModalOpen, setIsMarketingModalOpen] = React.useState(false);
+  const [isPerformanceAIModalOpen, setIsPerformanceAIModalOpen] = React.useState(false);
 
   const footerLinks = {
     'Services': [
-      'Website Design',
-      'Web Development',
-      'Digital Marketing',
-      'Brand Identity',
-      'SEO Optimization',
-      'Analytics & Insights'
+      { name: 'Neural Website Design', action: () => setIsWebsiteModalOpen(true) },
+      { name: 'Intelligent Branding', action: () => setIsBrandingModalOpen(true) },
+      { name: 'Smart Mobile Apps', action: () => setIsMobileModalOpen(true) },
+      { name: 'Neural Marketing', action: () => setIsMarketingModalOpen(true) },
+      { name: 'Performance AI', action: () => setIsPerformanceAIModalOpen(true) },
+      { name: 'AI Consulting', action: () => setIsModalOpen(true) }
     ],
     'Company': [
-      'About Us',
-      'Our Team',
-      'Careers',
-      'Blog',
-      'Case Studies',
-      'Contact'
+      { name: 'About Us', action: null },
+      { name: 'Our Team', action: null },
+      { name: 'Careers', action: null },
+      { name: 'Blog', action: null },
+      { name: 'Case Studies', action: null },
+      { name: 'Contact', action: null }
     ],
     'Resources': [
-      'Design Process',
-      'Development Guide',
-      'Marketing Tips',
-      'Brand Guidelines',
-      'Free Consultation',
-      'Support Center'
+      { name: 'Design Process', action: null },
+      { name: 'Development Guide', action: null },
+      { name: 'Marketing Tips', action: null },
+      { name: 'Brand Guidelines', action: null },
+      { name: 'Free Consultation', action: () => setIsModalOpen(true) },
+      { name: 'Support Center', action: null }
     ]
   };
 
@@ -80,12 +90,21 @@ const Footer = () => {
               <ul className="space-y-3">
                 {links.map((link, index) => (
                   <li key={index}>
-                    <a
-                      href="#"
-                      className="text-slate-400 hover:text-white transition-colors text-sm"
-                    >
-                      {link}
-                    </a>
+                    {link.action ? (
+                      <button
+                        onClick={link.action}
+                        className="text-slate-400 hover:text-white transition-colors text-sm text-left"
+                      >
+                        {link.name}
+                      </button>
+                    ) : (
+                      <a
+                        href="#"
+                        className="text-slate-400 hover:text-white transition-colors text-sm"
+                      >
+                        {link.name}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -113,6 +132,38 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Start Project Modal */}
+      <StartProjectModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+
+      {/* Service Modals */}
+      <IntelligentBrandingModal 
+        isOpen={isBrandingModalOpen} 
+        onClose={() => setIsBrandingModalOpen(false)} 
+      />
+
+      <NeuralWebsiteModal 
+        isOpen={isWebsiteModalOpen} 
+        onClose={() => setIsWebsiteModalOpen(false)} 
+      />
+
+      <SmartMobileAppsModal 
+        isOpen={isMobileModalOpen} 
+        onClose={() => setIsMobileModalOpen(false)} 
+      />
+
+      <NeuralMarketingModal 
+        isOpen={isMarketingModalOpen} 
+        onClose={() => setIsMarketingModalOpen(false)} 
+      />
+
+      <PerformanceAIModal 
+        isOpen={isPerformanceAIModalOpen} 
+        onClose={() => setIsPerformanceAIModalOpen(false)} 
+      />
     </footer>
   );
 };
