@@ -8,6 +8,9 @@ import NeuralWebsiteModal from './modals/NeuralWebsiteModal';
 import SmartMobileAppsModal from './modals/SmartMobileAppsModal';
 import NeuralMarketingModal from './modals/NeuralMarketingModal';
 import PerformanceAIModal from './modals/PerformanceAIModal';
+import PrivacyPolicyModal from './modals/PrivacyPolicyModal';
+import TermsOfServiceModal from './modals/TermsOfServiceModal';
+import CookiePolicyModal from './modals/CookiePolicyModal';
 
 const Footer = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -16,6 +19,9 @@ const Footer = () => {
   const [isMobileModalOpen, setIsMobileModalOpen] = React.useState(false);
   const [isMarketingModalOpen, setIsMarketingModalOpen] = React.useState(false);
   const [isPerformanceAIModalOpen, setIsPerformanceAIModalOpen] = React.useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = React.useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
+  const [isCookieModalOpen, setIsCookieModalOpen] = React.useState(false);
 
   const footerLinks = {
     'Services': [
@@ -107,15 +113,24 @@ const Footer = () => {
             </div>
 
             <div className="flex items-center space-x-6 text-slate-400 text-sm">
-              <a href="#" className="hover:text-white transition-colors">
+              <button 
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="hover:text-white transition-colors"
+              >
                 Privacy Policy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
+              </button>
+              <button 
+                onClick={() => setIsTermsModalOpen(true)}
+                className="hover:text-white transition-colors"
+              >
                 Terms of Service
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
+              </button>
+              <button 
+                onClick={() => setIsCookieModalOpen(true)}
+                className="hover:text-white transition-colors"
+              >
                 Cookie Policy
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -151,6 +166,22 @@ const Footer = () => {
       <PerformanceAIModal 
         isOpen={isPerformanceAIModalOpen} 
         onClose={() => setIsPerformanceAIModalOpen(false)} 
+      />
+
+      {/* Legal Policy Modals */}
+      <PrivacyPolicyModal 
+        isOpen={isPrivacyModalOpen} 
+        onClose={() => setIsPrivacyModalOpen(false)} 
+      />
+
+      <TermsOfServiceModal 
+        isOpen={isTermsModalOpen} 
+        onClose={() => setIsTermsModalOpen(false)} 
+      />
+
+      <CookiePolicyModal 
+        isOpen={isCookieModalOpen} 
+        onClose={() => setIsCookieModalOpen(false)} 
       />
     </footer>
   );
