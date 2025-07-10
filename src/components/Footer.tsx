@@ -33,8 +33,7 @@ const Footer = () => {
       { name: 'AI Consulting', action: () => setIsModalOpen(true) }
     ],
     'Company': [
-      { name: 'About Us', action: null },
-      { name: 'Contact', action: null }
+      { name: 'About Us', action: null }
     ]
   };
 
