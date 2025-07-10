@@ -55,11 +55,19 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3 text-slate-400">
                 <Mail size={16} />
-                <span>team@thinkzo.ai</span>
+                <a href="mailto:team@thinkzo.ai" className="hover:text-white transition-colors">
+                  team@thinkzo.ai
+                </a>
               </div>
               <div className="flex items-center space-x-3 text-slate-400">
                 <Phone size={16} />
-                <span>+1 (555) 123-4567</span>
+                <a href="tel:8448446596" className="hover:text-white transition-colors">
+                  (844) 844-6596
+                </a>
+              </div>
+              <div className="flex items-center space-x-3 text-slate-400">
+                <MapPin size={16} />
+                <span>US Services Only</span>
               </div>
             </div>
 
