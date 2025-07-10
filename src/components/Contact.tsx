@@ -331,15 +331,6 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
-                    <MapPin className="text-purple-400" size={20} />
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold">Office</div>
-                    <div className="text-slate-400">{contactInfo.address}</div>
-                  </div>
-                </div>
               </div>
             </div>
 
