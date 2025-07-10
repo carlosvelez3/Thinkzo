@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Star, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, Star } from 'lucide-react';
 import { supabase, Service } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
