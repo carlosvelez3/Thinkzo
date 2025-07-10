@@ -327,7 +327,10 @@ const Contact = () => {
                   </div>
                   <div>
                     <div className="text-white font-semibold">Phone</div>
-                    <div className="text-slate-400">{contactInfo.phone}</div>
+                    <div className="text-slate-400">
+                      {contactInfo.phone}
+                      <div className="text-xs text-slate-500 mt-1">US services only</div>
+                    </div>
                   </div>
                 </div>
 
@@ -351,6 +354,11 @@ const Contact = () => {
                 <div className="flex items-center space-x-3">
                   <Send className="text-purple-400" size={20} />
                   <span className="text-slate-300">24/7 support available</span>
+                </div>
+                <div className="pt-2 border-t border-slate-700/50">
+                  <div className="text-slate-500 text-sm">
+                    * Currently serving US-based clients only
+                  </div>
                 </div>
               </div>
             </div>
