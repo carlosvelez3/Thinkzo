@@ -25,7 +25,7 @@ const Contact = () => {
   // Get contact info from CMS
   const contactInfo = getContentSection('contact_info')?.content || {
     email: 'team@thinkzo.ai',
-    phone: '+1 (555) 123-4567',
+    phone: '(844) 844-6596',
     address: '123 Design Street, Creative City, CC 12345',
     hours: 'Monday - Friday: 9AM - 6PM PST'
   };
