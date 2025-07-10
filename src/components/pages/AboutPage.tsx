@@ -48,7 +48,7 @@ const AboutPage = () => {
                 Thinkzo
               </span>
             </h1>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-100 max-w-3xl mx-auto leading-relaxed">
               We're a team of AI researchers, engineers, and designers on a mission to make 
               intelligent technology accessible to every business.
             </p>
@@ -68,10 +68,10 @@ const AboutPage = () => {
               <h2 className="text-4xl font-bold text-white mb-6">
                 {missionContent.title}
               </h2>
-              <p className="text-lg text-slate-300 mb-6 leading-relaxed">
+              <p className="text-lg text-slate-100 mb-6 leading-relaxed">
                 {missionContent.content}
               </p>
-              <p className="text-lg text-slate-300 leading-relaxed">
+              <p className="text-lg text-slate-100 leading-relaxed">
                 {missionContent.additionalContent}
               </p>
             </motion.div>
@@ -122,7 +122,7 @@ const AboutPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-white mb-6">Our Values</h2>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-200 max-w-3xl mx-auto">
               These core principles guide everything we do and shape how we build the future of AI.
             </p>
           </motion.div>
@@ -144,7 +144,7 @@ const AboutPage = () => {
                   <IconComponent className="text-purple-400" size={32} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4">{value.title}</h3>
-                <p className="text-slate-300 leading-relaxed">{value.description}</p>
+                <p className="text-slate-100 leading-relaxed">{value.description}</p>
               </motion.div>
             );
             })}
@@ -163,7 +163,7 @@ const AboutPage = () => {
               className="text-center mb-16"
             >
               <h2 className="text-4xl font-bold text-white mb-6">Meet Our Team</h2>
-              <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+              <p className="text-xl text-slate-200 max-w-3xl mx-auto">
                 The brilliant minds behind Thinkzo's neural-powered solutions.
               </p>
             </motion.div>
@@ -191,7 +191,7 @@ const AboutPage = () => {
 
                   <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
                   <div className="text-purple-400 font-medium mb-4">{member.role}</div>
-                  <p className="text-slate-300 text-sm leading-relaxed mb-6">{member.bio}</p>
+                  <p className="text-slate-100 text-sm leading-relaxed mb-6">{member.bio}</p>
 
                   <div className="flex justify-center space-x-3">
                     <a
@@ -232,7 +232,7 @@ const AboutPage = () => {
             <h2 className="text-3xl font-bold text-white mb-6">
               Ready to Join the Neural Revolution?
             </h2>
-            <p className="text-xl text-slate-300 mb-8">
+            <p className="text-xl text-slate-100 mb-8">
               Let's work together to build intelligent solutions that transform your business.
             </p>
             <motion.button

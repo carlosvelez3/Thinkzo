@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Star, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, Star } from 'lucide-react';
 import { supabase, Service } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -127,6 +127,7 @@ const ServicesPage = () => {
               </span>
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-100 max-w-3xl mx-auto leading-relaxed">
               Discover our comprehensive range of AI-powered solutions designed to transform your business.
             </p>
           </motion.div>
@@ -161,7 +162,7 @@ const ServicesPage = () => {
                   filter === category
                     ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border border-purple-500/20'
                     : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800/70 border border-slate-700/50'
-                className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 hover:bg-slate-700/90 transition-all duration-300 relative group shadow-xl"
+                }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
@@ -230,19 +231,13 @@ const ServicesPage = () => {
 
                   {/* Service Content */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-2xl font-bold text-white">{service.title}</h3>
-                      <div className="flex items-center space-x-1 text-purple-400">
-                        <DollarSign size={16} />
-                        <span className="font-semibold">{service.price}</span>
-                      </div>
-                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">{service.title}</h3>
                     
                     <div className="text-purple-400 text-sm font-medium mb-4 uppercase tracking-wide">
                       {service.category}
                     </div>
                     
-                    <p className="text-slate-300 leading-relaxed mb-6">
+                    <p className="text-slate-100 leading-relaxed mb-6">
                       {service.description}
                     </p>
                   </div>
@@ -254,7 +249,7 @@ const ServicesPage = () => {
                       {service.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
-                          <span className="text-slate-300 text-sm">{feature}</span>
+                          <span className="text-slate-100 text-sm">{feature}</span>
                         </li>
                       ))}
                     </ul>

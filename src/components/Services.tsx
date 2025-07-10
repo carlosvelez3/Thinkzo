@@ -71,6 +71,7 @@ const Services = () => {
               </span>
             </h2>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-100 max-w-3xl mx-auto">
               Harness the power of artificial intelligence to transform your business 
               with our cutting-edge neural solutions.
             </p>
@@ -98,6 +99,7 @@ const Services = () => {
                 </h3>
 
                 <p className="text-slate-300 mb-6 leading-relaxed">
+                <p className="text-slate-100 mb-6 leading-relaxed">
                   {service.description}
                 </p>
 
@@ -106,6 +108,7 @@ const Services = () => {
                     <li key={featureIndex} className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
                       <span className="text-slate-300 text-sm">{feature}</span>
+                      <span className="text-slate-100 text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -147,6 +150,7 @@ const Services = () => {
                 Ready to evolve your business?
               </h3>
               <p className="text-slate-300 mb-6">
+              <p className="text-slate-100 mb-6">
                 Let our neural networks analyze your needs and craft the perfect digital solution.
               </p>
               <motion.button
