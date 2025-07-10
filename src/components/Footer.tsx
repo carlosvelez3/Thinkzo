@@ -109,6 +109,16 @@ const Footer = () => {
                     )}
                   </li>
                 ))}
+                {category === 'Company' && (
+                  <li>
+                    <a
+                      href="mailto:team@thinkzo.ai"
+                      className="text-slate-400 hover:text-white transition-colors text-sm"
+                    >
+                      Contact Us
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
           ))}
