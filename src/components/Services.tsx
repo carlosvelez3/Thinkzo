@@ -84,7 +84,7 @@ const Services = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 hover:bg-slate-800/70 transition-all duration-300 group"
+                className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 hover:bg-slate-700/90 transition-all duration-300 group shadow-xl"
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
@@ -142,7 +142,7 @@ const Services = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-center mt-20"
           >
-            <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 max-w-2xl mx-auto">
+            <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 max-w-2xl mx-auto shadow-2xl">
               <h3 className="text-2xl font-bold text-white mb-4">
                 Ready to evolve your business?
               </h3>

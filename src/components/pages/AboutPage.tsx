@@ -32,7 +32,7 @@ const AboutPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-800 relative">
       {/* Hero Section */}
       <section className="pt-32 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
@@ -82,7 +82,7 @@ const AboutPage = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8">
+              <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 shadow-2xl">
                 <img
                   src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Team collaboration"
@@ -138,7 +138,7 @@ const AboutPage = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -10 }}
                 onClick={() => setIsModalOpen(true)}
-                className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 text-center hover:bg-slate-800/70 transition-all duration-300"
+                className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 text-center hover:bg-slate-700/90 transition-all duration-300 shadow-xl"
               >
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <IconComponent className="text-purple-400" size={32} />
@@ -176,7 +176,7 @@ const AboutPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ y: -10 }}
-                  className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 text-center hover:bg-slate-800/70 transition-all duration-300"
+                  className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 text-center hover:bg-slate-700/90 transition-all duration-300 shadow-xl"
                 >
                   <div className="relative mb-6">
                     <img
@@ -227,7 +227,7 @@ const AboutPage = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-12"
+            className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-12 shadow-2xl"
           >
             <h2 className="text-3xl font-bold text-white mb-6">
               Ready to Join the Neural Revolution?

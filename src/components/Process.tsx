@@ -87,7 +87,7 @@ const Process = () => {
 
                   <motion.div
                     whileHover={{ y: -10, scale: 1.02 }}
-                    className="bg-slate-800/20 backdrop-blur-xl border border-slate-700/20 rounded-3xl p-8 text-center hover:bg-slate-800/30 transition-all duration-300 mt-8 lg:mt-0"
+                    className="bg-slate-800/60 backdrop-blur-xl border border-slate-600/50 rounded-3xl p-8 text-center hover:bg-slate-700/80 transition-all duration-300 mt-8 lg:mt-0 shadow-xl"
                   >
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -126,7 +126,7 @@ const Process = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-center mt-20"
           >
-            <div className="bg-slate-800/20 backdrop-blur-xl border border-slate-700/20 rounded-3xl p-8 max-w-2xl mx-auto">
+            <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 max-w-2xl mx-auto shadow-2xl">
               <h3 className="text-2xl font-bold text-white mb-4">
                 Ready to build something intelligent?
               </h3>

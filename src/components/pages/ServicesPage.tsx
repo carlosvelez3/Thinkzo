@@ -110,7 +110,7 @@ const ServicesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-800 relative">
       {/* Hero Section */}
       <section className="pt-32 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
@@ -161,7 +161,7 @@ const ServicesPage = () => {
                   filter === category
                     ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border border-purple-500/20'
                     : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800/70 border border-slate-700/50'
-                }`}
+                className="bg-slate-800/80 backdrop-blur-xl border border-slate-600/60 rounded-3xl p-8 hover:bg-slate-700/90 transition-all duration-300 relative group shadow-xl"
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
