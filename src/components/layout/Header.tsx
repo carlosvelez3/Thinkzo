@@ -50,9 +50,9 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-slate-900/1 backdrop-blur-xl border border-slate-400/2 rounded-2xl shadow-2xl w-full max-w-4xl"
+        className="fixed top-6 left-0 right-0 z-50 flex justify-center px-6"
       >
-        <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-400/20 rounded-2xl shadow-2xl w-full max-w-6xl">
+        <div className="bg-slate-900/20 backdrop-blur-xl border border-slate-400/20 rounded-2xl shadow-2xl w-full max-w-6xl">
           <div className="flex items-center justify-between h-16 px-6">
             {/* Logo */}
             <motion.button
