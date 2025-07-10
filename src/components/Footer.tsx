@@ -28,19 +28,7 @@ const Footer = () => {
     ],
     'Company': [
       { name: 'About Us', action: null },
-      { name: 'Our Team', action: null },
-      { name: 'Careers', action: null },
-      { name: 'Blog', action: null },
-      { name: 'Case Studies', action: null },
       { name: 'Contact', action: null }
-    ],
-    'Resources': [
-      { name: 'Design Process', action: null },
-      { name: 'Development Guide', action: null },
-      { name: 'Marketing Tips', action: null },
-      { name: 'Brand Guidelines', action: null },
-      { name: 'Free Consultation', action: () => setIsModalOpen(true) },
-      { name: 'Support Center', action: null }
     ]
   };
 
