@@ -363,18 +363,6 @@ const Contact = () => {
               </div>
             </div>
 
-            <div className="text-center">
-              <div className="text-slate-400 mb-4">
-                Prefer to schedule a call?
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="border-2 border-purple-500/30 text-purple-400 px-8 py-3 rounded-full font-semibold hover:bg-purple-500/10 hover:text-white transition-all duration-300"
-              >
-                Book a Free Consultation
-              </motion.button>
-            </div>
           </motion.div>
         </div>
       </div>
