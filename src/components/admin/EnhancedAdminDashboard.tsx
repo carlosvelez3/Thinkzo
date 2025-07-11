@@ -30,6 +30,7 @@ import SystemHealthCheck from './SystemHealthCheck';
 import PublishReadinessCheck from './PublishReadinessCheck';
 import TestingPanel from '../TestingPanel';
 import LeadQualificationDashboard from './LeadQualificationDashboard';
+import ProposalGenerator from './ProposalGenerator';
 
 const EnhancedAdminDashboard = () => {
   const { user, signOut } = useAuth();
@@ -41,6 +42,7 @@ const EnhancedAdminDashboard = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'leads', label: 'Lead Qualification', icon: Target },
+    { id: 'proposals', label: 'Proposal Generator', icon: FolderOpen },
     { id: 'content', label: 'Content Editor', icon: Edit3 },
     { id: 'team', label: 'Team Management', icon: UserCheck },
     { id: 'navigation', label: 'Navigation', icon: Navigation },
@@ -249,6 +251,8 @@ const EnhancedAdminDashboard = () => {
           )}
 
           {activeTab === 'leads' && <LeadQualificationDashboard />}
+
+          {activeTab === 'proposals' && <ProposalGenerator />}
 
           {activeTab === 'content' && (
             <ContentEditor 
