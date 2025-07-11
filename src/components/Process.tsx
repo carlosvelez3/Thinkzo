@@ -73,47 +73,47 @@ const Process = () => {
                 (() => {
                   const IconComponent = iconMap[step.title] || MessageSquare;
                   return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="relative"
-                >
-                  {/* Step Number */}
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm z-10 hidden lg:flex">
-                    {index + 1}
-                  </div>
-
-                  <motion.div
-                    whileHover={{ y: -10, scale: 1.02 }}
-                    className="bg-slate-800/60 backdrop-blur-xl border border-slate-600/50 rounded-3xl p-8 text-center hover:bg-slate-700/80 transition-all duration-300 mt-8 lg:mt-0 shadow-xl"
-                  >
                     <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6"
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.2 }}
+                      className="relative"
                     >
-                      <IconComponent className="text-purple-400" size={32} />
+                      {/* Step Number */}
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm z-10 hidden lg:flex">
+                        {index + 1}
+                      </div>
+
+                      <motion.div
+                        whileHover={{ y: -10, scale: 1.02 }}
+                        className="bg-slate-800/60 backdrop-blur-xl border border-slate-600/50 rounded-3xl p-8 text-center hover:bg-slate-700/80 transition-all duration-300 mt-8 lg:mt-0 shadow-xl"
+                      >
+                        <motion.div
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6"
+                        >
+                          <IconComponent className="text-purple-400" size={32} />
+                        </motion.div>
+
+                        <h3 className="text-2xl font-bold text-white mb-4">
+                          {step.title}
+                        </h3>
+
+                        <p className="text-slate-300 mb-6 leading-relaxed">
+                          {step.description}
+                        </p>
+
+                        <ul className="space-y-2">
+                          {step.details.map((detail, detailIndex) => (
+                            <li key={detailIndex} className="flex items-center space-x-3">
+                              <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
+                              <span className="text-slate-300 text-sm">{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
                     </motion.div>
-
-                    <h3 className="text-2xl font-bold text-white mb-4">
-                      {step.title}
-                    </h3>
-
-                    <p className="text-slate-300 mb-6 leading-relaxed">
-                      {step.description}
-                    </p>
-
-                    <ul className="space-y-2">
-                      {step.details.map((detail, detailIndex) => (
-                        <li key={detailIndex} className="flex items-center space-x-3">
-                          <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
-                          <span className="text-slate-300 text-sm">{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                </motion.div>
                   );
                 })()
               ))}
@@ -132,6 +132,7 @@ const Process = () => {
               </h3>
               <p className="text-slate-300 mb-6">
                 Let our neural network assemble the perfect digital solution for your vision.
+              </p>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsModalOpen(true)}
