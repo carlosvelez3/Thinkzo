@@ -132,10 +132,9 @@ const Process = () => {
               </h3>
               <p className="text-slate-300 mb-6">
                 Let our neural network assemble the perfect digital solution for your vision.
-              </p>
               <motion.button
-                onClick={() => setIsModalOpen(true)}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/8 transition-all duration-300 backdrop-blur-xl border border-purple-500/20"
               >
                 Start Neural Assembly
