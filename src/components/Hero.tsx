@@ -262,14 +262,6 @@ const Hero = () => {
               <span>{heroContent.primaryButton}</span>
               <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
             </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="border-2 border-slate-600/30 text-slate-300 px-8 py-4 rounded-full text-lg font-semibold hover:bg-slate-800/30 hover:text-white transition-all duration-300"
-            >
-              {heroContent.secondaryButton}
-            </motion.button>
           </motion.div>
         </div>
 
