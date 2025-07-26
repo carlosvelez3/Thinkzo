@@ -60,8 +60,7 @@ export const useAuth = () => {
       
       try {
         if (window.hcaptcha) {
-          // Replace 'your-site-key' with your actual hCaptcha site key
-          captchaToken = await window.hcaptcha.execute('your-site-key');
+          captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY);
         }
       } catch (captchaError) {
         console.warn('hCaptcha execution failed:', captchaError);
