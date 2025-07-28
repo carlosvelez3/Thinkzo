@@ -55,18 +55,6 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      // Execute hCaptcha to get token
-      let captchaToken: string | undefined;
-      
-      try {
-        if (window.hcaptcha) {
-          captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY);
-        }
-      } catch (captchaError) {
-        console.warn('hCaptcha execution failed:', captchaError);
-        // Continue without captcha token - you may want to handle this differently
-      }
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -74,7 +62,6 @@ export const useAuth = () => {
           data: {
             full_name: fullName,
           },
-          ...(captchaToken && { captchaToken }),
         },
       });
 
