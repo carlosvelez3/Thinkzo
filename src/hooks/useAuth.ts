@@ -55,6 +55,11 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     if (!email.includes('@') || password.length < 6) {
+      alert("Enter a valid email and password of at least 6 characters.");
+      return;
+    }
+
+    if (!email.includes('@') || password.length < 6) {
       alert("Please enter a valid email and stronger password.");
       return;
     }
