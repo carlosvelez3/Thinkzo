@@ -54,6 +54,11 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
+    if (!email.includes('@') || password.length < 6) {
+      alert("Please enter a valid email and stronger password.");
+      return;
+    }
+
     try {
       // FIXED: Execute hCaptcha, handle failures, and pass token to Supabase
       let captchaToken: string | undefined;
