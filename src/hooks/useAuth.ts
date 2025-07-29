@@ -55,10 +55,27 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
+      // FIXED: Execute hCaptcha, handle failures, and pass token to Supabase
+      let captchaToken: string | undefined;
+
+      try {
+        if (window.hcaptcha && import.meta.env.VITE_HCAPTCHA_SITE_KEY) {
+          captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY, { async: true });
+          if (!captchaToken) throw new Error("Captcha token not returned");
+        } else {
+          throw new Error("hCaptcha not loaded or SITE_KEY missing");
+        }
+      } catch (err) {
+        console.error("❌ hCaptcha execution failed:", err);
+        toast.error("Captcha verification failed. Please refresh the page and try again.");
+        return { data: null, error: new Error("Captcha verification failed") };
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          captchaToken, // ✅ REQUIRED to prevent Supabase 500 errors
           data: {
             full_name: fullName,
           },
