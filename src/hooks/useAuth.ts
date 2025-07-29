@@ -60,26 +60,10 @@ export const useAuth = () => {
     }
 
     try {
-      // Optional hCaptcha verification - only if properly configured
-      let captchaToken: string | undefined;
-
-      try {
-        // Only attempt hCaptcha if both the script is loaded and site key is configured
-        if (window.hcaptcha && import.meta.env.VITE_HCAPTCHA_SITE_KEY && import.meta.env.VITE_HCAPTCHA_SITE_KEY !== 'your_hcaptcha_site_key_here') {
-          captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY, { async: true });
-          console.log('✅ hCaptcha verification successful');
-        }
-      } catch (err) {
-        console.warn("⚠️ hCaptcha verification skipped:", err);
-        // Continue without captcha - it's optional for development
-        captchaToken = undefined;
-      }
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          ...(captchaToken && { captchaToken }), // Only include if we have a valid token
           data: {
             full_name: fullName,
           },
