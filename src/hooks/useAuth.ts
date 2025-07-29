@@ -64,27 +64,15 @@ export const useAuth = () => {
       return { data: null, error: new Error("Invalid email or password too short") };
     }
 
+    // Note: hCaptcha verification disabled for development
+    // To enable: configure valid site key in hCaptcha dashboard for your domain
     let captchaToken: string | undefined;
-
-    try {
-      if (window.hcaptcha && import.meta.env.VITE_HCAPTCHA_SITE_KEY) {
-        captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY, { async: true });
-        if (!captchaToken) throw new Error("Captcha token was not returned.");
-      } else {
-        throw new Error("hCaptcha not available or SITE KEY missing.");
-      }
-    } catch (captchaError) {
-      console.error("Captcha error:", captchaError);
-      alert("⚠️ Captcha verification failed. Please refresh and try again.");
-      return { data: null, error: new Error("Captcha verification failed") };
-    }
 
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          captchaToken,
           data: {
             full_name: fullName,
           },
