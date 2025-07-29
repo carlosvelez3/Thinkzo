@@ -59,11 +59,27 @@ export const useAuth = () => {
       return;
     }
 
+    let captchaToken: string | undefined;
+
+    try {
+      if (window.hcaptcha && import.meta.env.VITE_HCAPTCHA_SITE_KEY) {
+        captchaToken = await window.hcaptcha.execute(import.meta.env.VITE_HCAPTCHA_SITE_KEY, { async: true });
+        if (!captchaToken) throw new Error("Captcha token was not returned.");
+      } else {
+        throw new Error("hCaptcha not available or SITE KEY missing.");
+      }
+    } catch (captchaError) {
+      console.error("Captcha error:", captchaError);
+      alert("⚠️ Captcha verification failed. Please refresh and try again.");
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          captchaToken,
           data: {
             full_name: fullName,
           },
@@ -71,7 +87,8 @@ export const useAuth = () => {
       });
 
       if (error) {
-        console.error("❌ Supabase signup error:", error);
+        console.error("Signup failed:", error);
+        alert("❌ Signup failed: " + error.message);
         throw error;
       }
 
