@@ -56,12 +56,12 @@ export const useAuth = () => {
   const signUp = async (email: string, password: string, fullName: string) => {
     if (!email.includes('@') || password.length < 6) {
       alert("Enter a valid email and password of at least 6 characters.");
-      return;
+      return { data: null, error: new Error("Invalid email or password too short") };
     }
 
     if (!email.includes('@') || password.length < 6) {
       alert("Please enter a valid email and stronger password.");
-      return;
+      return { data: null, error: new Error("Invalid email or password too short") };
     }
 
     let captchaToken: string | undefined;
@@ -76,7 +76,7 @@ export const useAuth = () => {
     } catch (captchaError) {
       console.error("Captcha error:", captchaError);
       alert("⚠️ Captcha verification failed. Please refresh and try again.");
-      return;
+      return { data: null, error: new Error("Captcha verification failed") };
     }
 
     try {
