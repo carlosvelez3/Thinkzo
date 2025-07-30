@@ -66,7 +66,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
       // Reset form on error to allow retry
       signInForm.setError('root', { 
         type: 'manual', 
-        message: 'Please check your credentials and try again' 
+        message: error.message || 'Invalid email or password. Please check your credentials and try again.' 
       });
     }
   };

@@ -107,7 +107,7 @@ export const useAuth = () => {
       return { data, error: null };
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred during sign in';
-      if (errorMessage.includes('Invalid login credentials')) {
+      if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('invalid_credentials')) {
         toast.error('Invalid email or password. Please check your credentials and try again.');
       } else if (errorMessage.includes('Email not confirmed')) {
         toast.error('Please check your email and click the confirmation link before signing in.');
