@@ -59,15 +59,6 @@ export const useAuth = () => {
       return { data: null, error: new Error("Invalid email or password too short") };
     }
 
-    if (!email.includes('@') || password.length < 6) {
-      alert("Please enter a valid email and stronger password.");
-      return { data: null, error: new Error("Invalid email or password too short") };
-    }
-
-    // Note: hCaptcha verification disabled for development
-    // To enable: configure valid site key in hCaptcha dashboard for your domain
-    let captchaToken: string | undefined;
-
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
