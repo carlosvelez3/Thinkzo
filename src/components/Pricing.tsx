@@ -9,19 +9,19 @@ const Pricing = () => {
 
   const pricingTiers = [
     {
-      name: 'Startup Bundle',
+      name: 'Starter Launchpad',
       description: 'Perfect for new businesses getting started',
       monthlyPrice: 99,
       yearlyPrice: 990,
-      originalPrice: 500,
+      originalPrice: 295,
+      monthlyPayment: 49,
+      setupFee: 25,
       features: [
-        '5-page responsive website',
-        'Basic AI features',
-        'Mobile optimization',
-        'SEO foundation',
-        'Contact form integration',
-        '1 month support',
-        'Basic analytics setup'
+        'Up to 3-Page AI Website',
+        'SSL + Mobile Ready',
+        'Contact Form',
+        'Hosting Setup',
+        'Ownership After 6 Months'
       ],
       color: 'blue',
       icon: Rocket,
@@ -155,21 +155,20 @@ const Pricing = () => {
                     <div className="flex-1 border-t border-slate-600"></div>
                   </div>
                   
-                  {/* Monthly/Yearly pricing */}
-                  <div className="flex items-baseline space-x-2 mb-2">
-                    <span className="text-4xl font-bold text-white">
-                      ${getPrice(tier)}
-                    </span>
-                    <span className="text-slate-400">
-                      /{billingCycle === 'monthly' ? 'month' : 'year'}
-                    </span>
-                  </div>
-                  
-                  {billingCycle === 'yearly' && (
-                    <div className="text-green-400 text-sm font-medium">
-                      Save ${getSavings(tier)} per year
+                  {/* Monthly pricing */}
+                  <div className="text-center">
+                    <div className="flex items-baseline justify-center space-x-2 mb-2">
+                      <span className="text-3xl font-bold text-white">
+                        ${tier.monthlyPayment || tier.monthlyPrice}
+                      </span>
+                      <span className="text-slate-400">/month</span>
                     </div>
-                  )}
+                    {tier.setupFee && (
+                      <div className="text-yellow-400 text-sm font-medium">
+                        + ${tier.setupFee} Setup Fee
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Features */}
