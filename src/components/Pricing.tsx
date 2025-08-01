@@ -50,18 +50,16 @@ const Pricing = () => {
     {
       name: 'Enterprise Neural Suite',
       description: 'Complete AI-powered business solution',
-      monthlyPrice: 299,
-      yearlyPrice: 2990,
-      originalPrice: 1850,
+      monthlyPrice: 179,
+      originalPrice: 995,
+      monthlyPayment: 179,
+      setupFee: 25,
       features: [
-        'Everything in Smart Business',
-        'Advanced AI integrations',
-        'Custom neural features',
-        'Multi-language support',
-        'Advanced security',
-        'Custom integrations',
-        '6 months maintenance',
-        'Dedicated account manager'
+        '10 Pages',
+        'AI Agent, SEO, Branding',
+        'Lead Capture',
+        'Hosting Setup',
+        'Ownership After 6 Months'
       ],
       color: 'emerald',
       icon: Zap,
