@@ -125,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                 <div className="flex items-center space-x-3">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    onClick={() => handleAuthClick('signin')}
+                    onClick={() => handleAuthClick('signup')}
                     className="text-white hover:text-purple-300 transition-colors"
                   >
                     Sign In
