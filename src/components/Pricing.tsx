@@ -30,18 +30,16 @@ const Pricing = () => {
     {
       name: 'Smart Business AI Bundle',
       description: 'Most popular - Everything you need to grow',
-      monthlyPrice: 149,
-      yearlyPrice: 1490,
-      originalPrice: 950,
+      monthlyPrice: 139,
+      yearlyPrice: 1390,
+      originalPrice: 695,
+      monthlyPayment: 139,
+      setupFee: 25,
       features: [
-        'Everything in Startup Bundle',
-        'AI chatbot integration',
-        'Performance monitoring',
-        'Booking system',
-        'Advanced analytics',
-        'E-commerce ready',
-        '3 months support',
-        'Priority support'
+        '3–5 Pages',
+        'SEO, Forms, Branding',
+        'Hosting Setup',
+        'Ownership After 6 Months'
       ],
       color: 'purple',
       icon: Brain,
