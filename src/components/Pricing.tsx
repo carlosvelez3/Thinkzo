@@ -98,35 +98,6 @@ const Pricing = () => {
             <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-8">
               Choose the perfect AI-powered solution for your business. All plans include our neural intelligence technology.
             </p>
-
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center space-x-4 mb-12">
-              <span className={`text-lg ${billingCycle === 'monthly' ? 'text-white' : 'text-slate-400'}`}>
-                Monthly
-              </span>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                className={`relative w-16 h-8 rounded-full transition-colors duration-300 ${
-                  billingCycle === 'yearly' ? 'bg-purple-500' : 'bg-slate-600'
-                }`}
-              >
-                <motion.div
-                  animate={{ x: billingCycle === 'yearly' ? 32 : 4 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
-                />
-              </motion.button>
-              <span className={`text-lg ${billingCycle === 'yearly' ? 'text-white' : 'text-slate-400'}`}>
-                Yearly
-              </span>
-              {billingCycle === 'yearly' && (
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">
-                  Save up to 20%
-                </span>
-              )}
-            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
