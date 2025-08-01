@@ -167,6 +167,24 @@ const Pricing = () => {
 
                 {/* Pricing */}
                 <div className="mb-8">
+                  {/* One-time pricing - prominently displayed */}
+                  <div className="text-center mb-4">
+                    <div className="text-4xl font-bold text-white mb-2">
+                      ${tier.originalPrice}
+                    </div>
+                    <div className="text-slate-400 text-lg">
+                      One-time payment
+                    </div>
+                  </div>
+                  
+                  {/* Divider */}
+                  <div className="flex items-center my-6">
+                    <div className="flex-1 border-t border-slate-600"></div>
+                    <span className="px-4 text-slate-400 text-sm">or</span>
+                    <div className="flex-1 border-t border-slate-600"></div>
+                  </div>
+                  
+                  {/* Monthly/Yearly pricing */}
                   <div className="flex items-baseline space-x-2 mb-2">
                     <span className="text-4xl font-bold text-white">
                       ${getPrice(tier)}
@@ -181,10 +199,6 @@ const Pricing = () => {
                       Save ${getSavings(tier)} per year
                     </div>
                   )}
-                  
-                  <div className="text-slate-500 text-sm mt-2">
-                    One-time option: ${tier.originalPrice}
-                  </div>
                 </div>
 
                 {/* Features */}
