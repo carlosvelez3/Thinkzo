@@ -3,10 +3,13 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Clock, Users } from 'lucide-react';
 import { useContent } from '../hooks/useContent';
 import { insertContact } from '../lib/supabase';
+import { validateContactForm, contactFormRateLimit } from '../lib/validation';
+import { useAccessibility } from '../hooks/useAccessibility';
 import toast from 'react-hot-toast';
 
 const Contact = () => {
   const { getContentSection } = useContent();
+  const { announceToScreenReader, useUniqueId } = useAccessibility();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +24,19 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  
+  // Generate unique IDs for form fields
+  const nameId = useUniqueId('contact-name');
+  const emailId = useUniqueId('contact-email');
+  const phoneId = useUniqueId('contact-phone');
+  const companyId = useUniqueId('contact-company');
+  const websiteId = useUniqueId('contact-website');
+  const serviceId = useUniqueId('contact-service');
+  const budgetId = useUniqueId('contact-budget');
+  const timelineId = useUniqueId('contact-timeline');
+  const subjectId = useUniqueId('contact-subject');
+  const messageId = useUniqueId('contact-message');
   
   // Get contact info from CMS
   const contactInfo = getContentSection('contact_info')?.content || {
@@ -39,16 +55,47 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear previous validation errors
+    setValidationErrors({});
+    
+    // Rate limiting check
+    const userKey = `${formData.email || 'anonymous'}-${Date.now()}`;
+    if (!contactFormRateLimit.isAllowed(userKey)) {
+      const remainingTime = Math.ceil(contactFormRateLimit.getRemainingTime(userKey) / 1000);
+      toast.error(`Please wait ${remainingTime} seconds before submitting again`);
+      return;
+    }
+    
+    // Validate and sanitize input
+    const validation = validateContactForm({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      company: formData.company,
+      website: formData.website,
+      message: formData.message,
+      subject: formData.subject
+    });
+    
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      announceToScreenReader('Please correct the form errors and try again');
+      toast.error('Please correct the form errors and try again');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
+      // Use sanitized data
       const contactData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        company: formData.company || undefined,
-        subject: formData.subject || `${formData.service} Inquiry`,
-        message: `Service: ${formData.service}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\nWebsite: ${formData.website}\n\n${formData.message}`,
+        name: validation.sanitized.name,
+        email: validation.sanitized.email,
+        phone: validation.sanitized.phone || undefined,
+        company: validation.sanitized.company || undefined,
+        subject: validation.sanitized.subject || `${formData.service} Inquiry`,
+        message: `Service: ${formData.service}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\nWebsite: ${validation.sanitized.website || ''}\n\n${validation.sanitized.message}`,
         contact_type: 'sales' as const,
         priority: 'high' as const,
         source: 'contact_form',
@@ -65,6 +112,7 @@ const Contact = () => {
 
       if (error) throw error;
 
+      announceToScreenReader('Message sent successfully! We will get back to you soon.');
       toast.success('Message sent successfully! We\'ll get back to you soon.');
       
       // Reset form
@@ -81,6 +129,7 @@ const Contact = () => {
         message: ''
       });
     } catch (error: any) {
+      announceToScreenReader('Failed to send message. Please try again.');
       toast.error('Failed to send message. Please try again.');
       console.error('Contact form error:', error);
     } finally {
@@ -123,88 +172,130 @@ const Contact = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={nameId} className="block text-slate-400 text-sm mb-2">
                     Full Name *
                   </label>
                   <input
+                    id={nameId}
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    aria-describedby={validationErrors.name ? `${nameId}-error` : undefined}
+                    aria-invalid={!!validationErrors.name}
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="John Doe"
                   />
+                  {validationErrors.name && (
+                    <div id={`${nameId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                      {validationErrors.name}
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={emailId} className="block text-slate-400 text-sm mb-2">
                     Email Address *
                   </label>
                   <input
+                    id={emailId}
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    aria-describedby={validationErrors.email ? `${emailId}-error` : undefined}
+                    aria-invalid={!!validationErrors.email}
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="john@example.com"
                   />
+                  {validationErrors.email && (
+                    <div id={`${emailId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                      {validationErrors.email}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={companyId} className="block text-slate-400 text-sm mb-2">
                     Company
                   </label>
                   <input
+                    id={companyId}
                     type="text"
                     name="company"
                     value={formData.company}
                     onChange={handleChange}
+                    aria-describedby={validationErrors.company ? `${companyId}-error` : undefined}
+                    aria-invalid={!!validationErrors.company}
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="Your Company"
                   />
+                  {validationErrors.company && (
+                    <div id={`${companyId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                      {validationErrors.company}
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={websiteId} className="block text-slate-400 text-sm mb-2">
                     Company Website
                   </label>
                   <input
+                    id={websiteId}
                     type="url"
                     name="website"
                     value={formData.website}
                     onChange={handleChange}
+                    aria-describedby={validationErrors.website ? `${websiteId}-error` : undefined}
+                    aria-invalid={!!validationErrors.website}
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="https://yourcompany.com"
                   />
+                  {validationErrors.website && (
+                    <div id={`${websiteId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                      {validationErrors.website}
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={phoneId} className="block text-slate-400 text-sm mb-2">
                     Phone Number
                   </label>
                   <input
+                    id={phoneId}
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    aria-describedby={validationErrors.phone ? `${phoneId}-error` : undefined}
+                    aria-invalid={!!validationErrors.phone}
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                     placeholder="+1 (555) 123-4567"
                   />
+                  {validationErrors.phone && (
+                    <div id={`${phoneId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                      {validationErrors.phone}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={serviceId} className="block text-slate-400 text-sm mb-2">
                     Service Needed
                   </label>
                   <select
+                    id={serviceId}
                     name="service"
                     value={formData.service}
                     onChange={handleChange}
+                    aria-label="Select the service you need"
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                   >
                     <option value="">Select a service</option>
@@ -218,13 +309,15 @@ const Contact = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 text-sm mb-2">
+                  <label htmlFor={budgetId} className="block text-slate-400 text-sm mb-2">
                     Budget Range
                   </label>
                   <select
+                    id={budgetId}
                     name="budget"
                     value={formData.budget}
                     onChange={handleChange}
+                    aria-label="Select your budget range"
                     className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                   >
                     <option value="">Select budget range</option>
@@ -238,13 +331,15 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 text-sm mb-2">
+                <label htmlFor={timelineId} className="block text-slate-400 text-sm mb-2">
                   Project Timeline
                 </label>
                 <select
+                  id={timelineId}
                   name="timeline"
                   value={formData.timeline}
                   onChange={handleChange}
+                  aria-label="Select your project timeline"
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                 >
                   <option value="">Select timeline</option>
@@ -257,32 +352,48 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 text-sm mb-2">
+                <label htmlFor={subjectId} className="block text-slate-400 text-sm mb-2">
                   Subject
                 </label>
                 <input
+                  id={subjectId}
                   type="text"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
+                  aria-describedby={validationErrors.subject ? `${subjectId}-error` : undefined}
+                  aria-invalid={!!validationErrors.subject}
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors"
                   placeholder="Project inquiry"
                 />
+                {validationErrors.subject && (
+                  <div id={`${subjectId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                    {validationErrors.subject}
+                  </div>
+                )}
               </div>
 
               <div>
-                <label className="block text-slate-400 text-sm mb-2">
+                <label htmlFor={messageId} className="block text-slate-400 text-sm mb-2">
                   Project Goals & Details *
                 </label>
                 <textarea
+                  id={messageId}
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   required
                   rows={5}
+                  aria-describedby={validationErrors.message ? `${messageId}-error` : undefined}
+                  aria-invalid={!!validationErrors.message}
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors resize-none"
                   placeholder="Describe your project goals, specific requirements, and what success looks like for your business..."
                 />
+                {validationErrors.message && (
+                  <div id={`${messageId}-error`} className="text-red-400 text-sm mt-1" role="alert">
+                    {validationErrors.message}
+                  </div>
+                )}
               </div>
 
               <motion.button
@@ -290,6 +401,7 @@ const Contact = () => {
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={isSubmitting}
+                aria-label={isSubmitting ? 'Sending your message, please wait' : 'Send your message to Thinkzo'}
                 className="w-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white py-4 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2 border border-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={20} />

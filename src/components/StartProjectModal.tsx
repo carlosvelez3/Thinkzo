@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
 import { insertContact } from '../lib/supabase';
+import { validateContactForm, contactFormRateLimit } from '../lib/validation';
+import { useAccessibility } from '../hooks/useAccessibility';
+import { handleFormError, logError } from '../lib/errorHandling';
 import toast from 'react-hot-toast';
 
 interface StartProjectModalProps {
@@ -10,6 +13,8 @@ interface StartProjectModalProps {
 }
 
 const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }) => {
+  const { useFocusTrap, announceToScreenReader } = useAccessibility();
+  const containerRef = useFocusTrap(isOpen);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,8 +30,18 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    // Clear validation error when user starts typing
+    if (validationErrors[e.target.name]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[e.target.name];
+        return newErrors;
+      });
+    }
+    
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -35,20 +50,50 @@ const StartProjectModal: React.FC<StartProjectModalProps> = ({ isOpen, onClose }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear previous validation errors
+    setValidationErrors({});
+    
+    // Rate limiting check
+    const userKey = `${formData.email || 'anonymous'}-project`;
+    if (!contactFormRateLimit.isAllowed(userKey)) {
+      const remainingTime = Math.ceil(contactFormRateLimit.getRemainingTime(userKey) / 1000);
+      toast.error(`Please wait ${remainingTime} seconds before submitting again`);
+      return;
+    }
+    
+    // Validate and sanitize input
+    const validation = validateContactForm({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      company: formData.company,
+      website: formData.website,
+      message: `${formData.goals}\n\nAdditional Notes: ${formData.additional_notes}`
+    });
+    
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      announceToScreenReader('Please correct the form errors and try again');
+      toast.error('Please correct the form errors and try again');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
+      // Use sanitized data
       const contactData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        company: formData.company || undefined,
+        name: validation.sanitized.name,
+        email: validation.sanitized.email,
+        phone: validation.sanitized.phone || undefined,
+        company: validation.sanitized.company || undefined,
         subject: `${formData.project_type} Project Inquiry`,
         message: `Project Type: ${formData.project_type}
 Goals: ${formData.goals}
 Timeline: ${formData.timeline}
 Budget: ${formData.budget}
-Website: ${formData.website}
+Website: ${validation.sanitized.website || ''}
 
 Additional Notes:
 ${formData.additional_notes}`,
@@ -69,6 +114,7 @@ ${formData.additional_notes}`,
       if (error) throw error;
 
       setIsSubmitted(true);
+      announceToScreenReader('Project submitted successfully! We will contact you within 24 hours.');
       toast.success('Project submitted successfully!');
       
       // Reset form after 3 seconds and close modal
@@ -89,7 +135,10 @@ ${formData.additional_notes}`,
         onClose();
       }, 3000);
     } catch (error: any) {
-      toast.error('Failed to submit project. Please try again.');
+      const errorMessage = handleFormError(error);
+      logError(error, 'StartProjectModal.handleSubmit');
+      announceToScreenReader(`Failed to submit project: ${errorMessage}`);
+      toast.error(errorMessage);
       console.error('Project submission error:', error);
     } finally {
       setIsSubmitting(false);
@@ -136,6 +185,10 @@ ${formData.additional_notes}`,
             transition={{ type: "spring", duration: 0.5 }}
             className="bg-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
+            ref={containerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
           >
             {/* Close Button */}
             <motion.button
@@ -143,6 +196,7 @@ ${formData.additional_notes}`,
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
               className="absolute top-6 right-6 w-10 h-10 bg-slate-700/50 hover:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300"
+              aria-label="Close project submission form"
             >
               <X size={20} />
             </motion.button>
@@ -160,7 +214,7 @@ ${formData.additional_notes}`,
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl flex items-center justify-center">
                       <Sparkles className="text-purple-400" size={24} />
                     </div>
-                    <h2 className="text-3xl font-bold text-white">
+                    <h2 id="modal-title" className="text-3xl font-bold text-white">
                       Start Your{' '}
                       <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                         Neural Project
@@ -192,7 +246,14 @@ ${formData.additional_notes}`,
                         required
                         className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-purple-500 focus:outline-none transition-colors placeholder-slate-400"
                         placeholder="John Doe"
+                        aria-describedby={validationErrors.name ? 'name-error' : undefined}
+                        aria-invalid={!!validationErrors.name}
                       />
+                      {validationErrors.name && (
+                        <div id="name-error" className="text-red-400 text-sm mt-1" role="alert">
+                          {validationErrors.name}
+                        </div>
+                      )}
                     </motion.div>
 
                     <motion.div

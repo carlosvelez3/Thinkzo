@@ -3,6 +3,8 @@
  * Handles database connections and authentication
  */
 import { createClient } from '@supabase/supabase-js';
+import { handleSupabaseError, withRetry, safeAsync } from './errorHandling';
+import { validateContactData } from './validation';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -242,31 +244,31 @@ export const insertContact = async (contactData: {
   source?: string;
   metadata?: Record<string, any>;
 }) => {
-  try {
+  // Validate data before sending
+  const validatedData = validateContactData(contactData);
+  
+  return await withRetry(async () => {
     const { data, error } = await supabase.rpc('safe_insert_contact', {
-      p_name: contactData.name,
-      p_email: contactData.email,
-      p_message: contactData.message,
-      p_phone: contactData.phone,
-      p_company: contactData.company,
-      p_subject: contactData.subject,
-      p_contact_type: contactData.contact_type,
-      p_priority: contactData.priority,
-      p_source: contactData.source,
-      p_metadata: contactData.metadata
+      p_name: validatedData.name,
+      p_email: validatedData.email,
+      p_message: validatedData.message,
+      p_phone: validatedData.phone,
+      p_company: validatedData.company,
+      p_subject: validatedData.subject,
+      p_contact_type: validatedData.contact_type,
+      p_priority: validatedData.priority,
+      p_source: validatedData.source,
+      p_metadata: validatedData.metadata
     });
 
-    if (error) throw error;
+    if (error) throw handleSupabaseError(error);
 
     if (!data.success) {
-      throw new Error(data.error);
+      throw handleSupabaseError({ message: data.error });
     }
 
     return { data: data.data, error: null };
-  } catch (error: any) {
-    console.error('Failed to insert contact:', error.message);
-    return { data: null, error };
-  }
+  }, 2);
 };
 
 // AI Lead Qualification function

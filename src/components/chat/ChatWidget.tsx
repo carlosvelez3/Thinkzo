@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2 } from 'lucide-react';
+import { chatRateLimit } from '../../lib/validation';
+import { useAccessibility } from '../../hooks/useAccessibility';
+import toast from 'react-hot-toast';
 
 interface Message {
   id: string;
@@ -24,6 +27,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const { announceToScreenReader, useFocusTrap } = useAccessibility();
+  const containerRef = useFocusTrap(isOpen && !isMinimized);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -53,6 +58,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
+
+    // Rate limiting check
+    const userKey = 'chat-user';
+    if (!chatRateLimit.isAllowed(userKey)) {
+      const remainingTime = Math.ceil(chatRateLimit.getRemainingTime(userKey) / 1000);
+      toast.error(`Please wait ${remainingTime} seconds before sending another message`);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -97,8 +110,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      announceToScreenReader('AI assistant has responded');
     } catch (error) {
       console.error('Chat error:', error);
+      announceToScreenReader('Error occurred while getting AI response');
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: 'Sorry, I\'m having trouble connecting right now. Please try again later or contact our team at team@thinkzo.ai.',
@@ -151,6 +166,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
             className={`${themeClasses} backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden mb-4`}
+            ref={containerRef}
+            role="dialog"
+            aria-label="AI Chat Assistant"
+            aria-modal={isOpen ? "true" : "false"}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
@@ -170,12 +189,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="p-1 text-slate-400 hover:text-white transition-colors"
+                  aria-label={isMinimized ? "Maximize chat window" : "Minimize chat window"}
                 >
                   {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-1 text-slate-400 hover:text-white transition-colors"
+                  aria-label="Close chat window"
                 >
                   <X size={16} />
                 </button>
@@ -185,7 +206,12 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
             {!isMinimized && (
               <>
                 {/* Messages */}
-                <div className="h-80 overflow-y-auto p-4 space-y-4">
+                <div 
+                  className="h-80 overflow-y-auto p-4 space-y-4"
+                  role="log"
+                  aria-label="Chat conversation"
+                  aria-live="polite"
+                >
                   {messages.map((message) => (
                     <motion.div
                       key={message.id}
@@ -259,12 +285,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
                       placeholder="Type your message..."
                       className="flex-1 bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-2 text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none transition-colors"
                       disabled={isLoading}
+                      aria-label="Type your message to the AI assistant"
                     />
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={sendMessage}
                       disabled={!inputValue.trim() || isLoading}
+                      aria-label={isLoading ? "Sending message, please wait" : "Send message to AI assistant"}
                       className="w-10 h-10 bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-500/20 rounded-xl flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send size={16} />
@@ -283,6 +311,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-purple-500/25 transition-all duration-300"
+        aria-label={isOpen ? "Close AI chat assistant" : "Open AI chat assistant"}
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
