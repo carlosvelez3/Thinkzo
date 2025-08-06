@@ -210,7 +210,6 @@ const Pricing: React.FC = () => {
                     ? 'bg-gradient-to-r from-purple-400/90 via-pink-400/90 to-cyan-400/90 hover:from-purple-500/90 hover:via-pink-500/90 hover:to-cyan-500/90 text-white transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 backdrop-blur-sm'
                     : 'bg-navy-800/90 hover:bg-navy-700/90 text-white border border-navy-600/90 hover:border-cyan-400/90 backdrop-blur-sm'
                 } ${loadingPlan === plan.name ? 'opacity-50 cursor-not-allowed' : ''}`}
-                }`}
               >
                 {loadingPlan === plan.name ? 'Processing...' : 
                  plan.name === 'Elite Automator' ? 'Get Custom Quote' : 'Get Started'}
