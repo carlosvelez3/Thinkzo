@@ -168,7 +168,7 @@ const Navigation: React.FC = () => {
                 About <span className="gradient-text">Thinkzo.ai</span>
               </h2>
               
-              <div className="text-lg text-gray-300 leading-relaxed font-light space-y-4">
+              <div className="text-lg text-gray-100 leading-relaxed font-normal space-y-4 text-center">
                 <p>
                   <strong className="text-white">ThinkZo.ai was built on a simple idea:</strong><br />
                   AI-powered websites should be smart, fast, and affordable.
@@ -210,7 +210,7 @@ const Navigation: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-400 text-center mt-4">
+                <p className="text-sm text-white font-bold text-center mt-4">
                   We accept major cryptocurrencies for secure and flexible payments
                 </p>
               </div>
