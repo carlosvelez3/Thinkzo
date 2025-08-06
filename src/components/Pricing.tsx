@@ -78,7 +78,7 @@ const Pricing: React.FC = () => {
 
   const handleChoosePlan = async (plan: typeof plans[0]) => {
     // Handle custom pricing plans via contact form
-    if (plan.name === 'Elite Automator' || !plan.stripePriceIds) {
+    if (plan.name === 'Elite Automator' || plan.name === 'Starter Launchpad' || plan.name === 'Growth Optimizer' || !plan.stripePriceIds) {
       scrollToContact();
       return;
     }
@@ -211,8 +211,7 @@ const Pricing: React.FC = () => {
                     : 'bg-navy-800/90 hover:bg-navy-700/90 text-white border border-navy-600/90 hover:border-cyan-400/90 backdrop-blur-sm'
                 } ${loadingPlan === plan.name ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loadingPlan === plan.name ? 'Processing...' : 
-                 plan.name === 'Elite Automator' ? 'Get Custom Quote' : 'Get Started'}
+                {loadingPlan === plan.name ? 'Processing...' : 'Get Started'}
               </button>
             </div>
           ))}
