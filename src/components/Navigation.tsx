@@ -158,13 +158,13 @@ const Navigation: React.FC = () => {
             </button>
             
             <div className="space-y-6">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
                   <Info className="w-6 h-6 text-white" />
                 </div>
               </div>
               
-              <h2 className="text-3xl font-bold font-poppins text-white mb-6 tracking-tight">
+              <h2 className="text-3xl font-bold font-poppins text-white mb-6 tracking-tight text-center">
                 About <span className="gradient-text">Thinkzo.ai</span>
               </h2>
               
