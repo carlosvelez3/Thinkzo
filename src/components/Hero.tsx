@@ -54,7 +54,6 @@ const Hero: React.FC = () => {
   };
   
   // Helper function to create traveling signals
-/
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const signal = document.createElement('div');
