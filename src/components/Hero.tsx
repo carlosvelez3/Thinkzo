@@ -54,9 +54,9 @@ const Hero: React.FC = () => {
   };
   
   // Helper function to create traveling signals
-// esleslint-disable-next-line @typetscript-eslint/no-explicit-any
+/
   
-  const createTravelingSignal = (startNeuron: any, endNeuron: any, container: HTMLElement) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const signal = document.createElement('div');
     
     signal.className = 'neural-signal';
