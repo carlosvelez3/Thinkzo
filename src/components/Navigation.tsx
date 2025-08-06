@@ -132,29 +132,35 @@ const Navigation: React.FC = () => {
               </button>
               <button
                 onClick={() => scrollToSection('contact')}
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Bitcoin (BTC)">
-                    ₿
-                  </div>
-        )}
-      </nav>
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Cardano (ADA)">
-                    ADA
-                  </div>
-          onClick={() => setIsAboutModalOpen(false)}
-        >
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="USD Coin (USDC)">
-                    USDC
-                  </div>
-          >
-            {/* Close Button */}
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Ethereum (ETH)">
-                    ETH
-                  </div>
+                className="text-gray-300 hover:text-cyan-400 block px-6 py-3 text-lg font-medium w-full text-left transition-all duration-300 rounded-xl bg-white/5 hover:bg-cyan-400/10 backdrop-blur-sm border border-white/10 hover:border-cyan-400/30"
+              >
+                Contact
               </button>
             </div>
-                  <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Binance Coin (BNB)">
-                    BNB
-                  </div>
+          </div>
+        )}
+      </nav>
+
+      {/* About Modal */}
+      {isAboutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setIsAboutModalOpen(false)}
+        >
+          <div className="relative bg-navy-900/95 backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-cyan-400/20 shadow-2xl shadow-cyan-500/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsAboutModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <X size={24} />
+            </button>
+            
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
+                  <Info className="w-6 h-6 text-white" />
                 </div>
               </div>
               
@@ -179,44 +185,29 @@ const Navigation: React.FC = () => {
                 </h3>
                 <div className="flex justify-center items-center flex-wrap gap-4">
                   <div className="flex items-center justify-center w-12 h-12 bg-orange-500/10 rounded-full border border-orange-500/20 hover:bg-orange-500/20 transition-all duration-300 group">
-                    <img 
-                      src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" 
-                      alt="Bitcoin (BTC)" 
-                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                      title="Bitcoin (BTC)"
-                    />
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Bitcoin (BTC)">
+                      ₿
+                    </div>
                   </div>
                   <div className="flex items-center justify-center w-12 h-12 bg-blue-500/10 rounded-full border border-blue-500/20 hover:bg-blue-500/20 transition-all duration-300 group">
-                    <img 
-                      src="https://cryptologos.cc/logos/cardano-ada-logo.svg" 
-                      alt="Cardano (ADA)" 
-                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                      title="Cardano (ADA)"
-                    />
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Cardano (ADA)">
+                      ADA
+                    </div>
                   </div>
                   <div className="flex items-center justify-center w-12 h-12 bg-blue-600/10 rounded-full border border-blue-600/20 hover:bg-blue-600/20 transition-all duration-300 group">
-                    <img 
-                      src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg" 
-                      alt="USD Coin (USDC)" 
-                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                      title="USD Coin (USDC)"
-                    />
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="USD Coin (USDC)">
+                      USDC
+                    </div>
                   </div>
                   <div className="flex items-center justify-center w-12 h-12 bg-purple-500/10 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-all duration-300 group">
-                    <img 
-                      src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" 
-                      alt="Ethereum (ETH)" 
-                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                      title="Ethereum (ETH)"
-                    />
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Ethereum (ETH)">
+                      ETH
+                    </div>
                   </div>
                   <div className="flex items-center justify-center w-12 h-12 bg-yellow-500/10 rounded-full border border-yellow-500/20 hover:bg-yellow-500/20 transition-all duration-300 group">
-                    <img 
-                      src="https://cryptologos.cc/logos/bnb-bnb-logo.svg" 
-                      alt="Binance Coin (BNB)" 
-                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                      title="Binance Coin (BNB)"
-                    />
+                    <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Binance Coin (BNB)">
+                      BNB
+                    </div>
                   </div>
                 </div>
                 <p className="text-sm text-gray-400 text-center mt-4">
