@@ -215,7 +215,7 @@ const Navigation: React.FC = () => {
                 </p>
               </div>
               
-              <div className="mt-8">
+              <div className="mt-8 text-center">
                 <button
                   onClick={() => setIsAboutModalOpen(false)}
                   className="btn-primary"
