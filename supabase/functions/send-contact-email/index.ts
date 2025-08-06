@@ -123,12 +123,12 @@ serve(async (req) => {
         status: 200,
       },
     )
-  } catch (error) {
-    console.error('❌ Error processing contact form:', error)
+  } catch (_error) {
+    console.error('❌ Error processing contact form:', _error)
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message,
+        error: _error instanceof Error ? _error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       }),
       {

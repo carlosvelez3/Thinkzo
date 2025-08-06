@@ -60,10 +60,10 @@ Deno.serve(async (req) => {
         status: 200,
       },
     )
-  } catch (error) {
-    console.error('Error creating checkout session:', error)
+  } catch (_error) {
+    console.error('Error creating checkout session:', _error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: _error instanceof Error ? _error.message : 'Unknown error' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,

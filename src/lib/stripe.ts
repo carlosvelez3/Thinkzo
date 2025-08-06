@@ -48,8 +48,8 @@ export const createCheckoutSession = async (priceId: string, planName: string) =
 
     // Redirect to Stripe Checkout
     window.location.href = url;
-  } catch (error) {
-    console.error('Error creating checkout session:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Error creating checkout session:', _error);
+    throw _error;
   }
 };

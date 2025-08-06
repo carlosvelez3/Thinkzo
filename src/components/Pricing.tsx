@@ -92,8 +92,8 @@ const Pricing: React.FC = () => {
         : plan.stripePriceIds.monthly;
       
       await createCheckoutSession(priceId, plan.name);
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
+    } catch (_error) {
+      console.error('Error creating checkout session:', _error);
       alert('There was an error processing your request. Please try again or contact us directly.');
     } finally {
       setLoadingPlan(null);
