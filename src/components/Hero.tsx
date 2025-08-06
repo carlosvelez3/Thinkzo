@@ -261,7 +261,18 @@ const Hero: React.FC = () => {
       
       {/* Floating Electric Brains */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(6)].map((_, index) => (
+        {[...Array(6)].map((_, index) => {
+          const colorSchemes = [
+            { brain: 'text-cyan-400/70', spark: 'bg-cyan-300', glow: 'rgba(34, 211, 238, 0.6)' },
+            { brain: 'text-purple-400/70', spark: 'bg-purple-300', glow: 'rgba(168, 85, 247, 0.6)' },
+            { brain: 'text-pink-400/70', spark: 'bg-pink-300', glow: 'rgba(244, 114, 182, 0.6)' },
+            { brain: 'text-emerald-400/70', spark: 'bg-emerald-300', glow: 'rgba(52, 211, 153, 0.6)' },
+            { brain: 'text-yellow-400/70', spark: 'bg-yellow-300', glow: 'rgba(251, 191, 36, 0.6)' },
+            { brain: 'text-indigo-400/70', spark: 'bg-indigo-300', glow: 'rgba(129, 140, 248, 0.6)' }
+          ];
+          const colorScheme = colorSchemes[index % colorSchemes.length];
+          
+          return (
           <div
             key={index}
             className="absolute animate-float-brain opacity-60"
@@ -275,10 +286,10 @@ const Hero: React.FC = () => {
             <div className="relative">
               <Brain 
                 size={24 + (index % 3) * 8} 
-                className="text-cyan-400/70 filter drop-shadow-lg animate-electric-pulse"
+                className={`${colorScheme.brain} filter drop-shadow-lg animate-electric-pulse`}
                 style={{
                   animationDelay: `${index * 0.8}s`,
-                  filter: `drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(6, 182, 212, 0.4))`
+                  filter: `drop-shadow(0 0 8px ${colorScheme.glow}) drop-shadow(0 0 16px ${colorScheme.glow})`
                 }}
               />
               {/* Electric sparks around brain */}
@@ -286,7 +297,7 @@ const Hero: React.FC = () => {
                 {[...Array(4)].map((_, sparkIndex) => (
                   <div
                     key={sparkIndex}
-                    className="absolute w-1 h-1 bg-cyan-300 rounded-full animate-electric-spark"
+                    className={`absolute w-1 h-1 ${colorScheme.spark} rounded-full animate-electric-spark`}
                     style={{
                       left: `${20 + sparkIndex * 15}%`,
                       top: `${15 + sparkIndex * 20}%`,
@@ -298,7 +309,7 @@ const Hero: React.FC = () => {
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
       
       {/* Mobile Fallback Background */}
