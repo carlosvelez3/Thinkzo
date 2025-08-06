@@ -202,4 +202,61 @@
   .animate-neural-connection-pulse {
     animation: neural-connection-pulse 4s ease-in-out infinite;
   }
+  
+  @keyframes float-brain {
+    0%, 100% { 
+      transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+    25% { 
+      transform: translateY(-15px) translateX(5px) rotate(2deg);
+    }
+    50% { 
+      transform: translateY(-8px) translateX(-3px) rotate(-1deg);
+    }
+    75% { 
+      transform: translateY(-20px) translateX(8px) rotate(3deg);
+    }
+  }
+  
+  @keyframes electric-pulse {
+    0%, 100% { 
+      filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(6, 182, 212, 0.4));
+      transform: scale(1);
+    }
+    50% { 
+      filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.8)) drop-shadow(0 0 24px rgba(6, 182, 212, 0.6)) drop-shadow(0 0 36px rgba(8, 145, 178, 0.4));
+      transform: scale(1.1);
+    }
+  }
+  
+  @keyframes electric-spark {
+    0%, 100% { 
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    25% { 
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: scale(0.8);
+    }
+    75% { 
+      opacity: 1;
+      transform: scale(1.5);
+    }
+  }
+  
+  .animate-float-brain {
+    animation: float-brain 6s ease-in-out infinite;
+  }
+  
+  .animate-electric-pulse {
+    animation: electric-pulse 3s ease-in-out infinite;
+  }
+  
+  .animate-electric-spark {
+    animation: electric-spark 2s ease-in-out infinite;
+  }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Brain } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -258,6 +258,48 @@ const Hero: React.FC = () => {
         ref={neuralNetworkRef}
         className="absolute inset-0 hidden md:block pointer-events-none"
       />
+      
+      {/* Floating Electric Brains */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(6)].map((_, index) => (
+          <div
+            key={index}
+            className="absolute animate-float-brain opacity-60"
+            style={{
+              left: `${10 + (index * 15)}%`,
+              top: `${20 + (index % 3) * 25}%`,
+              animationDelay: `${index * 1.2}s`,
+              animationDuration: `${4 + (index % 3)}s`
+            }}
+          >
+            <div className="relative">
+              <Brain 
+                size={24 + (index % 3) * 8} 
+                className="text-cyan-400/70 filter drop-shadow-lg animate-electric-pulse"
+                style={{
+                  animationDelay: `${index * 0.8}s`,
+                  filter: `drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(6, 182, 212, 0.4))`
+                }}
+              />
+              {/* Electric sparks around brain */}
+              <div className="absolute inset-0">
+                {[...Array(4)].map((_, sparkIndex) => (
+                  <div
+                    key={sparkIndex}
+                    className="absolute w-1 h-1 bg-cyan-300 rounded-full animate-electric-spark"
+                    style={{
+                      left: `${20 + sparkIndex * 15}%`,
+                      top: `${15 + sparkIndex * 20}%`,
+                      animationDelay: `${(index + sparkIndex) * 0.3}s`,
+                      boxShadow: '0 0 4px currentColor'
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       
       {/* Mobile Fallback Background */}
       <div className="absolute inset-0 md:hidden bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800" />
