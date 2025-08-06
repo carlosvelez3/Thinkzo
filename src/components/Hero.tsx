@@ -326,7 +326,7 @@ const Hero: React.FC = () => {
           </h1>
           
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-            ThinkZo.ai was built on a simple idea: AI-powered websites should be smart, fast, and affordable. We combine cutting-edge technology with budget-friendly solutions to help entrepreneurs, creators, and growing businesses thrive online—without paying enterprise prices.
+            Your gateway to AI-powered insights and automation. Build, deploy and scale intelligent applications without limits.
           </p>
           
           <div className="animate-slide-up">
