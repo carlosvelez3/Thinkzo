@@ -31,8 +31,8 @@ const Pricing: React.FC = () => {
       setupFee: '$25',
       popular: false,
       stripePriceIds: {
-        onetime: 'price_1QdVGJP123456789abcdef01', // Replace with your actual Stripe Price ID
-        monthly: 'price_1QdVGKP123456789abcdef02'   // Replace with your actual Stripe Price ID
+        onetime: 'price_1QdVGJP123456789abcdef01', // TODO: Replace with your actual Stripe Price ID
+        monthly: 'price_1QdVGKP123456789abcdef02'   // TODO: Replace with your actual Stripe Price ID
       }
     },
     {
@@ -52,8 +52,8 @@ const Pricing: React.FC = () => {
       setupFee: '$25',
       popular: true,
       stripePriceIds: {
-        onetime: 'price_1QdVGLP123456789abcdef03', // Replace with your actual Stripe Price ID
-        monthly: 'price_1QdVGMP123456789abcdef04'   // Replace with your actual Stripe Price ID
+        onetime: 'price_1QdVGLP123456789abcdef03', // TODO: Replace with your actual Stripe Price ID
+        monthly: 'price_1QdVGMP123456789abcdef04'   // TODO: Replace with your actual Stripe Price ID
       }
     },
     {
@@ -77,8 +77,27 @@ const Pricing: React.FC = () => {
   ];
 
   const handleChoosePlan = async (plan: typeof plans[0]) => {
-    // All plans now redirect to contact form
-    scrollToContact();
+    // Handle custom pricing plans via contact form
+    if (plan.name === 'Elite Automator' || !plan.stripePriceIds) {
+      scrollToContact();
+      return;
+    }
+
+    // Handle Stripe checkout for standard plans
+    try {
+      setLoadingPlan(plan.name);
+      
+      const priceId = billingType === 'onetime' 
+        ? plan.stripePriceIds.onetime 
+        : plan.stripePriceIds.monthly;
+      
+      await createCheckoutSession(priceId, plan.name);
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('There was an error processing your request. Please try again or contact us directly.');
+    } finally {
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -185,13 +204,16 @@ const Pricing: React.FC = () => {
 
               <button
                 onClick={() => handleChoosePlan(plan)}
+                disabled={loadingPlan === plan.name}
                 className={`w-full py-4 px-6 rounded-lg font-semibold transition-all duration-300 ${
                   plan.popular
                     ? 'bg-gradient-to-r from-purple-400/90 via-pink-400/90 to-cyan-400/90 hover:from-purple-500/90 hover:via-pink-500/90 hover:to-cyan-500/90 text-white transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 backdrop-blur-sm'
                     : 'bg-navy-800/90 hover:bg-navy-700/90 text-white border border-navy-600/90 hover:border-cyan-400/90 backdrop-blur-sm'
+                } ${loadingPlan === plan.name ? 'opacity-50 cursor-not-allowed' : ''}`}
                 }`}
               >
-                Get Started
+                {loadingPlan === plan.name ? 'Processing...' : 
+                 plan.name === 'Elite Automator' ? 'Get Custom Quote' : 'Get Started'}
               </button>
             </div>
           ))}
