@@ -187,6 +187,58 @@ const Navigation: React.FC = () => {
                 </p>
               </div>
               
+              {/* Crypto Payment Section */}
+              <div className="mt-8 pt-6 border-t border-navy-700/50">
+                <h3 className="text-xl font-semibold text-white mb-4 text-center">
+                  Accepted Cryptocurrencies
+                </h3>
+                <div className="flex justify-center items-center flex-wrap gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 bg-orange-500/10 rounded-full border border-orange-500/20 hover:bg-orange-500/20 transition-all duration-300 group">
+                    <img 
+                      src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" 
+                      alt="Bitcoin (BTC)" 
+                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
+                      title="Bitcoin (BTC)"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-500/10 rounded-full border border-blue-500/20 hover:bg-blue-500/20 transition-all duration-300 group">
+                    <img 
+                      src="https://cryptologos.cc/logos/cardano-ada-logo.svg" 
+                      alt="Cardano (ADA)" 
+                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
+                      title="Cardano (ADA)"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-600/10 rounded-full border border-blue-600/20 hover:bg-blue-600/20 transition-all duration-300 group">
+                    <img 
+                      src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg" 
+                      alt="USD Coin (USDC)" 
+                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
+                      title="USD Coin (USDC)"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center w-12 h-12 bg-purple-500/10 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-all duration-300 group">
+                    <img 
+                      src="https://cryptologos.cc/logos/ethereum-eth-logo.svg" 
+                      alt="Ethereum (ETH)" 
+                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
+                      title="Ethereum (ETH)"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center w-12 h-12 bg-yellow-500/10 rounded-full border border-yellow-500/20 hover:bg-yellow-500/20 transition-all duration-300 group">
+                    <img 
+                      src="https://cryptologos.cc/logos/bnb-bnb-logo.svg" 
+                      alt="Binance Coin (BNB)" 
+                      className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
+                      title="Binance Coin (BNB)"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400 text-center mt-4">
+                  We accept major cryptocurrencies for secure and flexible payments
+                </p>
+              </div>
+              
               <div className="mt-8">
                 <button
                   onClick={() => setIsAboutModalOpen(false)}
