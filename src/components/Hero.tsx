@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
   };
   
   // Helper function to create traveling signals
-/// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// esleslint-disable-next-line @typetscript-eslint/no-explicit-any
   
   const createTravelingSignal = (startNeuron: any, endNeuron: any, container: HTMLElement) => {
     const signal = document.createElement('div');
