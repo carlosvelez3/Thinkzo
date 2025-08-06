@@ -146,8 +146,8 @@ const Contact: React.FC = () => {
         setIsSubmitted(false);
       }, 5000);
       
-    } catch (error) {
-      console.error('❌ Form submission error:', error);
+    } catch (_error) {
+      console.error('❌ Form submission error:', _error);
       alert('There was an error submitting your form. Please try again or email us directly at team@thinkzo.ai');
     } finally {
       setIsLoading(false);

@@ -1,4 +1,3 @@
-```typescript
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Mail, Lock, UserPlus } from 'lucide-react';
@@ -37,7 +36,7 @@ const Signup: React.FC = () => {
         email,
         password,
         options: {
-          emailRedirectTo: \`${window.location.origin}/success-signup`, // You might want a dedicated success page
+          emailRedirectTo: `${window.location.origin}/success`,
         },
       });
 
@@ -59,8 +58,9 @@ const Signup: React.FC = () => {
         setPassword('');
         setConfirmPassword('');
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'An unexpected error occurred.' });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -133,4 +133,3 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
-```

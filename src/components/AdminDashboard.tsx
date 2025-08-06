@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Edit3, Save, X, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Edit3, Save, X, Eye, EyeOff } from 'lucide-react';
 
 interface ContentSection {
   id: string;
   section_key: string;
   title: string;
-  content: any;
+  content: unknown;
   is_published: boolean;
 }
 
 interface SiteSetting {
   id: string;
   setting_key: string;
-  setting_value: any;
+  setting_value: unknown;
   description: string;
 }
 
@@ -44,8 +44,8 @@ const AdminDashboard: React.FC = () => {
 
       setContentSections(sections || []);
       setSiteSettings(settings || []);
-    } catch (error) {
-      console.error('Error loading content:', error);
+    } catch (_error) {
+      console.error('Error loading content:', _error);
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,8 @@ const AdminDashboard: React.FC = () => {
         )
       );
       setEditingSection(null);
-    } catch (error) {
-      console.error('Error updating content section:', error);
+    } catch (_error) {
+      console.error('Error updating content section:', _error);
     }
   };
 
@@ -86,8 +86,8 @@ const AdminDashboard: React.FC = () => {
         )
       );
       setEditingSetting(null);
-    } catch (error) {
-      console.error('Error updating site setting:', error);
+    } catch (_error) {
+      console.error('Error updating site setting:', _error);
     }
   };
 
@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
                           setSiteSettings(prev =>
                             prev.map(s => s.id === setting.id ? { ...s, setting_value: newValue } : s)
                           );
-                        } catch (error) {
+                        } catch {} {
                           // Handle invalid JSON
                         }
                       }}
@@ -236,7 +236,7 @@ const AdminDashboard: React.FC = () => {
                           setContentSections(prev =>
                             prev.map(s => s.id === section.id ? { ...s, content: newContent } : s)
                           );
-                        } catch (error) {
+                        } catch {} {
                           // Handle invalid JSON
                         }
                       }}

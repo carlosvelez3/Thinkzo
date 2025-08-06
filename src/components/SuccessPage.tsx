@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, ArrowLeft, Mail, Download } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Mail } from 'lucide-react';
 
 const SuccessPage: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
