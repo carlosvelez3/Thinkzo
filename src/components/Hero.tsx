@@ -4,6 +4,7 @@ import { ArrowRight, Brain } from 'lucide-react';
 declare global {
   interface Window {
     VANTA: any;
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }
 }
 
@@ -13,6 +14,7 @@ const Hero: React.FC = () => {
   const neuralNetworkRef = useRef<HTMLDivElement>(null);
 
   // Helper function to create connections between neurons
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createConnection = (neuron1: any, neuron2: any, container: HTMLElement) => {
     const connection = document.createElement('div');
     const angle = Math.atan2(neuron2.y - neuron1.y, neuron2.x - neuron1.x);
@@ -26,6 +28,7 @@ const Hero: React.FC = () => {
       position: absolute;
       left: ${neuron1.x}px;
       top: ${neuron1.y}px;
+      
       width: ${length}px;
       height: 3px;
       background: linear-gradient(90deg, 
@@ -51,6 +54,8 @@ const Hero: React.FC = () => {
   };
   
   // Helper function to create traveling signals
+/// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  
   const createTravelingSignal = (startNeuron: any, endNeuron: any, container: HTMLElement) => {
     const signal = document.createElement('div');
     
@@ -74,6 +79,7 @@ const Hero: React.FC = () => {
       box-shadow: 
         0 0 15px #22d3ee,
         0 0 30px #06b6d4,
+        
         0 0 45px #0891b2;
       transform: translate(-4px, -4px);
     `;
