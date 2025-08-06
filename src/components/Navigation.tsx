@@ -132,44 +132,29 @@ const Navigation: React.FC = () => {
               </button>
               <button
                 onClick={() => scrollToSection('contact')}
-                className="text-gray-300 hover:text-cyan-400 block px-6 py-3 text-lg font-medium w-full text-left transition-all duration-300 rounded-xl bg-white/5 hover:bg-cyan-400/10 backdrop-blur-sm border border-white/10 hover:border-cyan-400/30"
-              >
-                Contact
-              </button>
-            </div>
-          </div>
+                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Bitcoin (BTC)">
+                    ₿
+                  </div>
         )}
       </nav>
-
-      {/* About Us Modal */}
-      {isAboutModalOpen && (
-        <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Cardano (ADA)">
+                    ADA
+                  </div>
           onClick={() => setIsAboutModalOpen(false)}
         >
-          <div 
-            className="bg-navy-800/95 backdrop-blur-md rounded-2xl p-8 max-w-2xl w-full border border-cyan-400/30 shadow-2xl transform animate-slide-up"
-            style={{
-              boxShadow: '0 0 50px rgba(34, 211, 238, 0.3), 0 20px 40px rgba(0, 0, 0, 0.5)'
-            }}
-            onClick={(e) => e.stopPropagation()}
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="USD Coin (USDC)">
+                    USDC
+                  </div>
           >
             {/* Close Button */}
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => setIsAboutModalOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:bg-navy-700/50 rounded-lg"
-              >
-                <X size={24} />
+                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Ethereum (ETH)">
+                    ETH
+                  </div>
               </button>
             </div>
-
-            {/* Modal Content */}
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-6">
-                <div className="bg-gradient-to-r from-purple-400/20 via-pink-400/20 to-cyan-400/20 p-4 rounded-full border border-cyan-400/30">
-                  <Info size={32} className="text-cyan-400" />
+                  <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xs group-hover:scale-110 transition-transform duration-300" title="Binance Coin (BNB)">
+                    BNB
+                  </div>
                 </div>
               </div>
               
