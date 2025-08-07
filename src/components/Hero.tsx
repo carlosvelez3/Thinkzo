@@ -131,6 +131,19 @@ const Hero: React.FC = () => {
       const y = Math.random() * (container.offsetHeight - 80) + 40;
       const size = 16 + Math.random() * 8; // Slightly larger to accommodate brain icon
       
+      // Define color schemes for different brain neurons
+      const colorSchemes = [
+        { color: '#22d3ee', glow: 'rgba(34, 211, 238, 0.6)' }, // Cyan
+        { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' }, // Purple
+        { color: '#f472b6', glow: 'rgba(244, 114, 182, 0.6)' }, // Pink
+        { color: '#34d399', glow: 'rgba(52, 211, 153, 0.6)' }, // Emerald
+        { color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.6)' }, // Yellow
+        { color: '#818cf8', glow: 'rgba(129, 140, 248, 0.6)' }, // Indigo
+        { color: '#fb7185', glow: 'rgba(251, 113, 133, 0.6)' }, // Rose
+        { color: '#06b6d4', glow: 'rgba(6, 182, 212, 0.6)' }    // Cyan-600
+      ];
+      const colorScheme = colorSchemes[i % colorSchemes.length];
+      
       neuron.className = 'neural-node';
       neuron.style.cssText = `
         left: ${x}px;
@@ -140,13 +153,15 @@ const Hero: React.FC = () => {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(34, 211, 238, 0.8);
+        color: ${colorScheme.color};
         box-shadow: 
-          0 0 15px rgba(34, 211, 238, 0.6),
-          0 0 30px rgba(6, 182, 212, 0.4),
-          0 0 45px rgba(8, 145, 178, 0.2);
-        animation-delay: ${Math.random() * 5}s;
-        filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6));
+          0 0 15px ${colorScheme.glow},
+          0 0 30px ${colorScheme.glow},
+          0 0 45px ${colorScheme.glow};
+        animation: neuron-pulse 5s ease-in-out infinite, brain-rotate 8s linear infinite;
+        animation-delay: ${Math.random() * 5}s, ${Math.random() * 8}s;
+        filter: drop-shadow(0 0 8px ${colorScheme.glow});
+        transform-origin: center;
       `;
       
       // Add brain icon to the neuron
@@ -167,6 +182,8 @@ const Hero: React.FC = () => {
       brainIcon.style.cssText = `
         pointer-events: none;
         opacity: 0.9;
+        animation: brain-pulse 3s ease-in-out infinite;
+        animation-delay: ${Math.random() * 3}s;
       `;
       
       neuron.appendChild(brainIcon);
