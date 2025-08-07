@@ -331,7 +331,7 @@ const Hero: React.FC = () => {
           </h1>
           
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-            Your gateway to AI-powered insights and automation. Build, deploy and scale intelligent applications without limits.
+            <span className="font-semibold text-white">Unleash AI-powered insights and automation.</span> Build, deploy and scale intelligent applications <span className="font-bold text-cyan-300">without limits.</span>
           </p>
           
           <div className="animate-slide-up">
