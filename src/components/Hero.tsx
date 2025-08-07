@@ -30,26 +30,24 @@ const Hero: React.FC = () => {
       top: ${neuron1.y}px;
       
       width: ${length}px;
-      height: 4px;
+      height: 2px;
       background: linear-gradient(90deg, 
-        rgba(34, 211, 238, 0.2) 0%, 
-        rgba(34, 211, 238, 1) 20%,
-        rgba(255, 255, 255, 1) 40%,
-        rgba(6, 182, 212, 1) 60%,
-        rgba(34, 211, 238, 1) 80%,
-        rgba(34, 211, 238, 0.2) 100%);
+        rgba(34, 211, 238, 0.1) 0%, 
+        rgba(34, 211, 238, 0.4) 20%,
+        rgba(34, 211, 238, 0.6) 40%,
+        rgba(6, 182, 212, 0.4) 60%,
+        rgba(34, 211, 238, 0.4) 80%,
+        rgba(34, 211, 238, 0.1) 100%);
       transform-origin: 0 50%;
       transform: rotate(${angle}rad);
       pointer-events: none;
       z-index: 2;
-      border-radius: 2px;
+      border-radius: 1px;
       box-shadow: 
-        0 0 15px rgba(34, 211, 238, 0.8),
-        0 0 30px rgba(6, 182, 212, 0.6),
-        0 0 45px rgba(14, 116, 144, 0.4),
-        inset 0 0 10px rgba(255, 255, 255, 0.3);
-      animation: electric-connection-pulse 2s ease-in-out infinite, electric-flicker 0.5s ease-in-out infinite;
-      animation-delay: ${Math.random() * 4}s;
+        0 0 4px rgba(34, 211, 238, 0.3),
+        0 0 8px rgba(6, 182, 212, 0.2);
+      animation: electric-connection-pulse 6s ease-in-out infinite;
+      animation-delay: ${Math.random() * 8}s;
     `;
     
     container.appendChild(connection);
@@ -65,26 +63,22 @@ const Hero: React.FC = () => {
       position: absolute;
       left: ${startNeuron.x}px;
       top: ${startNeuron.y}px;
-      width: 12px;
-      height: 12px;
+      width: 8px;
+      height: 8px;
       background: radial-gradient(circle, 
-        #ffffff 0%,
-        #ffffff 10%, 
-        #22d3ee 30%, 
-        #06b6d4 50%, 
-        #0891b2 70%, 
-        rgba(34, 211, 238, 0.9) 90%,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(34, 211, 238, 0.6) 30%, 
+        rgba(6, 182, 212, 0.4) 60%, 
+        rgba(34, 211, 238, 0.2) 80%, 
         transparent 100%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 4;
       box-shadow: 
-        0 0 20px #ffffff,
-        0 0 40px #22d3ee,
-        0 0 60px #06b6d4,
-        0 0 80px #0891b2;
-      transform: translate(-6px, -6px);
-      animation: signal-energy-pulse 0.3s ease-in-out infinite;
+        0 0 6px rgba(34, 211, 238, 0.4),
+        0 0 12px rgba(6, 182, 212, 0.3);
+      transform: translate(-4px, -4px);
+      animation: signal-energy-pulse 1s ease-in-out infinite;
     `;
     
     container.appendChild(signal);
@@ -94,23 +88,23 @@ const Hero: React.FC = () => {
       Math.pow(endNeuron.x - startNeuron.x, 2) + 
       Math.pow(endNeuron.y - startNeuron.y, 2)
     );
-    const duration = Math.max(0.8, distance / 200);
+    const duration = Math.max(1.2, distance / 150);
     
-    signal.style.transition = `all ${duration}s cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
+    signal.style.transition = `all ${duration}s ease-out`;
     
     setTimeout(() => {
       signal.style.left = endNeuron.x + 'px';
       signal.style.top = endNeuron.y + 'px';
-      signal.style.transform = 'translate(-6px, -6px) scale(3)';
-      signal.style.filter = 'brightness(3) saturate(2)';
+      signal.style.transform = 'translate(-4px, -4px) scale(1.5)';
+      signal.style.filter = 'brightness(1.5)';
       
       // Enhanced destination neuron activation
-      endNeuron.element.style.animation = 'electric-neuron-activate 0.8s ease-out';
-      endNeuron.element.style.filter = 'brightness(3) saturate(2) contrast(1.5)';
+      endNeuron.element.style.animation = 'electric-neuron-activate 1s ease-out';
+      endNeuron.element.style.filter = 'brightness(1.5) saturate(1.5)';
       
       setTimeout(() => {
         signal.remove();
-        endNeuron.element.style.animation = 'electric-neuron-pulse 2s ease-in-out infinite, brain-rotate 8s linear infinite';
+        endNeuron.element.style.animation = 'electric-neuron-pulse 4s ease-in-out infinite, brain-rotate 12s linear infinite';
         endNeuron.element.style.filter = 'brightness(1)';
       }, duration * 1000);
     }, 100);
@@ -129,22 +123,20 @@ const Hero: React.FC = () => {
     const neurons: Array<{ x: number; y: number; element: HTMLElement }> = [];
     
     // Create enhanced brain neurons
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 10; i++) {
       const neuron = document.createElement('div');
       const x = Math.random() * (container.offsetWidth - 80) + 40;
       const y = Math.random() * (container.offsetHeight - 80) + 40;
-      const size = 20 + Math.random() * 12; // Larger for more energy
+      const size = 16 + Math.random() * 8; // Smaller for less distraction
       
       // Define color schemes for different brain neurons
       const colorSchemes = [
-        { color: '#00ffff', glow: 'rgba(0, 255, 255, 0.9)' }, // Electric Cyan
-        { color: '#ff00ff', glow: 'rgba(255, 0, 255, 0.9)' }, // Electric Magenta
-        { color: '#ffff00', glow: 'rgba(255, 255, 0, 0.9)' }, // Electric Yellow
-        { color: '#00ff00', glow: 'rgba(0, 255, 0, 0.9)' }, // Electric Green
-        { color: '#ff6600', glow: 'rgba(255, 102, 0, 0.9)' }, // Electric Orange
-        { color: '#6600ff', glow: 'rgba(102, 0, 255, 0.9)' }, // Electric Purple
-        { color: '#ff0066', glow: 'rgba(255, 0, 102, 0.9)' }, // Electric Pink
-        { color: '#ffffff', glow: 'rgba(255, 255, 255, 0.9)' }  // Electric White
+        { color: '#22d3ee', glow: 'rgba(34, 211, 238, 0.4)' }, // Softer Cyan
+        { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.4)' }, // Softer Purple
+        { color: '#f472b6', glow: 'rgba(244, 114, 182, 0.4)' }, // Softer Pink
+        { color: '#34d399', glow: 'rgba(52, 211, 153, 0.4)' }, // Softer Green
+        { color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.4)' }, // Softer Yellow
+        { color: '#818cf8', glow: 'rgba(129, 140, 248, 0.4)' }, // Softer Indigo
       ];
       const colorScheme = colorSchemes[i % colorSchemes.length];
       
@@ -159,14 +151,11 @@ const Hero: React.FC = () => {
         justify-content: center;
         color: ${colorScheme.color};
         box-shadow: 
-          0 0 20px ${colorScheme.glow},
-          0 0 40px ${colorScheme.glow},
-          0 0 60px ${colorScheme.glow},
-          0 0 80px ${colorScheme.glow},
-          inset 0 0 10px rgba(255, 255, 255, 0.3);
-        animation: electric-neuron-pulse 2s ease-in-out infinite, brain-rotate 6s linear infinite, electric-flicker 0.8s ease-in-out infinite;
-        animation-delay: ${Math.random() * 5}s, ${Math.random() * 8}s;
-        filter: drop-shadow(0 0 15px ${colorScheme.glow}) brightness(1.2) saturate(1.5);
+          0 0 8px ${colorScheme.glow},
+          0 0 16px ${colorScheme.glow};
+        animation: electric-neuron-pulse 4s ease-in-out infinite, brain-rotate 12s linear infinite;
+        animation-delay: ${Math.random() * 8}s, ${Math.random() * 12}s;
+        filter: drop-shadow(0 0 6px ${colorScheme.glow}) brightness(1) saturate(1.2);
         transform-origin: center;
       `;
       
@@ -188,8 +177,8 @@ const Hero: React.FC = () => {
       brainIcon.style.cssText = `
         pointer-events: none;
         opacity: 1;
-        animation: brain-pulse 1.5s ease-in-out infinite, electric-shimmer 2s ease-in-out infinite;
-        animation-delay: ${Math.random() * 3}s;
+        animation: brain-pulse 3s ease-in-out infinite;
+        animation-delay: ${Math.random() * 6}s;
         filter: drop-shadow(0 0 5px currentColor);
       `;
       
@@ -209,7 +198,7 @@ const Hero: React.FC = () => {
           
           // Enhanced connection logic with distance-based probability
           const connectionProbability = Math.max(0, 1 - (distance / 200));
-          if (distance < 200 && Math.random() < connectionProbability * 0.6) {
+          if (distance < 180 && Math.random() < connectionProbability * 0.4) {
             createConnection(neuron1, neuron2, container);
           }
         }
@@ -218,14 +207,14 @@ const Hero: React.FC = () => {
     
     // Enhanced signal generation system
     const createSignalLoop = () => {
-      if (Math.random() > 0.1) { // 90% chance to create signal - much more active
+      if (Math.random() > 0.4) { // 60% chance to create signal - more moderate
         const startNeuron = neurons[Math.floor(Math.random() * neurons.length)];
         const nearbyNeurons = neurons.filter(n => {
           const distance = Math.sqrt(
             Math.pow(startNeuron.x - n.x, 2) + 
             Math.pow(startNeuron.y - n.y, 2)
           );
-          return distance < 200 && n !== startNeuron;
+          return distance < 180 && n !== startNeuron;
         });
         
         if (nearbyNeurons.length > 0) {
@@ -235,7 +224,7 @@ const Hero: React.FC = () => {
       }
       
       // More frequent signal generation
-      setTimeout(createSignalLoop, 300 + Math.random() * 600);
+      setTimeout(createSignalLoop, 800 + Math.random() * 1200);
     };
     
     // Start the enhanced signal system
