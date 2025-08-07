@@ -124,12 +124,12 @@ const Hero: React.FC = () => {
     
     const neurons: Array<{ x: number; y: number; element: HTMLElement }> = [];
     
-    // Create enhanced neurons
+    // Create enhanced brain neurons
     for (let i = 0; i < 15; i++) {
       const neuron = document.createElement('div');
       const x = Math.random() * (container.offsetWidth - 80) + 40;
       const y = Math.random() * (container.offsetHeight - 80) + 40;
-      const size = 8 + Math.random() * 12;
+      const size = 16 + Math.random() * 8; // Slightly larger to accommodate brain icon
       
       neuron.className = 'neural-node';
       neuron.style.cssText = `
@@ -137,19 +137,39 @@ const Hero: React.FC = () => {
         top: ${y}px;
         width: ${size}px;
         height: ${size}px;
-        background: radial-gradient(circle, 
-          rgba(255, 255, 255, 0.9) 0%, 
-          rgba(34, 211, 238, 0.8) 20%, 
-          rgba(6, 182, 212, 0.6) 50%, 
-          rgba(8, 145, 178, 0.4) 80%, 
-          transparent 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(34, 211, 238, 0.8);
         box-shadow: 
           0 0 15px rgba(34, 211, 238, 0.6),
           0 0 30px rgba(6, 182, 212, 0.4),
           0 0 45px rgba(8, 145, 178, 0.2);
         animation-delay: ${Math.random() * 5}s;
+        filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6));
       `;
       
+      // Add brain icon to the neuron
+      const brainIcon = document.createElement('div');
+      brainIcon.innerHTML = `
+        <svg width="${size * 0.7}" height="${size * 0.7}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+          <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+          <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+          <path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/>
+          <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/>
+          <path d="M3.477 10.896a4 4 0 0 1 .585-.396"/>
+          <path d="M19.938 10.5a4 4 0 0 1 .585.396"/>
+          <path d="M6 18a4 4 0 0 1-1.967-.516"/>
+          <path d="M19.967 17.484A4 4 0 0 1 18 18"/>
+        </svg>
+      `;
+      brainIcon.style.cssText = `
+        pointer-events: none;
+        opacity: 0.9;
+      `;
+      
+      neuron.appendChild(brainIcon);
       container.appendChild(neuron);
       neurons.push({ x: x + size/2, y: y + size/2, element: neuron });
     }
