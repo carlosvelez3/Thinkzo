@@ -28,160 +28,276 @@ const Hero: React.FC = () => {
     window.addEventListener('resize', resizeCanvas);
 
     let time = 0;
+    const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+    const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
 
-    // Network parameters
-    const numNodes = 70;
-    const connectionDistance = 200; // Max distance for nodes to connect
-    const nodeColors = [
-      '#22d3ee', // cyan-400
-      '#a855f7', // purple-400
-      '#ec4899', // pink-500
-      '#34d399', // emerald-400
-      '#facc15', // yellow-400
-    ];
-
-    interface Node {
+    // City lights (nodes) representing major cities
+    interface CityLight {
       x: number;
       y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      color: string;
+      size: number;
+      brightness: number;
       pulseOffset: number;
+      color: string;
       connections: number[];
     }
 
-    interface Particle {
+    // Digital stream particles flowing between cities
+    interface StreamParticle {
       x: number;
       y: number;
-      vx: number;
-      vy: number;
-      life: number;
-      maxLife: number;
+      targetX: number;
+      targetY: number;
+      progress: number;
+      speed: number;
       color: string;
       size: number;
+      trail: { x: number; y: number; alpha: number }[];
     }
 
-    const nodes: Node[] = [];
-    const particles: Particle[] = [];
+    const cityColors = [
+      '#22d3ee', // cyan-400
+      '#a855f7', // purple-500
+      '#ec4899', // pink-500
+      '#10b981', // emerald-500
+      '#f59e0b', // amber-500
+    ];
 
-    // Initialize nodes
-    for (let i = 0; i < numNodes; i++) {
-      nodes.push({
-        x: Math.random() * canvas.width / (window.devicePixelRatio || 1),
-        y: Math.random() * canvas.height / (window.devicePixelRatio || 1),
-        vx: (Math.random() - 0.5) * 0.3, // Slower movement
-        vy: (Math.random() - 0.5) * 0.3,
-        radius: Math.random() * 2 + 1, // Node size 1-3
-        color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
-        pulseOffset: Math.random() * Math.PI * 2,
-        connections: [],
-      });
-    }
+    const cities: CityLight[] = [];
+    const streamParticles: StreamParticle[] = [];
 
-    // Establish initial connections
-    nodes.forEach((node, i) => {
-      for (let j = i + 1; j < numNodes; j++) {
-        const otherNode = nodes[j];
-        const dist = Math.sqrt(Math.pow(node.x - otherNode.x, 2) + Math.pow(node.y - otherNode.y, 2));
-        if (dist < connectionDistance) {
-          node.connections.push(j);
-          otherNode.connections.push(i); // Ensure bidirectional connection
+    // Create city lights in realistic continental patterns
+    const createCityCluster = (centerX: number, centerY: number, count: number, spread: number) => {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * spread;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        if (x > 50 && x < canvasWidth - 50 && y > 50 && y < canvasHeight - 50) {
+          cities.push({
+            x,
+            y,
+            size: Math.random() * 3 + 2,
+            brightness: Math.random() * 0.5 + 0.5,
+            pulseOffset: Math.random() * Math.PI * 2,
+            color: cityColors[Math.floor(Math.random() * cityColors.length)],
+            connections: [],
+          });
+        }
+      }
+    };
+
+    // Create continental city clusters
+    // North America
+    createCityCluster(canvasWidth * 0.2, canvasHeight * 0.3, 12, 120);
+    // Europe
+    createCityCluster(canvasWidth * 0.55, canvasHeight * 0.25, 15, 100);
+    // Asia
+    createCityCluster(canvasWidth * 0.75, canvasHeight * 0.35, 18, 140);
+    // South America
+    createCityCluster(canvasWidth * 0.3, canvasHeight * 0.65, 8, 80);
+    // Africa
+    createCityCluster(canvasWidth * 0.52, canvasHeight * 0.55, 10, 90);
+    // Australia
+    createCityCluster(canvasWidth * 0.8, canvasHeight * 0.7, 5, 60);
+
+    // Establish connections between cities
+    cities.forEach((city, i) => {
+      const maxConnections = 3;
+      let connectionCount = 0;
+      
+      for (let j = 0; j < cities.length && connectionCount < maxConnections; j++) {
+        if (i === j) continue;
+        
+        const otherCity = cities[j];
+        const distance = Math.sqrt(
+          Math.pow(city.x - otherCity.x, 2) + Math.pow(city.y - otherCity.y, 2)
+        );
+        
+        // Connect cities within reasonable distance
+        if (distance < 300 && Math.random() < 0.4) {
+          city.connections.push(j);
+          connectionCount++;
         }
       }
     });
 
-    const animate = () => {
-      time += 0.01; // Animation speed
+    // Create initial stream particles
+    const createStreamParticle = (startCity: CityLight, endCityIndex: number) => {
+      const endCity = cities[endCityIndex];
+      if (!endCity) return;
 
-      // Clear canvas with a dark gradient background
+      streamParticles.push({
+        x: startCity.x,
+        y: startCity.y,
+        targetX: endCity.x,
+        targetY: endCity.y,
+        progress: 0,
+        speed: 0.008 + Math.random() * 0.012, // Varied speed
+        color: startCity.color,
+        size: Math.random() * 2 + 1,
+        trail: [],
+      });
+    };
+
+    const animate = () => {
+      time += 0.01;
+
+      // Create dark space background with subtle Earth surface texture
       const backgroundGradient = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 0,
-        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+        canvasWidth / 2, canvasHeight / 2, 0,
+        canvasWidth / 2, canvasHeight / 2, Math.max(canvasWidth, canvasHeight) / 2
       );
-      backgroundGradient.addColorStop(0, '#1e1b4b'); // navy-950
+      backgroundGradient.addColorStop(0, '#0f172a'); // slate-900
+      backgroundGradient.addColorStop(0.7, '#1e1b4b'); // navy-950
       backgroundGradient.addColorStop(1, '#000000');
       ctx.fillStyle = backgroundGradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-      // Update and draw nodes
-      nodes.forEach(node => {
-        // Move nodes
-        node.x += node.vx;
-        node.y += node.vy;
+      // Add subtle continent outlines
+      ctx.strokeStyle = 'rgba(30, 58, 138, 0.1)'; // navy-800 with low opacity
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 10]);
+      
+      // Draw abstract continental shapes
+      ctx.beginPath();
+      ctx.moveTo(canvasWidth * 0.1, canvasHeight * 0.4);
+      ctx.quadraticCurveTo(canvasWidth * 0.25, canvasHeight * 0.2, canvasWidth * 0.4, canvasHeight * 0.35);
+      ctx.quadraticCurveTo(canvasWidth * 0.35, canvasHeight * 0.5, canvasWidth * 0.15, canvasHeight * 0.6);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(canvasWidth * 0.45, canvasHeight * 0.15);
+      ctx.quadraticCurveTo(canvasWidth * 0.65, canvasHeight * 0.1, canvasWidth * 0.85, canvasHeight * 0.25);
+      ctx.quadraticCurveTo(canvasWidth * 0.9, canvasHeight * 0.45, canvasWidth * 0.7, canvasHeight * 0.6);
+      ctx.stroke();
+      
+      ctx.setLineDash([]);
 
-        // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width / (window.devicePixelRatio || 1)) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height / (window.devicePixelRatio || 1)) node.vy *= -1;
+      // Draw connections between cities as flowing digital streams
+      cities.forEach((city, i) => {
+        city.connections.forEach(connIndex => {
+          const otherCity = cities[connIndex];
+          if (!otherCity) return;
 
-        // Node pulse effect
-        const pulse = Math.sin(time * 2 + node.pulseOffset) * 0.5 + 0.5; // 0.5 to 1.5
-        const currentRadius = node.radius * (1 + pulse * 0.5); // Scale radius by pulse
+          // Create flowing connection line
+          const connectionPulse = Math.sin(time * 2 + i * 0.5) * 0.3 + 0.7;
+          const gradient = ctx.createLinearGradient(city.x, city.y, otherCity.x, otherCity.y);
+          gradient.addColorStop(0, `rgba(34, 211, 238, ${connectionPulse * 0.3})`);
+          gradient.addColorStop(0.5, `rgba(168, 85, 247, ${connectionPulse * 0.5})`);
+          gradient.addColorStop(1, `rgba(236, 72, 153, ${connectionPulse * 0.3})`);
 
-        ctx.fillStyle = node.color;
-        ctx.shadowColor = node.color;
-        ctx.shadowBlur = currentRadius * 5; // Stronger glow
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0; // Reset shadow
-      });
-
-      // Draw connections and flowing particles
-      ctx.lineWidth = 0.8; // Faint lines
-      nodes.forEach(node => {
-        node.connections.forEach(connIndex => {
-          const otherNode = nodes[connIndex];
-          const dist = Math.sqrt(Math.pow(node.x - otherNode.x, 2) + Math.pow(node.y - otherNode.y, 2));
-
-          // Dynamic connection opacity based on distance and pulse
-          const opacity = 1 - (dist / connectionDistance);
-          const connectionPulse = Math.sin(time * 1.5 + node.pulseOffset + otherNode.pulseOffset) * 0.2 + 0.3; // 0.3 to 0.5
-          ctx.strokeStyle = `rgba(34, 211, 238, ${opacity * connectionPulse})`; // cyan-400 for connections
-          ctx.shadowColor = `rgba(34, 211, 238, ${opacity * connectionPulse})`;
-          ctx.shadowBlur = 5;
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 2;
+          ctx.shadowColor = city.color;
+          ctx.shadowBlur = 8;
+          
           ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(otherNode.x, otherNode.y);
+          ctx.moveTo(city.x, city.y);
+          
+          // Create curved connection for more organic feel
+          const midX = (city.x + otherCity.x) / 2;
+          const midY = (city.y + otherCity.y) / 2 - 30;
+          ctx.quadraticCurveTo(midX, midY, otherCity.x, otherCity.y);
           ctx.stroke();
           ctx.shadowBlur = 0;
-
-          // Add flowing particles along connections
-          if (Math.random() < 0.05) { // Probability of generating a particle
-            particles.push({
-              x: node.x,
-              y: node.y,
-              vx: (otherNode.x - node.x) / dist * 2, // Speed along connection
-              vy: (otherNode.y - node.y) / dist * 2,
-              life: 0,
-              maxLife: dist / 2, // Life proportional to distance
-              color: `rgba(255, 255, 255, 0.8)`, // White for flowing data
-              size: Math.random() * 1.5 + 0.5, // Particle size 0.5-2
-            });
-          }
         });
       });
 
-      // Update and draw particles
-      particles.forEach((particle, index) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.life++;
-
-        if (particle.life > particle.maxLife) {
-          particles.splice(index, 1);
+      // Update and draw stream particles
+      streamParticles.forEach((particle, index) => {
+        particle.progress += particle.speed;
+        
+        if (particle.progress >= 1) {
+          streamParticles.splice(index, 1);
           return;
         }
 
-        const alpha = 1 - (particle.life / particle.maxLife);
-        ctx.fillStyle = particle.color.replace('0.8', alpha.toString());
+        // Calculate current position along the curve
+        const startX = particle.x;
+        const startY = particle.y;
+        const endX = particle.targetX;
+        const endY = particle.targetY;
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2 - 30;
+
+        // Quadratic bezier curve interpolation
+        const t = particle.progress;
+        const currentX = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
+        const currentY = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+
+        // Add to trail
+        particle.trail.push({ x: currentX, y: currentY, alpha: 1 });
+        if (particle.trail.length > 15) {
+          particle.trail.shift();
+        }
+
+        // Draw trail
+        particle.trail.forEach((point, trailIndex) => {
+          const alpha = (trailIndex / particle.trail.length) * point.alpha;
+          ctx.fillStyle = particle.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+          ctx.shadowColor = particle.color;
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, particle.size * alpha, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // Draw main particle
+        ctx.fillStyle = particle.color;
         ctx.shadowColor = particle.color;
-        ctx.shadowBlur = particle.size * 3;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.arc(currentX, currentY, particle.size, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
+
+      // Draw city lights with pulsing effect
+      cities.forEach((city, i) => {
+        const pulse = Math.sin(time * 1.5 + city.pulseOffset) * 0.4 + 0.6;
+        const currentSize = city.size * (0.8 + pulse * 0.4);
+        const currentBrightness = city.brightness * pulse;
+
+        // City glow
+        ctx.fillStyle = city.color;
+        ctx.shadowColor = city.color;
+        ctx.shadowBlur = currentSize * 4;
+        ctx.beginPath();
+        ctx.arc(city.x, city.y, currentSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Inner bright core
+        ctx.fillStyle = `rgba(255, 255, 255, ${currentBrightness})`;
+        ctx.beginPath();
+        ctx.arc(city.x, city.y, currentSize * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Randomly create new stream particles
+      if (Math.random() < 0.02) {
+        const randomCity = cities[Math.floor(Math.random() * cities.length)];
+        if (randomCity.connections.length > 0) {
+          const randomConnection = randomCity.connections[Math.floor(Math.random() * randomCity.connections.length)];
+          createStreamParticle(randomCity, randomConnection);
+        }
+      }
+
+      // Add floating data particles in the background
+      if (Math.random() < 0.1) {
+        const x = Math.random() * canvasWidth;
+        const y = Math.random() * canvasHeight;
+        const size = Math.random() * 1 + 0.5;
+        const color = cityColors[Math.floor(Math.random() * cityColors.length)];
+        
+        ctx.fillStyle = `${color}40`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -205,7 +321,7 @@ const Hero: React.FC = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Enhanced Animated Canvas Background */}
+      {/* Animated Canvas Background */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
@@ -213,8 +329,8 @@ const Hero: React.FC = () => {
       />
       
       {/* Sophisticated overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-950/40 via-transparent to-navy-950/60" />
-      <div className="absolute inset-0 bg-gradient-to-r from-navy-950/20 via-transparent to-navy-950/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-950/60 via-transparent to-navy-950/80" />
+      <div className="absolute inset-0 bg-gradient-to-r from-navy-950/40 via-transparent to-navy-950/40" />
       
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
@@ -223,8 +339,12 @@ const Hero: React.FC = () => {
             <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">Thinkzo.ai</span>
           </h1>
           
-          <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-            <span className="font-bold text-white">Unleash AI-powered insights and automation.</span> Build, deploy and scale intelligent applications <span className="font-bold text-cyan-300">without limits.</span>
+          <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
+            <span className="font-bold text-white">Build the future, one connection at a time.</span>
+          </p>
+          
+          <p className="text-lg sm:text-xl text-cyan-400 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
+            This is the Thinkzo.ai Integration Stack.
           </p>
           
           <div className="animate-slide-up">
