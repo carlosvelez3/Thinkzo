@@ -31,272 +31,284 @@ const Hero: React.FC = () => {
     const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
     const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
 
-    // City lights (nodes) representing major cities
-    interface CityLight {
+    // Earth properties
+    const earthRadius = Math.min(canvasWidth, canvasHeight) * 0.15;
+    const earthX = canvasWidth * 0.5;
+    const earthY = canvasHeight * 0.5;
+
+    // Stars
+    interface Star {
       x: number;
       y: number;
+      brightness: number;
+      twinkleOffset: number;
       size: number;
+    }
+
+    const stars: Star[] = [];
+    for (let i = 0; i < 400; i++) {
+      stars.push({
+        x: Math.random() * canvasWidth,
+        y: Math.random() * canvasHeight,
+        brightness: Math.random() * 0.8 + 0.2,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        size: Math.random() * 1.5 + 0.5,
+      });
+    }
+
+    // City lights on Earth
+    interface CityLight {
+      angle: number;
+      distance: number;
       brightness: number;
       pulseOffset: number;
+      size: number;
       color: string;
-      connections: number[];
     }
 
-    // Digital stream particles flowing between cities
-    interface StreamParticle {
-      x: number;
-      y: number;
-      targetX: number;
-      targetY: number;
-      progress: number;
+    const cityLights: CityLight[] = [];
+    const cityColors = ['#ffffff', '#22d3ee', '#a855f7', '#ec4899'];
+    
+    // Create city clusters
+    for (let i = 0; i < 80; i++) {
+      cityLights.push({
+        angle: Math.random() * Math.PI * 2,
+        distance: Math.random() * earthRadius * 0.8 + earthRadius * 0.2,
+        brightness: Math.random() * 0.6 + 0.4,
+        pulseOffset: Math.random() * Math.PI * 2,
+        size: Math.random() * 2 + 1,
+        color: cityColors[Math.floor(Math.random() * cityColors.length)],
+      });
+    }
+
+    // Orbital paths and satellites
+    interface OrbitalPath {
+      radius: number;
       speed: number;
-      color: string;
+      angle: number;
+      opacity: number;
+    }
+
+    interface Satellite {
+      pathIndex: number;
+      angle: number;
+      speed: number;
       size: number;
       trail: { x: number; y: number; alpha: number }[];
+      glowIntensity: number;
     }
 
-    const cityColors = [
-      '#22d3ee', // cyan-400
-      '#a855f7', // purple-500
-      '#ec4899', // pink-500
-      '#10b981', // emerald-500
-      '#f59e0b', // amber-500
-    ];
+    const orbitalPaths: OrbitalPath[] = [];
+    const satellites: Satellite[] = [];
 
-    const cities: CityLight[] = [];
-    const streamParticles: StreamParticle[] = [];
+    // Create orbital paths
+    for (let i = 0; i < 5; i++) {
+      const radius = earthRadius + 60 + i * 40;
+      orbitalPaths.push({
+        radius,
+        speed: 0.002 + Math.random() * 0.001,
+        angle: Math.random() * Math.PI * 2,
+        opacity: 0.15 + Math.random() * 0.1,
+      });
 
-    // Create city lights in realistic continental patterns
-    const createCityCluster = (centerX: number, centerY: number, count: number, spread: number) => {
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * spread;
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
-        
-        if (x > 50 && x < canvasWidth - 50 && y > 50 && y < canvasHeight - 50) {
-          cities.push({
-            x,
-            y,
-            size: Math.random() * 3 + 2,
-            brightness: Math.random() * 0.5 + 0.5,
-            pulseOffset: Math.random() * Math.PI * 2,
-            color: cityColors[Math.floor(Math.random() * cityColors.length)],
-            connections: [],
-          });
-        }
-      }
-    };
-
-    // Create continental city clusters
-    // North America
-    createCityCluster(canvasWidth * 0.2, canvasHeight * 0.3, 12, 120);
-    // Europe
-    createCityCluster(canvasWidth * 0.55, canvasHeight * 0.25, 15, 100);
-    // Asia
-    createCityCluster(canvasWidth * 0.75, canvasHeight * 0.35, 18, 140);
-    // South America
-    createCityCluster(canvasWidth * 0.3, canvasHeight * 0.65, 8, 80);
-    // Africa
-    createCityCluster(canvasWidth * 0.52, canvasHeight * 0.55, 10, 90);
-    // Australia
-    createCityCluster(canvasWidth * 0.8, canvasHeight * 0.7, 5, 60);
-
-    // Establish connections between cities
-    cities.forEach((city, i) => {
-      const maxConnections = 3;
-      let connectionCount = 0;
-      
-      for (let j = 0; j < cities.length && connectionCount < maxConnections; j++) {
-        if (i === j) continue;
-        
-        const otherCity = cities[j];
-        const distance = Math.sqrt(
-          Math.pow(city.x - otherCity.x, 2) + Math.pow(city.y - otherCity.y, 2)
-        );
-        
-        // Connect cities within reasonable distance
-        if (distance < 300 && Math.random() < 0.4) {
-          city.connections.push(j);
-          connectionCount++;
-        }
-      }
-    });
-
-    // Create initial stream particles
-    const createStreamParticle = (startCity: CityLight, endCityIndex: number) => {
-      const endCity = cities[endCityIndex];
-      if (!endCity) return;
-
-      streamParticles.push({
-        x: startCity.x,
-        y: startCity.y,
-        targetX: endCity.x,
-        targetY: endCity.y,
-        progress: 0,
-        speed: 0.008 + Math.random() * 0.012, // Varied speed
-        color: startCity.color,
-        size: Math.random() * 2 + 1,
+      // Add satellite to this path
+      satellites.push({
+        pathIndex: i,
+        angle: Math.random() * Math.PI * 2,
+        speed: 0.008 + Math.random() * 0.004,
+        size: 3 + Math.random() * 2,
         trail: [],
+        glowIntensity: 0.8 + Math.random() * 0.4,
+      });
+    }
+
+    // Floating particles
+    interface Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      alpha: number;
+      color: string;
+      life: number;
+      maxLife: number;
+    }
+
+    const particles: Particle[] = [];
+    const particleColors = ['#22d3ee', '#a855f7', '#ec4899', '#ffffff'];
+
+    const createParticle = () => {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * canvasWidth * 0.6;
+      particles.push({
+        x: earthX + Math.cos(angle) * distance,
+        y: earthY + Math.sin(angle) * distance,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 0.5,
+        alpha: Math.random() * 0.6 + 0.2,
+        color: particleColors[Math.floor(Math.random() * particleColors.length)],
+        life: 0,
+        maxLife: 300 + Math.random() * 200,
       });
     };
 
     const animate = () => {
-      time += 0.01;
+      time += 0.008;
 
-      // Create dark space background with subtle Earth surface texture
-      const backgroundGradient = ctx.createRadialGradient(
+      // Create deep space background
+      const spaceGradient = ctx.createRadialGradient(
         canvasWidth / 2, canvasHeight / 2, 0,
         canvasWidth / 2, canvasHeight / 2, Math.max(canvasWidth, canvasHeight) / 2
       );
-      backgroundGradient.addColorStop(0, '#0f172a'); // slate-900
-      backgroundGradient.addColorStop(0.7, '#1e1b4b'); // navy-950
-      backgroundGradient.addColorStop(1, '#000000');
-      ctx.fillStyle = backgroundGradient;
+      spaceGradient.addColorStop(0, '#0f172a'); // slate-900
+      spaceGradient.addColorStop(0.6, '#1e1b4b'); // navy-950
+      spaceGradient.addColorStop(1, '#000000');
+      ctx.fillStyle = spaceGradient;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-      // Add subtle continent outlines
-      ctx.strokeStyle = 'rgba(30, 58, 138, 0.1)'; // navy-800 with low opacity
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 10]);
-      
-      // Draw abstract continental shapes
-      ctx.beginPath();
-      ctx.moveTo(canvasWidth * 0.1, canvasHeight * 0.4);
-      ctx.quadraticCurveTo(canvasWidth * 0.25, canvasHeight * 0.2, canvasWidth * 0.4, canvasHeight * 0.35);
-      ctx.quadraticCurveTo(canvasWidth * 0.35, canvasHeight * 0.5, canvasWidth * 0.15, canvasHeight * 0.6);
-      ctx.stroke();
-      
-      ctx.beginPath();
-      ctx.moveTo(canvasWidth * 0.45, canvasHeight * 0.15);
-      ctx.quadraticCurveTo(canvasWidth * 0.65, canvasHeight * 0.1, canvasWidth * 0.85, canvasHeight * 0.25);
-      ctx.quadraticCurveTo(canvasWidth * 0.9, canvasHeight * 0.45, canvasWidth * 0.7, canvasHeight * 0.6);
-      ctx.stroke();
-      
-      ctx.setLineDash([]);
-
-      // Draw connections between cities as flowing digital streams
-      cities.forEach((city, i) => {
-        city.connections.forEach(connIndex => {
-          const otherCity = cities[connIndex];
-          if (!otherCity) return;
-
-          // Create flowing connection line
-          const connectionPulse = Math.sin(time * 2 + i * 0.5) * 0.3 + 0.7;
-          const gradient = ctx.createLinearGradient(city.x, city.y, otherCity.x, otherCity.y);
-          gradient.addColorStop(0, `rgba(34, 211, 238, ${connectionPulse * 0.3})`);
-          gradient.addColorStop(0.5, `rgba(168, 85, 247, ${connectionPulse * 0.5})`);
-          gradient.addColorStop(1, `rgba(236, 72, 153, ${connectionPulse * 0.3})`);
-
-          ctx.strokeStyle = gradient;
-          ctx.lineWidth = 2;
-          ctx.shadowColor = city.color;
-          ctx.shadowBlur = 8;
-          
-          ctx.beginPath();
-          ctx.moveTo(city.x, city.y);
-          
-          // Create curved connection for more organic feel
-          const midX = (city.x + otherCity.x) / 2;
-          const midY = (city.y + otherCity.y) / 2 - 30;
-          ctx.quadraticCurveTo(midX, midY, otherCity.x, otherCity.y);
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        });
+      // Draw twinkling stars
+      stars.forEach(star => {
+        const twinkle = Math.sin(time * 2 + star.twinkleOffset) * 0.3 + 0.7;
+        const alpha = star.brightness * twinkle;
+        
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = star.size * 2;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
       });
 
-      // Update and draw stream particles
-      streamParticles.forEach((particle, index) => {
-        particle.progress += particle.speed;
+      // Draw orbital paths
+      orbitalPaths.forEach((path, index) => {
+        const pathPulse = Math.sin(time * 1.5 + index * 0.5) * 0.2 + 0.8;
+        ctx.strokeStyle = `rgba(34, 211, 238, ${path.opacity * pathPulse})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 15]);
+        ctx.beginPath();
+        ctx.arc(earthX, earthY, path.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // Draw Earth
+      // Earth base
+      const earthGradient = ctx.createRadialGradient(
+        earthX - earthRadius * 0.3, earthY - earthRadius * 0.3, 0,
+        earthX, earthY, earthRadius
+      );
+      earthGradient.addColorStop(0, '#4ade80'); // green-400
+      earthGradient.addColorStop(0.3, '#22c55e'); // green-500
+      earthGradient.addColorStop(0.6, '#1e40af'); // blue-700
+      earthGradient.addColorStop(1, '#1e3a8a'); // blue-800
+
+      ctx.fillStyle = earthGradient;
+      ctx.beginPath();
+      ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Earth atmospheric glow
+      const atmosphereGradient = ctx.createRadialGradient(
+        earthX, earthY, earthRadius,
+        earthX, earthY, earthRadius + 20
+      );
+      atmosphereGradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
+      atmosphereGradient.addColorStop(0.5, 'rgba(34, 211, 238, 0.2)');
+      atmosphereGradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
+
+      ctx.fillStyle = atmosphereGradient;
+      ctx.beginPath();
+      ctx.arc(earthX, earthY, earthRadius + 20, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw city lights on Earth
+      cityLights.forEach(city => {
+        const rotatedAngle = city.angle + time * 0.3; // Earth rotation
+        const x = earthX + Math.cos(rotatedAngle) * city.distance;
+        const y = earthY + Math.sin(rotatedAngle) * city.distance;
         
-        if (particle.progress >= 1) {
-          streamParticles.splice(index, 1);
-          return;
+        // Only draw cities on the visible side of Earth
+        const distanceFromCenter = Math.sqrt((x - earthX) ** 2 + (y - earthY) ** 2);
+        if (distanceFromCenter <= earthRadius) {
+          const pulse = Math.sin(time * 2 + city.pulseOffset) * 0.3 + 0.7;
+          const brightness = city.brightness * pulse;
+          
+          ctx.fillStyle = city.color;
+          ctx.shadowColor = city.color;
+          ctx.shadowBlur = city.size * 3;
+          ctx.beginPath();
+          ctx.arc(x, y, city.size * brightness, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
         }
+      });
 
-        // Calculate current position along the curve
-        const startX = particle.x;
-        const startY = particle.y;
-        const endX = particle.targetX;
-        const endY = particle.targetY;
-        const midX = (startX + endX) / 2;
-        const midY = (startY + endY) / 2 - 30;
-
-        // Quadratic bezier curve interpolation
-        const t = particle.progress;
-        const currentX = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
-        const currentY = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+      // Update and draw satellites
+      satellites.forEach(satellite => {
+        const path = orbitalPaths[satellite.pathIndex];
+        satellite.angle += satellite.speed;
+        
+        const x = earthX + Math.cos(satellite.angle) * path.radius;
+        const y = earthY + Math.sin(satellite.angle) * path.radius;
 
         // Add to trail
-        particle.trail.push({ x: currentX, y: currentY, alpha: 1 });
-        if (particle.trail.length > 15) {
-          particle.trail.shift();
+        satellite.trail.push({ x, y, alpha: 1 });
+        if (satellite.trail.length > 25) {
+          satellite.trail.shift();
         }
 
         // Draw trail
-        particle.trail.forEach((point, trailIndex) => {
-          const alpha = (trailIndex / particle.trail.length) * point.alpha;
-          ctx.fillStyle = particle.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
-          ctx.shadowColor = particle.color;
-          ctx.shadowBlur = 6;
+        satellite.trail.forEach((point, index) => {
+          const alpha = (index / satellite.trail.length) * 0.6;
+          ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
+          ctx.shadowColor = '#22d3ee';
+          ctx.shadowBlur = 4;
           ctx.beginPath();
-          ctx.arc(point.x, point.y, particle.size * alpha, 0, Math.PI * 2);
+          ctx.arc(point.x, point.y, 1, 0, Math.PI * 2);
           ctx.fill();
           ctx.shadowBlur = 0;
         });
 
-        // Draw main particle
-        ctx.fillStyle = particle.color;
-        ctx.shadowColor = particle.color;
-        ctx.shadowBlur = 12;
+        // Draw satellite
+        const glowPulse = Math.sin(time * 3) * 0.2 + 0.8;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#22d3ee';
+        ctx.shadowBlur = satellite.size * 4 * glowPulse;
         ctx.beginPath();
-        ctx.arc(currentX, currentY, particle.size, 0, Math.PI * 2);
+        ctx.arc(x, y, satellite.size, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
 
-      // Draw city lights with pulsing effect
-      cities.forEach((city, i) => {
-        const pulse = Math.sin(time * 1.5 + city.pulseOffset) * 0.4 + 0.6;
-        const currentSize = city.size * (0.8 + pulse * 0.4);
-        const currentBrightness = city.brightness * pulse;
+      // Update and draw particles
+      particles.forEach((particle, index) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life++;
 
-        // City glow
-        ctx.fillStyle = city.color;
-        ctx.shadowColor = city.color;
-        ctx.shadowBlur = currentSize * 4;
-        ctx.beginPath();
-        ctx.arc(city.x, city.y, currentSize, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        const lifeRatio = particle.life / particle.maxLife;
+        const currentAlpha = particle.alpha * (1 - lifeRatio);
 
-        // Inner bright core
-        ctx.fillStyle = `rgba(255, 255, 255, ${currentBrightness})`;
-        ctx.beginPath();
-        ctx.arc(city.x, city.y, currentSize * 0.3, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Randomly create new stream particles
-      if (Math.random() < 0.02) {
-        const randomCity = cities[Math.floor(Math.random() * cities.length)];
-        if (randomCity.connections.length > 0) {
-          const randomConnection = randomCity.connections[Math.floor(Math.random() * randomCity.connections.length)];
-          createStreamParticle(randomCity, randomConnection);
+        if (particle.life >= particle.maxLife) {
+          particles.splice(index, 1);
+          return;
         }
-      }
 
-      // Add floating data particles in the background
-      if (Math.random() < 0.1) {
-        const x = Math.random() * canvasWidth;
-        const y = Math.random() * canvasHeight;
-        const size = Math.random() * 1 + 0.5;
-        const color = cityColors[Math.floor(Math.random() * cityColors.length)];
-        
-        ctx.fillStyle = `${color}40`;
+        ctx.fillStyle = particle.color.replace(')', `, ${currentAlpha})`).replace('rgb', 'rgba');
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = particle.size * 2;
         ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Create new particles occasionally
+      if (Math.random() < 0.03) {
+        createParticle();
       }
 
       animationRef.current = requestAnimationFrame(animate);
@@ -329,8 +341,8 @@ const Hero: React.FC = () => {
       />
       
       {/* Sophisticated overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-950/60 via-transparent to-navy-950/80" />
-      <div className="absolute inset-0 bg-gradient-to-r from-navy-950/40 via-transparent to-navy-950/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-950/40 via-transparent to-navy-950/60" />
+      <div className="absolute inset-0 bg-gradient-to-r from-navy-950/30 via-transparent to-navy-950/30" />
       
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
