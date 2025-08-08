@@ -27,98 +27,31 @@ const Hero: React.FC = () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Animation variables
     let time = 0;
-    const centerX = canvas.offsetWidth / 2;
-    const centerY = canvas.offsetHeight / 2;
-    const earthRadius = Math.min(canvas.offsetWidth, canvas.offsetHeight) * 0.12;
 
-    // Enhanced stars with depth layers
-    const stars: Array<{ 
-      x: number; 
-      y: number; 
-      brightness: number; 
-      twinkle: number;
-      size: number;
-      layer: number;
-    }> = [];
-    
-    for (let i = 0; i < 300; i++) {
-      stars.push({
-        x: Math.random() * canvas.offsetWidth,
-        y: Math.random() * canvas.offsetHeight,
-        brightness: Math.random() * 0.9 + 0.1,
-        twinkle: Math.random() * Math.PI * 2,
-        size: Math.random() * 2 + 0.5,
-        layer: Math.random() < 0.1 ? 2 : 1 // 10% are brighter background stars
-      });
-    }
+    // Network parameters
+    const numNodes = 70;
+    const connectionDistance = 200; // Max distance for nodes to connect
+    const nodeColors = [
+      '#22d3ee', // cyan-400
+      '#a855f7', // purple-400
+      '#ec4899', // pink-500
+      '#34d399', // emerald-400
+      '#facc15', // yellow-400
+    ];
 
-    // Enhanced satellites with data transmission
-    const satellites: Array<{
-      angle: number;
-      radius: number;
-      speed: number;
-      size: number;
-      trail: Array<{ x: number; y: number; alpha: number }>;
-      dataBeams: Array<{
-        targetX: number;
-        targetY: number;
-        progress: number;
-        active: boolean;
-      }>;
-      lastBeamTime: number;
-    }> = [];
-    
-    for (let i = 0; i < 8; i++) {
-      satellites.push({
-        angle: (Math.PI * 2 * i) / 8,
-        radius: earthRadius + 60 + Math.random() * 120,
-        speed: 0.0008 + Math.random() * 0.0006,
-        size: 2.5 + Math.random() * 1.5,
-        trail: [],
-        dataBeams: [],
-        lastBeamTime: 0
-      });
-    }
-
-    // Network grid system
-    const networkNodes: Array<{
+    interface Node {
       x: number;
       y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      color: string;
+      pulseOffset: number;
       connections: number[];
-      pulse: number;
-      activity: number;
-    }> = [];
-
-    // Create network nodes
-    for (let i = 0; i < 25; i++) {
-      networkNodes.push({
-        x: Math.random() * canvas.offsetWidth,
-        y: Math.random() * canvas.offsetHeight,
-        connections: [],
-        pulse: Math.random() * Math.PI * 2,
-        activity: Math.random()
-      });
     }
 
-    // Connect nearby nodes
-    networkNodes.forEach((node, i) => {
-      networkNodes.forEach((otherNode, j) => {
-        if (i !== j) {
-          const distance = Math.sqrt(
-            Math.pow(node.x - otherNode.x, 2) + 
-            Math.pow(node.y - otherNode.y, 2)
-          );
-          if (distance < 150 && Math.random() < 0.3) {
-            node.connections.push(j);
-          }
-        }
-      });
-    });
-
-    // Floating particles for data flow
-    const particles: Array<{
+    interface Particle {
       x: number;
       y: number;
       vx: number;
@@ -127,295 +60,107 @@ const Hero: React.FC = () => {
       maxLife: number;
       color: string;
       size: number;
-    }> = [];
+    }
 
-    // Earth city lights data
-    const cityLights: Array<{
-      x: number;
-      y: number;
-      brightness: number;
-      flicker: number;
-    }> = [];
+    const nodes: Node[] = [];
+    const particles: Particle[] = [];
 
-    // Generate city lights on Earth surface
-    for (let i = 0; i < 80; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * earthRadius * 0.85;
-      cityLights.push({
-        x: Math.cos(angle) * radius,
-        y: Math.sin(angle) * radius,
-        brightness: Math.random() * 0.8 + 0.2,
-        flicker: Math.random() * Math.PI * 2
+    // Initialize nodes
+    for (let i = 0; i < numNodes; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width / (window.devicePixelRatio || 1),
+        y: Math.random() * canvas.height / (window.devicePixelRatio || 1),
+        vx: (Math.random() - 0.5) * 0.3, // Slower movement
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 2 + 1, // Node size 1-3
+        color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+        pulseOffset: Math.random() * Math.PI * 2,
+        connections: [],
       });
     }
 
-    const animate = () => {
-      time += 0.008; // Slower, more elegant motion
-      
-      // Create deep space background
-      const spaceGradient = ctx.createRadialGradient(
-        centerX, centerY, 0, 
-        centerX, centerY, Math.max(canvas.offsetWidth, canvas.offsetHeight)
-      );
-      spaceGradient.addColorStop(0, '#0a0a0f');
-      spaceGradient.addColorStop(0.3, '#0f0f1a');
-      spaceGradient.addColorStop(0.7, '#1a1a2e');
-      spaceGradient.addColorStop(1, '#000000');
-      ctx.fillStyle = spaceGradient;
-      ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-
-      // Draw layered stars with depth
-      stars.forEach(star => {
-        const twinkle = Math.sin(time * 1.5 + star.twinkle) * 0.4 + 0.6;
-        const alpha = star.brightness * twinkle * (star.layer === 2 ? 1.2 : 0.8);
-        
-        if (star.layer === 2) {
-          // Bright background stars
-          ctx.shadowColor = '#ffffff';
-          ctx.shadowBlur = star.size * 2;
-          ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        } else {
-          // Regular stars
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
+    // Establish initial connections
+    nodes.forEach((node, i) => {
+      for (let j = i + 1; j < numNodes; j++) {
+        const otherNode = nodes[j];
+        const dist = Math.sqrt(Math.pow(node.x - otherNode.x, 2) + Math.pow(node.y - otherNode.y, 2));
+        if (dist < connectionDistance) {
+          node.connections.push(j);
+          otherNode.connections.push(i); // Ensure bidirectional connection
         }
-        
+      }
+    });
+
+    const animate = () => {
+      time += 0.01; // Animation speed
+
+      // Clear canvas with a dark gradient background
+      const backgroundGradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 0,
+        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+      );
+      backgroundGradient.addColorStop(0, '#1e1b4b'); // navy-950
+      backgroundGradient.addColorStop(1, '#000000');
+      ctx.fillStyle = backgroundGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw nodes
+      nodes.forEach(node => {
+        // Move nodes
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Bounce off edges
+        if (node.x < 0 || node.x > canvas.width / (window.devicePixelRatio || 1)) node.vx *= -1;
+        if (node.y < 0 || node.y > canvas.height / (window.devicePixelRatio || 1)) node.vy *= -1;
+
+        // Node pulse effect
+        const pulse = Math.sin(time * 2 + node.pulseOffset) * 0.5 + 0.5; // 0.5 to 1.5
+        const currentRadius = node.radius * (1 + pulse * 0.5); // Scale radius by pulse
+
+        ctx.fillStyle = node.color;
+        ctx.shadowColor = node.color;
+        ctx.shadowBlur = currentRadius * 5; // Stronger glow
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur = 0; // Reset shadow
       });
 
-      // Draw network grid connections
-      ctx.strokeStyle = 'rgba(34, 211, 238, 0.08)';
-      ctx.lineWidth = 1;
-      networkNodes.forEach((node, i) => {
-        node.connections.forEach(connectionIndex => {
-          const targetNode = networkNodes[connectionIndex];
-          const pulseIntensity = Math.sin(time * 2 + node.pulse) * 0.3 + 0.7;
-          
-          ctx.globalAlpha = 0.05 * pulseIntensity;
+      // Draw connections and flowing particles
+      ctx.lineWidth = 0.8; // Faint lines
+      nodes.forEach(node => {
+        node.connections.forEach(connIndex => {
+          const otherNode = nodes[connIndex];
+          const dist = Math.sqrt(Math.pow(node.x - otherNode.x, 2) + Math.pow(node.y - otherNode.y, 2));
+
+          // Dynamic connection opacity based on distance and pulse
+          const opacity = 1 - (dist / connectionDistance);
+          const connectionPulse = Math.sin(time * 1.5 + node.pulseOffset + otherNode.pulseOffset) * 0.2 + 0.3; // 0.3 to 0.5
+          ctx.strokeStyle = `rgba(34, 211, 238, ${opacity * connectionPulse})`; // cyan-400 for connections
+          ctx.shadowColor = `rgba(34, 211, 238, ${opacity * connectionPulse})`;
+          ctx.shadowBlur = 5;
           ctx.beginPath();
           ctx.moveTo(node.x, node.y);
-          ctx.lineTo(targetNode.x, targetNode.y);
+          ctx.lineTo(otherNode.x, otherNode.y);
           ctx.stroke();
-        });
-      });
-      ctx.globalAlpha = 1;
-
-      // Draw network nodes
-      networkNodes.forEach(node => {
-        const pulse = Math.sin(time * 1.8 + node.pulse) * 0.5 + 0.5;
-        const size = 1 + pulse * 1.5;
-        
-        ctx.fillStyle = `rgba(34, 211, 238, ${0.3 + pulse * 0.4})`;
-        ctx.shadowColor = '#22d3ee';
-        ctx.shadowBlur = size * 2;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      // Draw Earth with enhanced details
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(time * 0.05); // Very slow rotation
-
-      // Earth main body with realistic gradient
-      const earthGradient = ctx.createRadialGradient(
-        -earthRadius * 0.4, -earthRadius * 0.4, 0, 
-        0, 0, earthRadius
-      );
-      earthGradient.addColorStop(0, '#4ade80');
-      earthGradient.addColorStop(0.2, '#22c55e');
-      earthGradient.addColorStop(0.5, '#16a34a');
-      earthGradient.addColorStop(0.8, '#15803d');
-      earthGradient.addColorStop(1, '#0f3d1a');
-      
-      ctx.fillStyle = earthGradient;
-      ctx.beginPath();
-      ctx.arc(0, 0, earthRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Continental landmasses
-      ctx.fillStyle = '#166534';
-      ctx.globalAlpha = 0.8;
-      
-      // North America
-      ctx.beginPath();
-      ctx.arc(-earthRadius * 0.3, -earthRadius * 0.4, earthRadius * 0.25, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Europe/Africa
-      ctx.beginPath();
-      ctx.arc(earthRadius * 0.1, -earthRadius * 0.2, earthRadius * 0.2, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Asia
-      ctx.beginPath();
-      ctx.arc(earthRadius * 0.4, -earthRadius * 0.1, earthRadius * 0.3, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Australia
-      ctx.beginPath();
-      ctx.arc(earthRadius * 0.3, earthRadius * 0.4, earthRadius * 0.15, 0, Math.PI * 2);
-      ctx.fill();
-      
-      ctx.globalAlpha = 1;
-
-      // Enhanced city lights
-      cityLights.forEach(light => {
-        const flicker = Math.sin(time * 3 + light.flicker) * 0.3 + 0.7;
-        const brightness = light.brightness * flicker;
-        
-        ctx.fillStyle = `rgba(255, 200, 100, ${brightness})`;
-        ctx.shadowColor = '#ffc107';
-        ctx.shadowBlur = 3;
-        ctx.beginPath();
-        ctx.arc(light.x, light.y, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      // Ocean reflections
-      ctx.fillStyle = 'rgba(34, 211, 238, 0.1)';
-      for (let i = 0; i < 20; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * earthRadius * 0.7;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        
-        ctx.beginPath();
-        ctx.arc(x, y, Math.random() * 2 + 1, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.restore();
-
-      // Enhanced atmospheric glow
-      const atmosphereGradient = ctx.createRadialGradient(
-        centerX, centerY, earthRadius, 
-        centerX, centerY, earthRadius + 40
-      );
-      atmosphereGradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
-      atmosphereGradient.addColorStop(0.5, 'rgba(34, 211, 238, 0.2)');
-      atmosphereGradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
-      ctx.fillStyle = atmosphereGradient;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, earthRadius + 40, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Update and draw satellites with data beams
-      satellites.forEach(satellite => {
-        satellite.angle += satellite.speed;
-        
-        const x = centerX + Math.cos(satellite.angle) * satellite.radius;
-        const y = centerY + Math.sin(satellite.angle) * satellite.radius;
-
-        // Add to trail with gradient effect
-        satellite.trail.push({ x, y, alpha: 1 });
-        if (satellite.trail.length > 80) {
-          satellite.trail.shift();
-        }
-
-        // Draw enhanced trail
-        satellite.trail.forEach((point, index) => {
-          const alpha = (index / satellite.trail.length) * 0.8;
-          const size = alpha * 2;
-          
-          ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
-          ctx.shadowColor = '#22d3ee';
-          ctx.shadowBlur = size * 2;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
-          ctx.fill();
           ctx.shadowBlur = 0;
-        });
 
-        // Generate data beams to Earth
-        if (time - satellite.lastBeamTime > 2 + Math.random() * 3) {
-          const earthAngle = Math.random() * Math.PI * 2;
-          const earthDistance = Math.random() * earthRadius * 0.8;
-          satellite.dataBeams.push({
-            targetX: centerX + Math.cos(earthAngle) * earthDistance,
-            targetY: centerY + Math.sin(earthAngle) * earthDistance,
-            progress: 0,
-            active: true
-          });
-          satellite.lastBeamTime = time;
-        }
-
-        // Update and draw data beams
-        satellite.dataBeams.forEach((beam, beamIndex) => {
-          if (beam.active) {
-            beam.progress += 0.03;
-            
-            if (beam.progress >= 1) {
-              beam.active = false;
-              satellite.dataBeams.splice(beamIndex, 1);
-              return;
-            }
-
-            const beamX = x + (beam.targetX - x) * beam.progress;
-            const beamY = y + (beam.targetY - y) * beam.progress;
-            
-            // Draw data beam
-            ctx.strokeStyle = `rgba(168, 85, 247, ${1 - beam.progress})`;
-            ctx.lineWidth = 2;
-            ctx.shadowColor = '#a855f7';
-            ctx.shadowBlur = 8;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(beamX, beamY);
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Draw beam particle
-            ctx.fillStyle = `rgba(168, 85, 247, ${1 - beam.progress})`;
-            ctx.shadowColor = '#a855f7';
-            ctx.shadowBlur = 6;
-            ctx.beginPath();
-            ctx.arc(beamX, beamY, 3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
+          // Add flowing particles along connections
+          if (Math.random() < 0.05) { // Probability of generating a particle
+            particles.push({
+              x: node.x,
+              y: node.y,
+              vx: (otherNode.x - node.x) / dist * 2, // Speed along connection
+              vy: (otherNode.y - node.y) / dist * 2,
+              life: 0,
+              maxLife: dist / 2, // Life proportional to distance
+              color: `rgba(255, 255, 255, 0.8)`, // White for flowing data
+              size: Math.random() * 1.5 + 0.5, // Particle size 0.5-2
+            });
           }
         });
-
-        // Draw enhanced satellite
-        ctx.fillStyle = '#22d3ee';
-        ctx.shadowColor = '#22d3ee';
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.arc(x, y, satellite.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Satellite pulse glow
-        const pulseSize = satellite.size + Math.sin(time * 4) * 2;
-        const pulseGradient = ctx.createRadialGradient(x, y, 0, x, y, pulseSize * 2);
-        pulseGradient.addColorStop(0, 'rgba(34, 211, 238, 0.3)');
-        pulseGradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
-        ctx.fillStyle = pulseGradient;
-        ctx.beginPath();
-        ctx.arc(x, y, pulseSize * 2, 0, Math.PI * 2);
-        ctx.fill();
       });
-
-      // Add floating data particles
-      if (Math.random() < 0.4) {
-        const colors = ['rgba(34, 211, 238, 0.8)', 'rgba(168, 85, 247, 0.8)', 'rgba(236, 72, 153, 0.8)'];
-        particles.push({
-          x: Math.random() * canvas.offsetWidth,
-          y: Math.random() * canvas.offsetHeight,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: (Math.random() - 0.5) * 1.5,
-          life: 0,
-          maxLife: 150 + Math.random() * 100,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          size: Math.random() * 2 + 1
-        });
-      }
 
       // Update and draw particles
       particles.forEach((particle, index) => {
@@ -423,21 +168,17 @@ const Hero: React.FC = () => {
         particle.y += particle.vy;
         particle.life++;
 
-        if (particle.life > particle.maxLife || 
-            particle.x < 0 || particle.x > canvas.offsetWidth ||
-            particle.y < 0 || particle.y > canvas.offsetHeight) {
+        if (particle.life > particle.maxLife) {
           particles.splice(index, 1);
           return;
         }
 
         const alpha = 1 - (particle.life / particle.maxLife);
-        const size = particle.size * alpha;
-        
         ctx.fillStyle = particle.color.replace('0.8', alpha.toString());
         ctx.shadowColor = particle.color;
-        ctx.shadowBlur = size * 2;
+        ctx.shadowBlur = particle.size * 3;
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
