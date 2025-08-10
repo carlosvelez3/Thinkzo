@@ -20,8 +20,7 @@ const Hero: React.FC = () => {
         playsInline
         poster="/global-network-connection-stockcake.jpg"
       >
-        <source src="/path-to-your-video.mp4" type="video/mp4" />
-        <source src="/path-to-your-video.webm" type="video/webm" />
+        <source src="https://www.dropbox.com/scl/fi/fh8pfp23deorjzo6yca50/Image_Animation_Request_Fulfilled-1.mp4?rlkey=anhviu6t2requnk3xdj1kdkyy&st=197agj7j&dl=1" type="video/mp4" />
         {/* Fallback image if video fails to load */}
         <img 
           src="/global-network-connection-stockcake.jpg" 
