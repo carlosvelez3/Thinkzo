@@ -11,23 +11,12 @@ const Hero: React.FC = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Video Background */}
-      <video
+      {/* Static Image Background with Animation */}
+      <img 
+        src="/global-network-connection-stockcake.jpg" 
+        alt="Global Network Connection" 
         className="absolute inset-0 w-full h-full object-cover animate-subtle-zoom"
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster="/global-network-connection-stockcake.jpg"
-      >
-        <source src="https://www.dropbox.com/scl/fi/02figlr6ole9oyz1f633f/Neural_Transmission_Lights_Video.mp4?rlkey=7vndxnvq2gbdv7sndu0b30ete&st=2lfsm6cm&dl=1" type="video/mp4" />
-        {/* Fallback image if video fails to load */}
-        <img 
-          src="/global-network-connection-stockcake.jpg" 
-          alt="Global Network Connection" 
-          className="w-full h-full object-cover"
-        />
-      </video>
+      />
       
       {/* Sophisticated overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-navy-950/60 via-navy-950/40 to-navy-950/70" />
