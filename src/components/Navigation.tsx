@@ -146,7 +146,7 @@ const Navigation: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setIsAboutModalOpen(false)}
         >
-          <div className="relative bg-navy-900/95 backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-cyan-400/20 shadow-2xl shadow-cyan-500/20"
+          <div className="relative bg-navy-900/10 backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-cyan-400/20 shadow-2xl shadow-cyan-500/20"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
