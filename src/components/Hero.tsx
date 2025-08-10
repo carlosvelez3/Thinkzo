@@ -32,9 +32,10 @@ const Hero: React.FC = () => {
     const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
 
     // Earth properties
-    const earthRadius = Math.min(canvasWidth, canvasHeight) * 0.15;
+    const earthRadius = Math.min(canvasWidth, canvasHeight) * 0.2; // Slightly larger Earth
     const earthX = canvasWidth * 0.5;
     const earthY = canvasHeight * 0.5;
+    let earthRotationAngle = 0;
 
     // Stars
     interface Star {
@@ -56,73 +57,123 @@ const Hero: React.FC = () => {
       });
     }
 
-    // City lights on Earth
-    interface CityLight {
-      angle: number;
-      distance: number;
-      brightness: number;
+    // Network Nodes (major cities/hubs)
+    interface NetworkNode {
+      lat: number;
+      lon: number;
+      x: number; // calculated
+      y: number; // calculated
+      size: number;
       pulseOffset: number;
+    }
+
+    const networkNodes: NetworkNode[] = [
+      // North America
+      { lat: 34.0522, lon: -118.2437, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Los Angeles
+      { lat: 40.7128, lon: -74.0060, x: 0, y: 0, size: 4, pulseOffset: Math.random() * Math.PI * 2 }, // New York
+      { lat: 43.6532, lon: -79.3832, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Toronto
+      { lat: 19.4326, lon: -99.1332, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Mexico City
+      // South America
+      { lat: -23.5505, lon: -46.6333, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Sao Paulo
+      { lat: -33.4489, lon: -70.6693, x: 0, y: 0, size: 2.5, pulseOffset: Math.random() * Math.PI * 2 }, // Santiago
+      // Europe
+      { lat: 51.5074, lon: -0.1278, x: 0, y: 0, size: 4, pulseOffset: Math.random() * Math.PI * 2 }, // London
+      { lat: 48.8566, lon: 2.3522, x: 0, y: 0, size: 3.5, pulseOffset: Math.random() * Math.PI * 2 }, // Paris
+      { lat: 52.5200, lon: 13.4050, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Berlin
+      { lat: 41.9028, lon: 12.4964, x: 0, y: 0, size: 2.5, pulseOffset: Math.random() * Math.PI * 2 }, // Rome
+      // Africa
+      { lat: -26.2041, lon: 28.0473, x: 0, y: 0, size: 2.5, pulseOffset: Math.random() * Math.PI * 2 }, // Johannesburg
+      { lat: 30.0444, lon: 31.2357, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Cairo
+      // Asia
+      { lat: 35.6895, lon: 139.6917, x: 0, y: 0, size: 4, pulseOffset: Math.random() * Math.PI * 2 }, // Tokyo
+      { lat: 39.9042, lon: 116.4074, x: 0, y: 0, size: 3.5, pulseOffset: Math.random() * Math.PI * 2 }, // Beijing
+      { lat: 28.7041, lon: 77.1025, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Delhi
+      { lat: 1.3521, lon: 103.8198, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Singapore
+      // Australia
+      { lat: -33.8688, lon: 151.2093, x: 0, y: 0, size: 3, pulseOffset: Math.random() * Math.PI * 2 }, // Sydney
+    ];
+
+    // Network Connections and Light Streaks
+    interface Connection {
+      from: NetworkNode;
+      to: NetworkNode;
+      length: number;
+      streaks: LightStreak[];
+    }
+
+    interface LightStreak {
+      position: number; // 0 to 1 along the connection
+      speed: number;
       size: number;
       color: string;
-    }
-
-    const cityLights: CityLight[] = [];
-    const cityColors = ['#ffffff', '#22d3ee', '#a855f7', '#ec4899'];
-    
-    // Create city clusters
-    for (let i = 0; i < 80; i++) {
-      cityLights.push({
-        angle: Math.random() * Math.PI * 2,
-        distance: Math.random() * earthRadius * 0.8 + earthRadius * 0.2,
-        brightness: Math.random() * 0.6 + 0.4,
-        pulseOffset: Math.random() * Math.PI * 2,
-        size: Math.random() * 2 + 1,
-        color: cityColors[Math.floor(Math.random() * cityColors.length)],
-      });
-    }
-
-    // Orbital paths and satellites
-    interface OrbitalPath {
-      radius: number;
-      speed: number;
-      angle: number;
       opacity: number;
     }
 
-    interface Satellite {
-      pathIndex: number;
-      angle: number;
-      speed: number;
-      size: number;
-      trail: { x: number; y: number; alpha: number }[];
-      glowIntensity: number;
-    }
+    const connections: Connection[] = [];
+    const numStreaksPerConnection = 2; // Number of streaks per connection
 
-    const orbitalPaths: OrbitalPath[] = [];
-    const satellites: Satellite[] = [];
+    // Function to convert lat/lon to 3D Cartesian coordinates
+    const latLonToCartesian = (lat: number, lon: number, radius: number, rotation: number) => {
+      const latRad = (lat * Math.PI) / 180;
+      const lonRad = (lon * Math.PI) / 180 + rotation; // Apply Earth rotation
 
-    // Create orbital paths
-    for (let i = 0; i < 5; i++) {
-      const radius = earthRadius + 60 + i * 40;
-      orbitalPaths.push({
-        radius,
-        speed: 0.002 + Math.random() * 0.001,
-        angle: Math.random() * Math.PI * 2,
-        opacity: 0.15 + Math.random() * 0.1,
+      const x = radius * Math.cos(latRad) * Math.cos(lonRad);
+      const y = radius * Math.cos(latRad) * Math.sin(lonRad);
+      const z = radius * Math.sin(latRad);
+      return { x, y, z };
+    };
+
+    // Function to project 3D Cartesian to 2D canvas
+    const project3DTo2D = (x: number, y: number, z: number, viewDistance: number) => {
+      const perspective = viewDistance / (viewDistance + z);
+      return {
+        x: earthX + x * perspective,
+        y: earthY - y * perspective, // Invert Y for canvas coordinates
+        z: z // Keep z for depth sorting
+      };
+    };
+
+    // Create connections between nodes (e.g., connect each node to its 3 nearest neighbors)
+    networkNodes.forEach((nodeA, i) => {
+      const distances: { dist: number; node: NetworkNode }[] = [];
+      networkNodes.forEach((nodeB, j) => {
+        if (i !== j) {
+          const dx = nodeA.lon - nodeB.lon;
+          const dy = nodeA.lat - nodeB.lat;
+          distances.push({ dist: Math.sqrt(dx * dx + dy * dy), node: nodeB });
+        }
       });
+      distances.sort((a, b) => a.dist - b.dist);
 
-      // Add satellite to this path
-      satellites.push({
-        pathIndex: i,
-        angle: Math.random() * Math.PI * 2,
-        speed: 0.008 + Math.random() * 0.004,
-        size: 3 + Math.random() * 2,
-        trail: [],
-        glowIntensity: 0.8 + Math.random() * 0.4,
-      });
-    }
+      // Connect to a few nearest neighbors
+      for (let k = 0; k < Math.min(3, distances.length); k++) {
+        const nodeB = distances[k].node;
+        // Avoid duplicate connections (e.g., A-B and B-A)
+        const exists = connections.some(conn =>
+          (conn.from === nodeA && conn.to === nodeB) || (conn.from === nodeB && conn.to === nodeA)
+        );
+        if (!exists) {
+          const newConnection: Connection = {
+            from: nodeA,
+            to: nodeB,
+            length: distances[k].dist,
+            streaks: []
+          };
+          for (let s = 0; s < numStreaksPerConnection; s++) {
+            newConnection.streaks.push({
+              position: Math.random(),
+              speed: 0.01 + Math.random() * 0.02,
+              size: 2 + Math.random() * 1,
+              color: '#22d3ee', // Electric blue
+              opacity: 0.8 + Math.random() * 0.2,
+            });
+          }
+          connections.push(newConnection);
+        }
+      }
+    });
 
-    // Floating particles
+    // Floating particles (ambient)
     interface Particle {
       x: number;
       y: number;
@@ -136,7 +187,7 @@ const Hero: React.FC = () => {
     }
 
     const particles: Particle[] = [];
-    const particleColors = ['#22d3ee', '#a855f7', '#ec4899', '#ffffff'];
+    const particleColors = ['#22d3ee', '#a855f7', '#ffffff']; // Cyan, Purple, White
 
     const createParticle = () => {
       const angle = Math.random() * Math.PI * 2;
@@ -156,6 +207,7 @@ const Hero: React.FC = () => {
 
     const animate = () => {
       time += 0.008;
+      earthRotationAngle += 0.0005; // Slow rotation
 
       // Create deep space background
       const spaceGradient = ctx.createRadialGradient(
@@ -182,28 +234,15 @@ const Hero: React.FC = () => {
         ctx.shadowBlur = 0;
       });
 
-      // Draw orbital paths
-      orbitalPaths.forEach((path, index) => {
-        const pathPulse = Math.sin(time * 1.5 + index * 0.5) * 0.2 + 0.8;
-        ctx.strokeStyle = `rgba(34, 211, 238, ${path.opacity * pathPulse})`;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 15]);
-        ctx.beginPath();
-        ctx.arc(earthX, earthY, path.radius, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      });
-
       // Draw Earth
-      // Earth base
+      // Earth base (simplified for network overlay)
       const earthGradient = ctx.createRadialGradient(
         earthX - earthRadius * 0.3, earthY - earthRadius * 0.3, 0,
         earthX, earthY, earthRadius
       );
-      earthGradient.addColorStop(0, '#4ade80'); // green-400
-      earthGradient.addColorStop(0.3, '#22c55e'); // green-500
-      earthGradient.addColorStop(0.6, '#1e40af'); // blue-700
-      earthGradient.addColorStop(1, '#1e3a8a'); // blue-800
+      earthGradient.addColorStop(0, '#1e3a8a'); // blue-800
+      earthGradient.addColorStop(0.5, '#0f172a'); // slate-900
+      earthGradient.addColorStop(1, '#000000');
 
       ctx.fillStyle = earthGradient;
       ctx.beginPath();
@@ -215,7 +254,7 @@ const Hero: React.FC = () => {
         earthX, earthY, earthRadius,
         earthX, earthY, earthRadius + 20
       );
-      atmosphereGradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
+      atmosphereGradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)'); // Cyan glow
       atmosphereGradient.addColorStop(0.5, 'rgba(34, 211, 238, 0.2)');
       atmosphereGradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
 
@@ -224,66 +263,79 @@ const Hero: React.FC = () => {
       ctx.arc(earthX, earthY, earthRadius + 20, 0, Math.PI * 2);
       ctx.fill();
 
-      // Draw city lights on Earth
-      cityLights.forEach(city => {
-        const rotatedAngle = city.angle + time * 0.3; // Earth rotation
-        const x = earthX + Math.cos(rotatedAngle) * city.distance;
-        const y = earthY + Math.sin(rotatedAngle) * city.distance;
-        
-        // Only draw cities on the visible side of Earth
-        const distanceFromCenter = Math.sqrt((x - earthX) ** 2 + (y - earthY) ** 2);
-        if (distanceFromCenter <= earthRadius) {
-          const pulse = Math.sin(time * 2 + city.pulseOffset) * 0.3 + 0.7;
-          const brightness = city.brightness * pulse;
+      // Update and draw network nodes and connections
+      const viewDistance = 300; // For perspective effect
+
+      // Calculate 3D positions and project to 2D for all nodes
+      networkNodes.forEach(node => {
+        const { x: cartX, y: cartY, z: cartZ } = latLonToCartesian(node.lat, node.lon, earthRadius, earthRotationAngle);
+        const projected = project3DTo2D(cartX, cartY, cartZ, viewDistance);
+        node.x = projected.x;
+        node.y = projected.y;
+        // Only draw if node is on the visible side of the Earth
+        node.pulseOffset = cartZ > -earthRadius * 0.5 ? node.pulseOffset : -1; // Hide if on back side
+      });
+
+      // Sort connections by average Z-depth for correct rendering order (back to front)
+      const sortedConnections = [...connections].sort((a, b) => {
+        const avgZ_A = (latLonToCartesian(a.from.lat, a.from.lon, earthRadius, earthRotationAngle).z + latLonToCartesian(a.to.lat, a.to.lon, earthRadius, earthRotationAngle).z) / 2;
+        const avgZ_B = (latLonToCartesian(b.from.lat, b.from.lon, earthRadius, earthRotationAngle).z + latLonToCartesian(b.to.lat, b.to.lon, earthRadius, earthRotationAngle).z) / 2;
+        return avgZ_A - avgZ_B;
+      });
+
+      sortedConnections.forEach(conn => {
+        const from3D = latLonToCartesian(conn.from.lat, conn.from.lon, earthRadius, earthRotationAngle);
+        const to3D = latLonToCartesian(conn.to.lat, conn.to.lon, earthRadius, earthRotationAngle);
+
+        // Only draw connections if both nodes are on the visible side
+        if (from3D.z > -earthRadius * 0.5 && to3D.z > -earthRadius * 0.5) {
+          const from2D = project3DTo2D(from3D.x, from3D.y, from3D.z, viewDistance);
+          const to2D = project3DTo2D(to3D.x, to3D.y, to3D.z, viewDistance);
+
+          // Draw base connection line
+          ctx.strokeStyle = 'rgba(34, 211, 238, 0.1)'; // Faint cyan
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(from2D.x, from2D.y);
+          ctx.lineTo(to2D.x, to2D.y);
+          ctx.stroke();
+
+          // Draw light streaks
+          conn.streaks.forEach(streak => {
+            streak.position = (streak.position + streak.speed) % 1; // Move streak along line
+            const currentX = from2D.x + (to2D.x - from2D.x) * streak.position;
+            const currentY = from2D.y + (to2D.y - from2D.y) * streak.position;
+
+            ctx.fillStyle = streak.color;
+            ctx.shadowColor = streak.color;
+            ctx.shadowBlur = streak.size * 3;
+            ctx.globalAlpha = streak.opacity;
+            ctx.beginPath();
+            ctx.arc(currentX, currentY, streak.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+          });
+        }
+      });
+
+      // Draw network nodes (city lights)
+      networkNodes.forEach(node => {
+        if (node.pulseOffset !== -1) { // Only draw if visible
+          const pulse = Math.sin(time * 3 + node.pulseOffset) * 0.3 + 0.7;
+          const size = node.size * pulse;
           
-          ctx.fillStyle = city.color;
-          ctx.shadowColor = city.color;
-          ctx.shadowBlur = city.size * 3;
+          ctx.fillStyle = '#ffffff'; // White core
+          ctx.shadowColor = 'rgba(34, 211, 238, 0.8)'; // Cyan glow
+          ctx.shadowBlur = size * 4;
           ctx.beginPath();
-          ctx.arc(x, y, city.size * brightness, 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
           ctx.fill();
           ctx.shadowBlur = 0;
         }
       });
 
-      // Update and draw satellites
-      satellites.forEach(satellite => {
-        const path = orbitalPaths[satellite.pathIndex];
-        satellite.angle += satellite.speed;
-        
-        const x = earthX + Math.cos(satellite.angle) * path.radius;
-        const y = earthY + Math.sin(satellite.angle) * path.radius;
-
-        // Add to trail
-        satellite.trail.push({ x, y, alpha: 1 });
-        if (satellite.trail.length > 25) {
-          satellite.trail.shift();
-        }
-
-        // Draw trail
-        satellite.trail.forEach((point, index) => {
-          const alpha = (index / satellite.trail.length) * 0.6;
-          ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
-          ctx.shadowColor = '#22d3ee';
-          ctx.shadowBlur = 4;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 1, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        });
-
-        // Draw satellite
-        const glowPulse = Math.sin(time * 3) * 0.2 + 0.8;
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#22d3ee';
-        ctx.shadowBlur = satellite.size * 4 * glowPulse;
-        ctx.beginPath();
-        ctx.arc(x, y, satellite.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      // Update and draw particles
+      // Update and draw ambient particles
       particles.forEach((particle, index) => {
         particle.x += particle.vx;
         particle.y += particle.vy;
