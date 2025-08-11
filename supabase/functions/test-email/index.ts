@@ -17,7 +17,13 @@ serve(async (req) => {
     console.log('🧪 Test email function called')
     
     // Initialize Resend with provided API key
-    const resend = new Resend('re_Jxy3y88b_JJrw7E6gpkJq97LHnpYJGN2a')
+// Read the Resend API key from environment variables
+const resendApiKey = Deno.env.get('RESEND_API_KEY')
+if (!resendApiKey) {
+  throw new Error('Resend API key not configured')
+}
+const resend = new Resend(resendApiKey)
+
     
     // Create test email content
     const emailSubject = `🧪 Test Email from Thinkzo.ai - ${new Date().toLocaleString()}`
