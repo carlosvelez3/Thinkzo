@@ -1,10 +1,246 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Check, Star } from 'lucide-react';
 import { createCheckoutSession } from '../lib/stripe';
 
 const Pricing: React.FC = () => {
   const [billingType, setBillingType] = useState<'onetime' | 'monthly'>('onetime');
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Create and inject the IOTA-style synchronized squares animation for pricing section
+    const style = document.createElement('style');
+    style.textContent = `
+      .pricing-iota-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0b1220 0%, #111833 50%, #0b1220 100%);
+        overflow: hidden;
+      }
+
+      .pricing-iota-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+        gap: 3px;
+        padding: 30px;
+        opacity: 0.4;
+      }
+
+      .pricing-iota-square {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: rgba(91, 140, 255, 0.06);
+        border: 1px solid rgba(91, 140, 255, 0.12);
+        border-radius: 12px;
+        backdrop-filter: blur(1px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: pricingIotaWave 10s ease-in-out infinite;
+      }
+
+      .pricing-iota-square::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(91, 140, 255, 0.08), transparent);
+        border-radius: 12px;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      .pricing-iota-square.active::before {
+        opacity: 1;
+      }
+
+      .pricing-iota-square.active {
+        background: rgba(91, 140, 255, 0.12);
+        border-color: rgba(91, 140, 255, 0.25);
+        box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
+        transform: scale(1.08);
+      }
+
+      .pricing-iota-square.pulse {
+        animation: pricingIotaPulse 3s ease-in-out infinite;
+      }
+
+      .pricing-ambient-glow {
+        position: absolute;
+        top: 15%;
+        left: 15%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(circle, rgba(91, 140, 255, 0.04) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: pricingAmbientGlow 15s ease-in-out infinite;
+      }
+
+      /* Synchronized wave animation for pricing */
+      @keyframes pricingIotaWave {
+        0%, 100% { 
+          transform: scale(1) translateY(0);
+          opacity: 0.5;
+        }
+        25% { 
+          transform: scale(1.03) translateY(-3px);
+          opacity: 0.7;
+        }
+        50% { 
+          transform: scale(1.06) translateY(-6px);
+          opacity: 0.9;
+        }
+        75% { 
+          transform: scale(1.03) translateY(-3px);
+          opacity: 0.7;
+        }
+      }
+
+      @keyframes pricingIotaPulse {
+        0%, 100% { 
+          transform: scale(1);
+          box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
+        }
+        50% { 
+          transform: scale(1.12);
+          box-shadow: 0 0 30px rgba(91, 140, 255, 0.3);
+        }
+      }
+
+      @keyframes pricingAmbientGlow {
+        0%, 100% { 
+          opacity: 0.4;
+          transform: scale(1);
+        }
+        50% { 
+          opacity: 0.7;
+          transform: scale(1.15);
+        }
+      }
+
+      /* Responsive grid adjustments for pricing */
+      @media (max-width: 768px) {
+        .pricing-iota-grid {
+          grid-template-columns: repeat(6, 1fr);
+          grid-template-rows: repeat(10, 1fr);
+          padding: 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .pricing-iota-grid {
+          grid-template-columns: repeat(4, 1fr);
+          grid-template-rows: repeat(15, 1fr);
+          padding: 15px;
+        }
+      }
+
+      /* Center safe area - keep clean for content */
+      .pricing-iota-square:nth-child(n+13):nth-child(-n+48) {
+        opacity: 0.2;
+        animation-duration: 15s;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Create IOTA-style synchronized grid for pricing
+    const createPricingIotaGrid = () => {
+      const grid = document.getElementById('pricing-iota-grid');
+      if (!grid) return;
+
+      // Clear existing squares
+      grid.innerHTML = '';
+
+      // Calculate grid size based on screen size
+      const isMobile = window.innerWidth <= 768;
+      const isSmallMobile = window.innerWidth <= 480;
+      
+      let cols, rows;
+      if (isSmallMobile) {
+        cols = 4; rows = 15;
+      } else if (isMobile) {
+        cols = 6; rows = 10;
+      } else {
+        cols = 10; rows = 6;
+      }
+
+      const totalSquares = cols * rows;
+
+      // Create squares
+      for (let i = 0; i < totalSquares; i++) {
+        const square = document.createElement('div');
+        square.className = 'pricing-iota-square';
+        
+        // Calculate position in grid
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        
+        // Create diagonal wave effect with staggered delays
+        const diagonalIndex = row + col;
+        const delay = (diagonalIndex * 0.15) % 10; // 10-second cycle
+        
+        square.style.animationDelay = `${delay}s`;
+        
+        // Add special effects to some squares
+        if (Math.random() < 0.12) {
+          square.classList.add('pulse');
+          square.style.animationDelay = `${delay + Math.random() * 3}s`;
+        }
+        
+        grid.appendChild(square);
+      }
+    };
+
+    // Synchronized wave activation for pricing
+    const activatePricingWaves = () => {
+      const squares = document.querySelectorAll('.pricing-iota-square');
+      
+      setInterval(() => {
+        // Create diagonal wave pattern
+        squares.forEach((square, index) => {
+          const cols = window.innerWidth <= 480 ? 4 : window.innerWidth <= 768 ? 6 : 10;
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+          const diagonalIndex = row + col;
+          
+          setTimeout(() => {
+            square.classList.add('active');
+            setTimeout(() => {
+              square.classList.remove('active');
+            }, 1200);
+          }, diagonalIndex * 120);
+        });
+      }, 10000); // 10-second cycle
+    };
+
+    // Initialize pricing IOTA animation
+    setTimeout(() => {
+      createPricingIotaGrid();
+      activatePricingWaves();
+    }, 100);
+
+    // Handle window resize
+    const handleResize = () => {
+      createPricingIotaGrid();
+    };
+    
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      document.head.removeChild(style);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const scrollToContact = () => {
     const element = document.getElementById('contact');
@@ -101,8 +337,17 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <section id="pricing" className="py-20 bg-navy-950">
+    <section id="pricing" className="relative py-20 bg-navy-950 overflow-hidden">
+      {/* IOTA-style Synchronized Squares Background */}
+      <div className="pricing-iota-bg">
+        <div className="pricing-ambient-glow"></div>
+        <div className="pricing-iota-grid" id="pricing-iota-grid">
+          {/* Squares will be generated dynamically */}
+        </div>
+      </div>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold font-poppins text-white mb-6 tracking-tight">
             AI Website <span className="gradient-text">Services</span>
@@ -323,6 +568,7 @@ const Pricing: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );
