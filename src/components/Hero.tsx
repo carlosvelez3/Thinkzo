@@ -10,319 +10,247 @@ const Hero: React.FC = () => {
   };
 
   useEffect(() => {
-    // Create and inject the animated banner styles and script
+    // Create and inject the IOTA-style synchronized squares animation
     const style = document.createElement('style');
     style.textContent = `
-      .animated-banner-bg {
+      .iota-banner-bg {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(ellipse at center, #001133 0%, #000011 70%, #000000 100%);
+        background: linear-gradient(135deg, #0b1220 0%, #111833 50%, #0b1220 100%);
         overflow: hidden;
       }
 
-      .digital-grid {
+      .iota-grid {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
-        width: 200vw;
-        height: 200vh;
-        perspective: 1000px;
-        transform-style: preserve-3d;
-      }
-
-      .grid-layer {
-        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        animation: floatLayer 8s ease-in-out infinite;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+        gap: 2px;
+        padding: 20px;
       }
 
-      .grid-layer:nth-child(1) { animation-delay: 0s; z-index: 3; }
-      .grid-layer:nth-child(2) { animation-delay: -2s; z-index: 2; }
-      .grid-layer:nth-child(3) { animation-delay: -4s; z-index: 1; }
-
-      .animated-square {
-        position: absolute;
-        border: 2px solid;
-        background: rgba(0, 100, 255, 0.1);
+      .iota-square {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: rgba(91, 140, 255, 0.08);
+        border: 1px solid rgba(91, 140, 255, 0.15);
+        border-radius: 8px;
         backdrop-filter: blur(1px);
-        animation: cleanPulse 6s ease-in-out infinite;
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: iotaWave 8s ease-in-out infinite;
       }
 
-      .animated-square:nth-child(odd) {
-        animation: cleanPulseReverse 6s ease-in-out infinite;
-      }
-
-      .animated-square.type-1 {
-        border-color: #0066ff;
-        box-shadow: 0 0 20px rgba(0, 102, 255, 0.5), inset 0 0 20px rgba(0, 102, 255, 0.1);
-      }
-
-      .animated-square.type-2 {
-        border-color: #00ccff;
-        box-shadow: 0 0 25px rgba(0, 204, 255, 0.6), inset 0 0 15px rgba(0, 204, 255, 0.2);
-      }
-
-      .animated-square.type-3 {
-        border-color: #ff0099;
-        box-shadow: 0 0 30px rgba(255, 0, 153, 0.4), inset 0 0 10px rgba(255, 0, 153, 0.15);
-      }
-
-      .animated-square.type-4 {
-        border-color: #00ff88;
-        box-shadow: 0 0 15px rgba(0, 255, 136, 0.7), inset 0 0 25px rgba(0, 255, 136, 0.1);
-      }
-
-      .animated-square.highlight {
-        background: rgba(255, 255, 255, 0.2);
-        border-width: 3px;
-        animation: magneticHighlight 8s ease-in-out infinite;
-      }
-
-      .animated-square.magnetic {
-        animation: magneticAttraction 4s ease-in-out infinite;
-        transform-origin: center;
-      }
-
-      .animated-square.cluster {
-        animation: clusterMovement 10s ease-in-out infinite;
-      }
-
-      .animated-particles {
+      .iota-square::before {
+        content: '';
         position: absolute;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(91, 140, 255, 0.1), transparent);
+        border-radius: 8px;
+        opacity: 0;
+        transition: opacity 0.6s ease;
       }
 
-      .animated-particle {
+      .iota-square.active::before {
+        opacity: 1;
+      }
+
+      .iota-square.active {
+        background: rgba(91, 140, 255, 0.15);
+        border-color: rgba(91, 140, 255, 0.3);
+        box-shadow: 0 0 15px rgba(91, 140, 255, 0.2);
+        transform: scale(1.05);
+      }
+
+      .iota-square.pulse {
+        animation: iotaPulse 2s ease-in-out infinite;
+      }
+
+      .iota-ambient-glow {
         position: absolute;
-        width: 2px;
-        height: 2px;
-        background: #fff;
+        top: 20%;
+        left: 20%;
+        width: 60%;
+        height: 60%;
+        background: radial-gradient(circle, rgba(91, 140, 255, 0.03) 0%, transparent 70%);
         border-radius: 50%;
-        animation: floatParticle 6s linear infinite;
-        opacity: 0.8;
+        animation: ambientGlow 12s ease-in-out infinite;
       }
 
-      @keyframes floatLayer {
-        0%, 100% { transform: translateZ(0px) rotateZ(0deg); }
-        25% { transform: translateZ(15px) rotateZ(1deg); }
-        50% { transform: translateZ(-5px) rotateZ(-0.5deg); }
-        75% { transform: translateZ(10px) rotateZ(0.5deg); }
-      }
-
-      @keyframes cleanPulse {
+      /* Synchronized wave animation */
+      @keyframes iotaWave {
         0%, 100% { 
-          opacity: 0.6; 
-          transform: scale(1) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1);
+          transform: scale(1) translateY(0);
+          opacity: 0.6;
         }
         25% { 
-          opacity: 0.8; 
-          transform: scale(1.02) rotateZ(1deg) translateX(2px) translateY(-2px);
-          filter: brightness(1.1);
-        }
-        50% {
-          opacity: 1; 
-          transform: scale(1.08) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1.3);
-        }
-        75% { 
-          opacity: 0.8; 
-          transform: scale(1.02) rotateZ(-1deg) translateX(-2px) translateY(2px);
-          filter: brightness(1.1);
-        }
-      }
-
-      @keyframes cleanPulseReverse {
-        0%, 100% { 
-          opacity: 1; 
-          transform: scale(1.03) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1.2);
-        }
-        25% { 
-          opacity: 0.7; 
-          transform: scale(0.98) rotateZ(-1deg) translateX(-3px) translateY(3px);
-          filter: brightness(0.9);
+          transform: scale(1.02) translateY(-2px);
+          opacity: 0.8;
         }
         50% { 
-          opacity: 0.4; 
-          transform: scale(0.92) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(0.8);
+          transform: scale(1.05) translateY(-4px);
+          opacity: 1;
         }
         75% { 
-          opacity: 0.7; 
-          transform: scale(0.98) rotateZ(1deg) translateX(3px) translateY(-3px);
-          filter: brightness(0.9);
+          transform: scale(1.02) translateY(-2px);
+          opacity: 0.8;
         }
       }
 
-      @keyframes magneticHighlight {
+      @keyframes iotaPulse {
         0%, 100% { 
-          box-shadow: 0 0 30px rgba(255, 255, 255, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.1);
-          transform: scale(1) translateX(0) translateY(0);
-        }
-        25% { 
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
-          transform: scale(1.05) translateX(5px) translateY(-5px);
+          transform: scale(1);
+          box-shadow: 0 0 15px rgba(91, 140, 255, 0.2);
         }
         50% { 
-          box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 50px rgba(255, 255, 255, 0.3);
-          transform: scale(1.15) translateX(0) translateY(0);
-        }
-        75% { 
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
-          transform: scale(1.05) translateX(-5px) translateY(5px);
+          transform: scale(1.08);
+          box-shadow: 0 0 25px rgba(91, 140, 255, 0.4);
         }
       }
 
-      @keyframes magneticAttraction {
+      @keyframes ambientGlow {
         0%, 100% { 
-          transform: scale(1) translateX(0) translateY(0) rotateZ(0deg);
+          opacity: 0.3;
+          transform: scale(1);
         }
-        20% { 
-          transform: scale(1.1) translateX(10px) translateY(-10px) rotateZ(5deg);
-        }
-        40% { 
-          transform: scale(0.9) translateX(-8px) translateY(8px) rotateZ(-3deg);
-        }
-        60% { 
-          transform: scale(1.05) translateX(12px) translateY(5px) rotateZ(2deg);
-        }
-        80% { 
-          transform: scale(0.95) translateX(-5px) translateY(-12px) rotateZ(-4deg);
+        50% { 
+          opacity: 0.6;
+          transform: scale(1.1);
         }
       }
 
-      @keyframes clusterMovement {
-        0%, 100% { 
-          transform: scale(1) translateX(0) translateY(0) rotateZ(0deg);
-        }
-        10% { 
-          transform: scale(1.02) translateX(15px) translateY(-8px) rotateZ(2deg);
-        }
-        25% { 
-          transform: scale(0.98) translateX(25px) translateY(-15px) rotateZ(4deg);
-        }
-        40% { 
-          transform: scale(1.05) translateX(20px) translateY(-20px) rotateZ(1deg);
-        }
-        55% { 
-          transform: scale(0.95) translateX(5px) translateY(-10px) rotateZ(-2deg);
-        }
-        70% { 
-          transform: scale(1.03) translateX(-10px) translateY(5px) rotateZ(-3deg);
-        }
-        85% { 
-          transform: scale(0.97) translateX(-5px) translateY(10px) rotateZ(1deg);
+      /* Responsive grid adjustments */
+      @media (max-width: 768px) {
+        .iota-grid {
+          grid-template-columns: repeat(8, 1fr);
+          grid-template-rows: repeat(12, 1fr);
+          padding: 15px;
         }
       }
 
-      @keyframes floatParticle {
-        0% {
-          transform: translateY(100vh) translateX(0);
-          opacity: 0;
+      @media (max-width: 480px) {
+        .iota-grid {
+          grid-template-columns: repeat(6, 1fr);
+          grid-template-rows: repeat(16, 1fr);
+          padding: 10px;
         }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% {
-          transform: translateY(-100px) translateX(100px);
-          opacity: 0;
-        }
+      }
+
+      /* Center safe area - keep clean for content */
+      .iota-square:nth-child(n+25):nth-child(-n+72) {
+        opacity: 0.3;
+        animation-duration: 12s;
       }
     `;
     document.head.appendChild(style);
 
-    // Create animated elements
-    const createSquares = () => {
-      const layers = document.querySelectorAll('.grid-layer');
-      const types = ['type-1', 'type-2', 'type-3', 'type-4'];
-      
-      layers.forEach((layer, layerIndex) => {
-        const squareCount = 35 - (layerIndex * 8);
-        
-        for (let i = 0; i < squareCount; i++) {
-          const square = document.createElement('div');
-          square.className = `animated-square ${types[Math.floor(Math.random() * types.length)]}`;
-          
-          const x = Math.random() * 100;
-          const y = Math.random() * 100;
-          const size = Math.random() * 60 + 25;
-          const rotation = Math.random() * 360;
-          
-          square.style.left = `${x}%`;
-          square.style.top = `${y}%`;
-          square.style.width = `${size}px`;
-          square.style.height = `${size}px`;
-          square.style.transform = `rotate(${rotation}deg)`;
-          square.style.animationDelay = `${Math.random() * 6}s`;
-          
-          // Add different animation classes for variety
-          if (Math.random() < 0.12) {
-            square.classList.add('highlight');
-          } else if (Math.random() < 0.08) {
-            square.classList.add('magnetic');
-          } else if (Math.random() < 0.06) {
-            square.classList.add('cluster');
-          }
-          
-          layer.appendChild(square);
-        }
-      });
-    }
+    // Create IOTA-style synchronized grid
+    const createIotaGrid = () => {
+      const grid = document.getElementById('iota-grid');
+      if (!grid) return;
 
-    const createParticles = () => {
-      const particleContainer = document.getElementById('animated-particles');
-      if (!particleContainer) return;
+      // Clear existing squares
+      grid.innerHTML = '';
+
+      // Calculate grid size based on screen size
+      const isMobile = window.innerWidth <= 768;
+      const isSmallMobile = window.innerWidth <= 480;
       
-      for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'animated-particle';
+      let cols, rows;
+      if (isSmallMobile) {
+        cols = 6; rows = 16;
+      } else if (isMobile) {
+        cols = 8; rows = 12;
+      } else {
+        cols = 12; rows = 8;
+      }
+
+      const totalSquares = cols * rows;
+
+      // Create squares
+      for (let i = 0; i < totalSquares; i++) {
+        const square = document.createElement('div');
+        square.className = 'iota-square';
         
-        const x = Math.random() * 100;
-        const delay = Math.random() * 6;
-        const duration = 4 + Math.random() * 4;
+        // Calculate position in grid
+        const row = Math.floor(i / cols);
+        const col = i % cols;
         
-        particle.style.left = `${x}%`;
-        particle.style.animationDelay = `${delay}s`;
-        particle.style.animationDuration = `${duration}s`;
+        // Create diagonal wave effect with staggered delays
+        const diagonalIndex = row + col;
+        const delay = (diagonalIndex * 0.1) % 8; // 8-second cycle
         
-        const colors = ['#ffffff', '#00ccff', '#0066ff', '#ff0099'];
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        square.style.animationDelay = `${delay}s`;
         
-        particleContainer.appendChild(particle);
+        // Add special effects to some squares
+        if (Math.random() < 0.15) {
+          square.classList.add('pulse');
+          square.style.animationDelay = `${delay + Math.random() * 2}s`;
+        }
+        
+        grid.appendChild(square);
       }
     };
 
-    // Initialize animation after a short delay
+    // Synchronized wave activation
+    const activateWaves = () => {
+      const squares = document.querySelectorAll('.iota-square');
+      
+      setInterval(() => {
+        // Create diagonal wave pattern
+        squares.forEach((square, index) => {
+          const cols = window.innerWidth <= 480 ? 6 : window.innerWidth <= 768 ? 8 : 12;
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+          const diagonalIndex = row + col;
+          
+          setTimeout(() => {
+            square.classList.add('active');
+            setTimeout(() => {
+              square.classList.remove('active');
+            }, 1000);
+          }, diagonalIndex * 100);
+        });
+      }, 8000); // 8-second cycle
+    };
+
+    // Initialize IOTA animation
     setTimeout(() => {
-      createSquares();
-      createParticles();
+      createIotaGrid();
+      activateWaves();
     }, 100);
 
+    // Handle window resize
+    const handleResize = () => {
+      createIotaGrid();
+    };
+    
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      // Cleanup
       document.head.removeChild(style);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated Digital Banner Background */}
-      <div className="animated-banner-bg">
-        <div className="digital-grid">
-          <div className="grid-layer" id="layer1"></div>
-          <div className="grid-layer" id="layer2"></div>
-          <div className="grid-layer" id="layer3"></div>
+      {/* IOTA-style Synchronized Squares Background */}
+      <div className="iota-banner-bg">
+        <div className="iota-ambient-glow"></div>
+        <div className="iota-grid" id="iota-grid">
+          {/* Squares will be generated dynamically */}
         </div>
-        
-        <div className="animated-particles" id="animated-particles"></div>
       </div>
       
       {/* Content */}
