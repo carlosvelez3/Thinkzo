@@ -151,6 +151,69 @@ const Hero: React.FC = () => {
         opacity: 0.3;
         animation-duration: 12s;
       }
+
+      /* Special moving blocks animation */
+      .special-block {
+        position: relative;
+        z-index: 5;
+      }
+
+      @keyframes special-block-action {
+        0%, 100% { 
+          transform: scale(1) translateX(0) translateY(0);
+          background: rgba(0, 100, 255, 0.1);
+          border-color: rgba(91, 140, 255, 0.15);
+          box-shadow: 0 0 15px rgba(91, 140, 255, 0.2);
+        }
+        25% { 
+          transform: scale(1.3) translateX(15px) translateY(-10px);
+          background: rgba(34, 211, 238, 0.3);
+          border-color: rgba(34, 211, 238, 0.6);
+          box-shadow: 0 0 30px rgba(34, 211, 238, 0.6), 0 0 60px rgba(34, 211, 238, 0.3);
+        }
+        50% { 
+          transform: scale(1.5) translateX(25px) translateY(-20px);
+          background: rgba(168, 85, 247, 0.4);
+          border-color: rgba(168, 85, 247, 0.7);
+          box-shadow: 0 0 40px rgba(168, 85, 247, 0.7), 0 0 80px rgba(168, 85, 247, 0.4);
+        }
+        75% { 
+          transform: scale(1.2) translateX(10px) translateY(-5px);
+          background: rgba(236, 72, 153, 0.3);
+          border-color: rgba(236, 72, 153, 0.6);
+          box-shadow: 0 0 35px rgba(236, 72, 153, 0.6), 0 0 70px rgba(236, 72, 153, 0.3);
+        }
+      }
+
+      /* Responsive adjustments for special blocks */
+      @media (max-width: 768px) {
+        @keyframes special-block-action {
+          0%, 100% { 
+            transform: scale(1) translateX(0) translateY(0);
+            background: rgba(0, 100, 255, 0.1);
+            border-color: rgba(91, 140, 255, 0.15);
+            box-shadow: 0 0 15px rgba(91, 140, 255, 0.2);
+          }
+          25% { 
+            transform: scale(1.2) translateX(8px) translateY(-5px);
+            background: rgba(34, 211, 238, 0.3);
+            border-color: rgba(34, 211, 238, 0.6);
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.6);
+          }
+          50% { 
+            transform: scale(1.3) translateX(12px) translateY(-8px);
+            background: rgba(168, 85, 247, 0.4);
+            border-color: rgba(168, 85, 247, 0.7);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.7);
+          }
+          75% { 
+            transform: scale(1.1) translateX(5px) translateY(-3px);
+            background: rgba(236, 72, 153, 0.3);
+            border-color: rgba(236, 72, 153, 0.6);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+          }
+        }
+      }
     `;
     document.head.appendChild(style);
 
@@ -196,6 +259,13 @@ const Hero: React.FC = () => {
         if (Math.random() < 0.15) {
           square.classList.add('pulse');
           square.style.animationDelay = `${delay + Math.random() * 2}s`;
+        }
+        
+        // Create special moving blocks (6-8 blocks)
+        if (Math.random() < 0.08) { // Approximately 6-8 blocks per grid
+          square.classList.add('special-block');
+          const specialDelay = Math.random() * 8; // Random delay within 8-second cycle
+          square.style.animation = `iotaWave 8s ease-in-out infinite ${delay}s, special-block-action 3s ease-in-out infinite ${specialDelay}s`;
         }
         
         grid.appendChild(square);
