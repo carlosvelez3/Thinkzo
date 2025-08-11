@@ -337,7 +337,7 @@ const Hero: React.FC = () => {
           </p>
           
           <p className="text-lg sm:text-xl text-cyan-400 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
-            This is the Thinkzo.ai Integration Stack.
+            Smart tech, not sky-high prices.
           </p>
           
           <div className="animate-slide-up">
