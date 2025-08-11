@@ -333,7 +333,7 @@ const Hero: React.FC = () => {
           </h1>
           
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-            <span className="font-bold text-white">Your vision, our code — supercharged with AI.</span>
+            <span className="font-semibold text-white drop-shadow-lg">Your vision, our code — supercharged with AI.</span>
           </p>
           
           <p className="text-lg sm:text-xl text-cyan-400 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
