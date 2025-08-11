@@ -60,22 +60,38 @@ const Hero: React.FC = () => {
 
       .animated-square.type-1 {
         border-color: #0066ff;
-        box-shadow: 0 0 20px rgba(0, 102, 255, 0.5), inset 0 0 20px rgba(0, 102, 255, 0.1);
+        box-shadow: 
+          0 0 20px rgba(0, 102, 255, 0.8), 
+          0 0 40px rgba(0, 102, 255, 0.4),
+          0 0 60px rgba(0, 102, 255, 0.2),
+          inset 0 0 20px rgba(0, 102, 255, 0.3);
       }
 
       .animated-square.type-2 {
         border-color: #00ccff;
-        box-shadow: 0 0 25px rgba(0, 204, 255, 0.6), inset 0 0 15px rgba(0, 204, 255, 0.2);
+        box-shadow: 
+          0 0 25px rgba(0, 204, 255, 0.9), 
+          0 0 50px rgba(0, 204, 255, 0.5),
+          0 0 75px rgba(0, 204, 255, 0.3),
+          inset 0 0 15px rgba(0, 204, 255, 0.4);
       }
 
       .animated-square.type-3 {
         border-color: #ff0099;
-        box-shadow: 0 0 30px rgba(255, 0, 153, 0.4), inset 0 0 10px rgba(255, 0, 153, 0.15);
+        box-shadow: 
+          0 0 30px rgba(255, 0, 153, 0.7), 
+          0 0 60px rgba(255, 0, 153, 0.4),
+          0 0 90px rgba(255, 0, 153, 0.2),
+          inset 0 0 10px rgba(255, 0, 153, 0.3);
       }
 
       .animated-square.type-4 {
         border-color: #00ff88;
-        box-shadow: 0 0 15px rgba(0, 255, 136, 0.7), inset 0 0 25px rgba(0, 255, 136, 0.1);
+        box-shadow: 
+          0 0 15px rgba(0, 255, 136, 1.0), 
+          0 0 30px rgba(0, 255, 136, 0.6),
+          0 0 45px rgba(0, 255, 136, 0.3),
+          inset 0 0 25px rgba(0, 255, 136, 0.2);
       }
 
       .animated-square.highlight {
@@ -93,6 +109,53 @@ const Hero: React.FC = () => {
         animation: clusterMovement 10s ease-in-out infinite;
       }
 
+      .neural-network {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .neural-node {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #22d3ee;
+        border-radius: 50%;
+        box-shadow: 
+          0 0 10px #22d3ee,
+          0 0 20px #22d3ee,
+          0 0 30px #22d3ee;
+        animation: neuralPulse 3s ease-in-out infinite;
+      }
+
+      .neural-connection {
+        position: absolute;
+        height: 2px;
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          #22d3ee 20%, 
+          #0891b2 50%, 
+          #22d3ee 80%, 
+          transparent 100%);
+        box-shadow: 0 0 8px #22d3ee;
+        animation: electricFlow 2s linear infinite;
+        transform-origin: left center;
+      }
+
+      .electric-spark {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #ffffff;
+        border-radius: 50%;
+        box-shadow: 
+          0 0 8px #22d3ee,
+          0 0 16px #0891b2;
+        animation: sparkTravel 3s linear infinite;
+      }
+
       .animated-particles {
         position: absolute;
         width: 100%;
@@ -104,8 +167,9 @@ const Hero: React.FC = () => {
         position: absolute;
         width: 2px;
         height: 2px;
-        background: #fff;
+        background: #22d3ee;
         border-radius: 50%;
+        box-shadow: 0 0 6px #22d3ee;
         animation: floatParticle 6s linear infinite;
         opacity: 0.8;
       }
@@ -121,22 +185,28 @@ const Hero: React.FC = () => {
         0%, 100% { 
           opacity: 0.6; 
           transform: scale(1) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1);
+          filter: brightness(1) saturate(1.2);
+          box-shadow: 
+            0 0 20px currentColor,
+            0 0 40px currentColor;
         }
         25% { 
           opacity: 0.8; 
           transform: scale(1.02) rotateZ(1deg) translateX(2px) translateY(-2px);
-          filter: brightness(1.1);
+          filter: brightness(1.3) saturate(1.4);
         }
         50% {
           opacity: 1; 
           transform: scale(1.08) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1.3);
+          filter: brightness(1.6) saturate(1.6);
+          box-shadow: 
+            0 0 30px currentColor,
+            0 0 60px currentColor;
         }
         75% { 
           opacity: 0.8; 
           transform: scale(1.02) rotateZ(-1deg) translateX(-2px) translateY(2px);
-          filter: brightness(1.1);
+          filter: brightness(1.3) saturate(1.4);
         }
       }
 
@@ -144,40 +214,108 @@ const Hero: React.FC = () => {
         0%, 100% { 
           opacity: 1; 
           transform: scale(1.03) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(1.2);
+          filter: brightness(1.4) saturate(1.3);
         }
         25% { 
           opacity: 0.7; 
           transform: scale(0.98) rotateZ(-1deg) translateX(-3px) translateY(3px);
-          filter: brightness(0.9);
+          filter: brightness(1.0) saturate(1.0);
         }
         50% { 
           opacity: 0.4; 
           transform: scale(0.92) rotateZ(0deg) translateX(0) translateY(0);
-          filter: brightness(0.8);
+          filter: brightness(0.9) saturate(0.8);
         }
         75% { 
           opacity: 0.7; 
           transform: scale(0.98) rotateZ(1deg) translateX(3px) translateY(-3px);
-          filter: brightness(0.9);
+          filter: brightness(1.0) saturate(1.0);
+        }
+      }
+
+      @keyframes neuralPulse {
+        0%, 100% { 
+          transform: scale(1);
+          opacity: 0.8;
+          box-shadow: 
+            0 0 10px #22d3ee,
+            0 0 20px #22d3ee,
+            0 0 30px #22d3ee;
+        }
+        50% { 
+          transform: scale(1.5);
+          opacity: 1;
+          box-shadow: 
+            0 0 15px #22d3ee,
+            0 0 30px #22d3ee,
+            0 0 45px #22d3ee,
+            0 0 60px #0891b2;
+        }
+      }
+
+      @keyframes electricFlow {
+        0% { 
+          opacity: 0.3;
+          transform: scaleX(0);
+        }
+        50% { 
+          opacity: 1;
+          transform: scaleX(1);
+          box-shadow: 0 0 12px #22d3ee;
+        }
+        100% { 
+          opacity: 0.3;
+          transform: scaleX(0);
+        }
+      }
+
+      @keyframes sparkTravel {
+        0% { 
+          opacity: 0;
+          transform: translateX(0) scale(0.5);
+        }
+        10% { 
+          opacity: 1;
+          transform: translateX(10px) scale(1);
+        }
+        90% { 
+          opacity: 1;
+          transform: translateX(calc(100% - 10px)) scale(1);
+        }
+        100% { 
+          opacity: 0;
+          transform: translateX(100%) scale(0.5);
         }
       }
 
       @keyframes magneticHighlight {
         0%, 100% { 
-          box-shadow: 0 0 30px rgba(255, 255, 255, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.1);
+          box-shadow: 
+            0 0 30px rgba(255, 255, 255, 0.5), 
+            0 0 60px rgba(34, 211, 238, 0.4),
+            inset 0 0 30px rgba(255, 255, 255, 0.2);
           transform: scale(1) translateX(0) translateY(0);
         }
         25% { 
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
+          box-shadow: 
+            0 0 40px rgba(255, 255, 255, 0.7), 
+            0 0 80px rgba(34, 211, 238, 0.6),
+            inset 0 0 40px rgba(255, 255, 255, 0.3);
           transform: scale(1.05) translateX(5px) translateY(-5px);
         }
         50% { 
-          box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 50px rgba(255, 255, 255, 0.3);
+          box-shadow: 
+            0 0 50px rgba(255, 255, 255, 1.0), 
+            0 0 100px rgba(34, 211, 238, 0.8),
+            0 0 150px rgba(8, 145, 178, 0.4),
+            inset 0 0 50px rgba(255, 255, 255, 0.4);
           transform: scale(1.15) translateX(0) translateY(0);
         }
         75% { 
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
+          box-shadow: 
+            0 0 40px rgba(255, 255, 255, 0.7), 
+            0 0 80px rgba(34, 211, 238, 0.6),
+            inset 0 0 40px rgba(255, 255, 255, 0.3);
           transform: scale(1.05) translateX(-5px) translateY(5px);
         }
       }
@@ -293,10 +431,77 @@ const Hero: React.FC = () => {
         particle.style.animationDelay = `${delay}s`;
         particle.style.animationDuration = `${duration}s`;
         
-        const colors = ['#ffffff', '#00ccff', '#0066ff', '#ff0099'];
+        const colors = ['#22d3ee', '#0891b2', '#06b6d4', '#ffffff'];
         particle.style.background = colors[Math.floor(Math.random() * colors.length)];
         
         particleContainer.appendChild(particle);
+      }
+    };
+
+    const createNeuralNetwork = () => {
+      const neuralContainer = document.getElementById('neural-network');
+      if (!neuralContainer) return;
+      
+      // Create neural nodes
+      const nodeCount = 12;
+      const nodes = [];
+      
+      for (let i = 0; i < nodeCount; i++) {
+        const node = document.createElement('div');
+        node.className = 'neural-node';
+        
+        const x = 10 + Math.random() * 80; // Keep nodes away from edges
+        const y = 10 + Math.random() * 80;
+        
+        node.style.left = `${x}%`;
+        node.style.top = `${y}%`;
+        node.style.animationDelay = `${Math.random() * 3}s`;
+        
+        nodes.push({ element: node, x, y });
+        neuralContainer.appendChild(node);
+      }
+      
+      // Create connections between nearby nodes
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const node1 = nodes[i];
+          const node2 = nodes[j];
+          
+          const distance = Math.sqrt(
+            Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
+          );
+          
+          // Only connect nodes that are reasonably close
+          if (distance < 40 && Math.random() < 0.6) {
+            const connection = document.createElement('div');
+            connection.className = 'neural-connection';
+            
+            const angle = Math.atan2(node2.y - node1.y, node2.x - node1.x);
+            const length = distance;
+            
+            connection.style.left = `${node1.x}%`;
+            connection.style.top = `${node1.y}%`;
+            connection.style.width = `${length}%`;
+            connection.style.transform = `rotate(${angle}rad)`;
+            connection.style.animationDelay = `${Math.random() * 2}s`;
+            
+            neuralContainer.appendChild(connection);
+            
+            // Add electric sparks that travel along connections
+            if (Math.random() < 0.4) {
+              const spark = document.createElement('div');
+              spark.className = 'electric-spark';
+              
+              spark.style.left = `${node1.x}%`;
+              spark.style.top = `${node1.y}%`;
+              spark.style.transform = `rotate(${angle}rad)`;
+              spark.style.animationDelay = `${Math.random() * 3}s`;
+              spark.style.animationDuration = `${2 + Math.random() * 2}s`;
+              
+              neuralContainer.appendChild(spark);
+            }
+          }
+        }
       }
     };
 
@@ -304,6 +509,7 @@ const Hero: React.FC = () => {
     setTimeout(() => {
       createSquares();
       createParticles();
+      createNeuralNetwork();
     }, 100);
 
     return () => {
@@ -322,6 +528,7 @@ const Hero: React.FC = () => {
           <div className="grid-layer" id="layer3"></div>
         </div>
         
+        <div className="neural-network" id="neural-network"></div>
         <div className="animated-particles" id="animated-particles"></div>
       </div>
       
