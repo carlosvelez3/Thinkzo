@@ -55,9 +55,21 @@ const Contact: React.FC = () => {
     setIsLoading(true);
     console.log('✅ Form validation passed, setting loading state');
     
-    // Check if Supabase is configured
-    if (!import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL === 'https://placeholder.supabase.co') {
-      console.warn('⚠️ Supabase not configured, showing success message without database storage');
+    // Check if Supabase is properly configured
+    if (!import.meta.env.VITE_SUPABASE_URL || 
+        !import.meta.env.VITE_SUPABASE_ANON_KEY ||
+        import.meta.env.VITE_SUPABASE_URL === 'https://placeholder.supabase.co' ||
+        import.meta.env.VITE_SUPABASE_ANON_KEY === 'your-anon-key') {
+      console.warn('⚠️ Supabase not properly configured. Please check your environment variables.');
+      console.warn('Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+      alert('Configuration Error: Please contact support. The form cannot be submitted at this time.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Fallback for development/demo purposes
+    if (import.meta.env.VITE_SUPABASE_URL === 'https://demo.supabase.co') {
+      console.warn('⚠️ Using demo Supabase configuration, showing success message without actual processing');
       setIsSubmitted(true);
       setFormData({
         name: '',

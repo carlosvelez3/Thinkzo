@@ -31,8 +31,12 @@ serve(async (req) => {
       throw new Error('Missing required fields: name, email, and project description are required')
     }
 
-    // Initialize Resend with provided API key
-    const resend = new Resend('re_Jxy3y88b_JJrw7E6gpkJq97LHnpYJGN2a')
+    // Initialize Resend with API key from environment variables
+    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    if (!resendApiKey) {
+      throw new Error('Resend API key not configured')
+    }
+    const resend = new Resend(resendApiKey)
 
     // Create email content
     const emailSubject = `🚀 New Project Inquiry from ${formData.name} - Thinkzo.ai`
