@@ -153,12 +153,13 @@ const Hero: React.FC = () => {
       }
 
       /* Special moving blocks animation */
-      .special-block {
+      .iota-square.dynamic-action {
         position: relative;
         z-index: 5;
+        animation: iotaWave 8s ease-in-out infinite, dynamic-block-action 3s ease-in-out forwards;
       }
 
-      @keyframes special-block-action {
+      @keyframes dynamic-block-action {
         0%, 100% { 
           transform: scale(1) translateX(0) translateY(0);
           background: rgba(0, 100, 255, 0.1);
@@ -187,7 +188,7 @@ const Hero: React.FC = () => {
 
       /* Responsive adjustments for special blocks */
       @media (max-width: 768px) {
-        @keyframes special-block-action {
+        @keyframes dynamic-block-action {
           0%, 100% { 
             transform: scale(1) translateX(0) translateY(0);
             background: rgba(0, 100, 255, 0.1);
@@ -262,11 +263,7 @@ const Hero: React.FC = () => {
         }
         
         // Create special moving blocks (6-8 blocks)
-        if (Math.random() < 0.08) { // Approximately 6-8 blocks per grid
-          square.classList.add('special-block');
-          const specialDelay = Math.random() * 8; // Random delay within 8-second cycle
-          square.style.animation = `iotaWave 8s ease-in-out infinite ${delay}s, special-block-action 3s ease-in-out infinite ${specialDelay}s`;
-        }
+        // All squares start as regular squares - special actions will be applied dynamically
         
         grid.appendChild(square);
       }
@@ -277,6 +274,7 @@ const Hero: React.FC = () => {
       const squares = document.querySelectorAll('.iota-square');
       
       setInterval(() => {
+        // First, activate the regular diagonal wave pattern
         // Create diagonal wave pattern
         squares.forEach((square, index) => {
           const cols = window.innerWidth <= 480 ? 6 : window.innerWidth <= 768 ? 8 : 12;
@@ -290,6 +288,27 @@ const Hero: React.FC = () => {
               square.classList.remove('active');
             }, 1000);
           }, diagonalIndex * 100);
+        });
+        
+        // Then, randomly select 6-8 blocks for special dynamic action
+        const squareArray = Array.from(squares);
+        const shuffledSquares = squareArray.sort(() => Math.random() - 0.5);
+        const numSpecialBlocks = Math.floor(Math.random() * 3) + 6; // Random number between 6-8
+        const selectedSquares = shuffledSquares.slice(0, numSpecialBlocks);
+        
+        selectedSquares.forEach((square, index) => {
+          // Remove any existing dynamic-action class
+          square.classList.remove('dynamic-action');
+          
+          // Add dynamic-action class with staggered timing
+          setTimeout(() => {
+            square.classList.add('dynamic-action');
+            
+            // Remove the class after animation completes (3 seconds)
+            setTimeout(() => {
+              square.classList.remove('dynamic-action');
+            }, 3000);
+          }, index * 400); // Stagger the start times by 400ms
         });
       }, 8000); // 8-second cycle
     };
