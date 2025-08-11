@@ -50,11 +50,12 @@ const Hero: React.FC = () => {
         border: 2px solid;
         background: rgba(0, 100, 255, 0.1);
         backdrop-filter: blur(1px);
-        animation: pulse 4s ease-in-out infinite;
+        animation: cleanPulse 6s ease-in-out infinite;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .animated-square:nth-child(odd) {
-        animation: pulseReverse 4s ease-in-out infinite;
+        animation: cleanPulseReverse 6s ease-in-out infinite;
       }
 
       .animated-square.type-1 {
@@ -80,7 +81,16 @@ const Hero: React.FC = () => {
       .animated-square.highlight {
         background: rgba(255, 255, 255, 0.2);
         border-width: 3px;
-        animation: highlight 3s ease-in-out infinite;
+        animation: magneticHighlight 8s ease-in-out infinite;
+      }
+
+      .animated-square.magnetic {
+        animation: magneticAttraction 4s ease-in-out infinite;
+        transform-origin: center;
+      }
+
+      .animated-square.cluster {
+        animation: clusterMovement 10s ease-in-out infinite;
       }
 
       .animated-particles {
@@ -102,44 +112,115 @@ const Hero: React.FC = () => {
 
       @keyframes floatLayer {
         0%, 100% { transform: translateZ(0px) rotateZ(0deg); }
-        33% { transform: translateZ(20px) rotateZ(2deg); }
-        66% { transform: translateZ(-10px) rotateZ(-1deg); }
+        25% { transform: translateZ(15px) rotateZ(1deg); }
+        50% { transform: translateZ(-5px) rotateZ(-0.5deg); }
+        75% { transform: translateZ(10px) rotateZ(0.5deg); }
       }
 
-      @keyframes pulse {
+      @keyframes cleanPulse {
         0%, 100% { 
           opacity: 0.6; 
-          transform: scale(1) rotateZ(0deg);
+          transform: scale(1) rotateZ(0deg) translateX(0) translateY(0);
           filter: brightness(1);
         }
-        50% { 
+        25% { 
+          opacity: 0.8; 
+          transform: scale(1.02) rotateZ(1deg) translateX(2px) translateY(-2px);
+          filter: brightness(1.1);
+        }
+        50% {
           opacity: 1; 
-          transform: scale(1.05) rotateZ(2deg);
+          transform: scale(1.08) rotateZ(0deg) translateX(0) translateY(0);
           filter: brightness(1.3);
+        }
+        75% { 
+          opacity: 0.8; 
+          transform: scale(1.02) rotateZ(-1deg) translateX(-2px) translateY(2px);
+          filter: brightness(1.1);
         }
       }
 
-      @keyframes pulseReverse {
+      @keyframes cleanPulseReverse {
         0%, 100% { 
           opacity: 1; 
-          transform: scale(1.05) rotateZ(1deg);
+          transform: scale(1.03) rotateZ(0deg) translateX(0) translateY(0);
           filter: brightness(1.2);
+        }
+        25% { 
+          opacity: 0.7; 
+          transform: scale(0.98) rotateZ(-1deg) translateX(-3px) translateY(3px);
+          filter: brightness(0.9);
         }
         50% { 
           opacity: 0.4; 
-          transform: scale(0.95) rotateZ(-1deg);
+          transform: scale(0.92) rotateZ(0deg) translateX(0) translateY(0);
           filter: brightness(0.8);
+        }
+        75% { 
+          opacity: 0.7; 
+          transform: scale(0.98) rotateZ(1deg) translateX(3px) translateY(-3px);
+          filter: brightness(0.9);
         }
       }
 
-      @keyframes highlight {
+      @keyframes magneticHighlight {
         0%, 100% { 
           box-shadow: 0 0 30px rgba(255, 255, 255, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.1);
-          transform: scale(1);
+          transform: scale(1) translateX(0) translateY(0);
+        }
+        25% { 
+          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
+          transform: scale(1.05) translateX(5px) translateY(-5px);
         }
         50% { 
           box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 50px rgba(255, 255, 255, 0.3);
-          transform: scale(1.1);
+          transform: scale(1.15) translateX(0) translateY(0);
+        }
+        75% { 
+          box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.2);
+          transform: scale(1.05) translateX(-5px) translateY(5px);
+        }
+      }
+
+      @keyframes magneticAttraction {
+        0%, 100% { 
+          transform: scale(1) translateX(0) translateY(0) rotateZ(0deg);
+        }
+        20% { 
+          transform: scale(1.1) translateX(10px) translateY(-10px) rotateZ(5deg);
+        }
+        40% { 
+          transform: scale(0.9) translateX(-8px) translateY(8px) rotateZ(-3deg);
+        }
+        60% { 
+          transform: scale(1.05) translateX(12px) translateY(5px) rotateZ(2deg);
+        }
+        80% { 
+          transform: scale(0.95) translateX(-5px) translateY(-12px) rotateZ(-4deg);
+        }
+      }
+
+      @keyframes clusterMovement {
+        0%, 100% { 
+          transform: scale(1) translateX(0) translateY(0) rotateZ(0deg);
+        }
+        10% { 
+          transform: scale(1.02) translateX(15px) translateY(-8px) rotateZ(2deg);
+        }
+        25% { 
+          transform: scale(0.98) translateX(25px) translateY(-15px) rotateZ(4deg);
+        }
+        40% { 
+          transform: scale(1.05) translateX(20px) translateY(-20px) rotateZ(1deg);
+        }
+        55% { 
+          transform: scale(0.95) translateX(5px) translateY(-10px) rotateZ(-2deg);
+        }
+        70% { 
+          transform: scale(1.03) translateX(-10px) translateY(5px) rotateZ(-3deg);
+        }
+        85% { 
+          transform: scale(0.97) translateX(-5px) translateY(10px) rotateZ(1deg);
         }
       }
 
@@ -164,7 +245,7 @@ const Hero: React.FC = () => {
       const types = ['type-1', 'type-2', 'type-3', 'type-4'];
       
       layers.forEach((layer, layerIndex) => {
-        const squareCount = 40 - (layerIndex * 10);
+        const squareCount = 35 - (layerIndex * 8);
         
         for (let i = 0; i < squareCount; i++) {
           const square = document.createElement('div');
@@ -172,7 +253,7 @@ const Hero: React.FC = () => {
           
           const x = Math.random() * 100;
           const y = Math.random() * 100;
-          const size = Math.random() * 80 + 20;
+          const size = Math.random() * 60 + 25;
           const rotation = Math.random() * 360;
           
           square.style.left = `${x}%`;
@@ -180,16 +261,20 @@ const Hero: React.FC = () => {
           square.style.width = `${size}px`;
           square.style.height = `${size}px`;
           square.style.transform = `rotate(${rotation}deg)`;
-          square.style.animationDelay = `${Math.random() * 4}s`;
+          square.style.animationDelay = `${Math.random() * 6}s`;
           
-          if (Math.random() < 0.15) {
+          // Add different animation classes for variety
+          if (Math.random() < 0.12) {
             square.classList.add('highlight');
+          } else if (Math.random() < 0.08) {
+            square.classList.add('magnetic');
+          } else if (Math.random() < 0.06) {
+            square.classList.add('cluster');
           }
           
           layer.appendChild(square);
         }
       });
-    };
 
     const createParticles = () => {
       const particleContainer = document.getElementById('animated-particles');
