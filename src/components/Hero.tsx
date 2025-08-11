@@ -275,6 +275,7 @@ const Hero: React.FC = () => {
           layer.appendChild(square);
         }
       });
+    }
 
     const createParticles = () => {
       const particleContainer = document.getElementById('animated-particles');
