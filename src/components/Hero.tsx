@@ -396,7 +396,7 @@ const Hero: React.FC = () => {
           <p className="text-sm text-gray-400 text-center mb-4 font-light">
             Powered by leading AI technologies
           </p>
-          <div className="overflow-hidden bg-navy-800/20 backdrop-blur-sm rounded-2xl border border-navy-700/50 py-4">
+          <div className="overflow-hidden">
             <div className="flex animate-scroll-right-to-left">
               {/* First set of companies */}
               <div className="flex items-center space-x-8 min-w-max">
