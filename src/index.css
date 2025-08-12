@@ -186,6 +186,47 @@
     animation: scroll-right-to-left 20s linear infinite;
   }
   
+  @keyframes feature-icon-entrance {
+    0% {
+      opacity: 0;
+      transform: scale(0.3) translateY(30px) rotate(-180deg);
+      filter: blur(10px);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.2) translateY(-10px) rotate(10deg);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0) rotate(0deg);
+      filter: blur(0px);
+    }
+  }
+  
+  @keyframes icon-bounce {
+    0%, 100% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(1.1) rotate(5deg);
+    }
+    50% {
+      transform: scale(1.2) rotate(-5deg);
+    }
+    75% {
+      transform: scale(1.1) rotate(3deg);
+    }
+  }
+  
+  .animate-feature-icon-entrance {
+    animation: feature-icon-entrance 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+  
+  .animate-icon-bounce {
+    animation: icon-bounce 0.8s ease-in-out;
+  }
+  
   @keyframes neural-connection-pulse {
     0%, 100% { 
       opacity: 0.15;
