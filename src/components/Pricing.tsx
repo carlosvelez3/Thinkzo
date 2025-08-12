@@ -367,7 +367,7 @@ const Pricing: React.FC = () => {
           {/* Crypto Payment Banner */}
           <div className="bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 border border-cyan-400/30 rounded-xl p-4 mb-8 backdrop-blur-sm">
             <p className="text-cyan-400 font-semibold text-lg">
-              🚀 <span className="gradient-text">Now Accepting Crypto Payments!</span> Embrace the future of payments with Thinkzo.ai!
+              🚀 <span className="gradient-text">Now Accepting Crypto Payments!</span>
             </p>
           </div>
           
