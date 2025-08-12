@@ -172,201 +172,7 @@
   .animate-icon-float {
     animation: icon-float 3s ease-in-out infinite;
   }
-  
-  @keyframes scroll-right-to-left {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  
-  .animate-scroll-right-to-left {
-    animation: scroll-right-to-left 20s linear infinite;
-  }
-  
-  @keyframes neural-connection-pulse {
-    0%, 100% { 
-      opacity: 0.15;
-      filter: brightness(0.5);
-      transform: scaleY(1);
-    }
-    50% { 
-      opacity: 0.4;
-      filter: brightness(0.8);
-      transform: scaleY(1.2);
-    }
-  }
-  
-  .animate-neural-connection-pulse {
-    animation: neural-connection-pulse 4s ease-in-out infinite;
-  }
-  
-  @keyframes float-brain {
-    0%, 100% { 
-      transform: translateY(0px) translateX(0px) rotate(0deg);
-    }
-    25% { 
-      transform: translateY(-15px) translateX(5px) rotate(2deg);
-    }
-    50% { 
-      transform: translateY(-8px) translateX(-3px) rotate(-1deg);
-    }
-    75% { 
-      transform: translateY(-20px) translateX(8px) rotate(3deg);
-    }
-  }
-  
-  @keyframes electric-pulse {
-    0%, 100% { 
-      filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(6, 182, 212, 0.4));
-      transform: scale(1);
-    }
-    50% { 
-      filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.8)) drop-shadow(0 0 24px rgba(6, 182, 212, 0.6)) drop-shadow(0 0 36px rgba(8, 145, 178, 0.4));
-      transform: scale(1.1);
-    }
-  }
-  
-  @keyframes electric-spark {
-    0%, 100% { 
-      opacity: 0;
-      transform: scale(0.5);
-    }
-    25% { 
-      opacity: 1;
-      transform: scale(1.2);
-    }
-    50% { 
-      opacity: 0.7;
-      transform: scale(0.8);
-    }
-    75% { 
-      opacity: 1;
-      transform: scale(1.5);
-    }
-  }
-  
-  .animate-float-brain {
-    animation: float-brain 6s ease-in-out infinite;
-  }
-  
-  .animate-electric-pulse {
-    animation: electric-pulse 3s ease-in-out infinite;
-  }
-  
-  .animate-electric-spark {
-    animation: electric-spark 2s ease-in-out infinite;
-  }
-  
- .animate-subtle-zoom {
-   animation: subtle-zoom 20s ease-in-out infinite;
- }
 
-  @keyframes subtle-zoom {
-    0%, 100% { 
-      transform: scale(1);
-    }
-    50% { 
-      transform: scale(1.1);
-    }
-  }
- 
-  @keyframes brain-rotate {
-    0% { 
-      transform: rotate(0deg) scale(1);
-    }
-    25% { 
-      transform: rotate(90deg) scale(1.1);
-    }
-    50% { 
-      transform: rotate(180deg) scale(1);
-    }
-    75% { 
-      transform: rotate(270deg) scale(1.1);
-    }
-    100% { 
-      transform: rotate(360deg) scale(1);
-    }
-  }
-  
-  @keyframes brain-pulse {
-    0%, 100% { 
-      transform: scale(1);
-      opacity: 0.9;
-    }
-    50% { 
-      transform: scale(1.2);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes electric-neuron-pulse {
-    0%, 100% { 
-      transform: scale(1);
-      filter: brightness(1) saturate(1.2);
-      box-shadow: 
-        0 0 8px currentColor,
-        0 0 16px currentColor;
-    }
-    50% { 
-      transform: scale(1.2);
-      filter: brightness(1.3) saturate(1.4);
-      box-shadow: 
-        0 0 12px currentColor,
-        0 0 24px currentColor;
-    }
-  }
-  
-  @keyframes electric-neuron-activate {
-    0% { 
-      transform: scale(1);
-      filter: brightness(1) saturate(1.2);
-    }
-    50% { 
-      transform: scale(1.6);
-      filter: brightness(1.8) saturate(1.8);
-      box-shadow: 
-        0 0 16px currentColor,
-        0 0 32px currentColor;
-    }
-    100% { 
-      transform: scale(1);
-      filter: brightness(1) saturate(1.2);
-    }
-  }
-  
-  @keyframes electric-connection-pulse {
-    0%, 100% { 
-      opacity: 0.2;
-      filter: brightness(0.6);
-      transform: scaleY(1);
-      box-shadow: 
-        0 0 4px rgba(34, 211, 238, 0.3),
-        0 0 8px rgba(6, 182, 212, 0.2);
-    }
-    50% { 
-      opacity: 0.4;
-      filter: brightness(1);
-      transform: scaleY(1.2);
-      box-shadow: 
-        0 0 6px rgba(34, 211, 238, 0.4),
-        0 0 12px rgba(6, 182, 212, 0.3);
-    }
-  }
-  
-  @keyframes signal-energy-pulse {
-    0%, 100% { 
-      transform: scale(1);
-      filter: brightness(1.2);
-    }
-    50% { 
-      transform: scale(1.1);
-      filter: brightness(1.4);
-    }
-  }
-  
   
   @keyframes fadeIn {
     0% { 
@@ -386,5 +192,18 @@
       opacity: 1;
       transform: translateY(0) scale(1);
     }
+  }
+  
+  @keyframes scroll-right-to-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .animate-scroll-right-to-left {
+    animation: scroll-right-to-left 20s linear infinite;
   }
 }
