@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Check, Star } from 'lucide-react';
 import { createCheckoutSession } from '../lib/stripe';
+import TypewriterText from './TypewriterText';
 
 const Pricing: React.FC = () => {
   const [billingType, setBillingType] = useState<'onetime' | 'monthly'>('onetime');
@@ -350,16 +351,45 @@ const Pricing: React.FC = () => {
         <div className="relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold font-poppins text-white mb-6 tracking-tight">
-            AI Website <span className="gradient-text">Services</span>
+            <TypewriterText 
+              text="AI Website " 
+              speed={100}
+              className="inline"
+            />
+            <span className="gradient-text">
+              <TypewriterText 
+                text="Services" 
+                speed={100}
+                delay={1200}
+                className="inline"
+              />
+            </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto font-light leading-relaxed mb-8">
-            Professional AI-powered websites designed to grow your business and convert visitors into customers.
+            <TypewriterText 
+              text="Professional AI-powered websites designed to grow your business and convert visitors into customers."
+              speed={35}
+              delay={2000}
+            />
           </p>
           
           {/* Crypto Payment Banner */}
           <div className="bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 border border-cyan-400/30 rounded-xl p-4 mb-8 backdrop-blur-sm">
             <p className="text-cyan-400 font-semibold text-lg">
-              🚀 <span className="gradient-text">Now Accepting Crypto Payments!</span> For added flexibility and security, you can now pay for our services using your preferred cryptocurrency. Embrace the future of payments with Thinkzo.ai!
+              🚀 <span className="gradient-text">
+                <TypewriterText 
+                  text="Now Accepting Crypto Payments!" 
+                  speed={60}
+                  delay={3000}
+                  className="inline"
+                />
+              </span> 
+              <TypewriterText 
+                text="For added flexibility and security, you can now pay for our services using your preferred cryptocurrency. Embrace the future of payments with Thinkzo.ai!"
+                speed={30}
+                delay={4500}
+                className="inline"
+              />
             </p>
           </div>
           

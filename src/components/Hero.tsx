@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
+import TypewriterText from './TypewriterText';
 
 const Hero: React.FC = () => {
   const scrollToPricing = () => {
@@ -346,15 +347,31 @@ const Hero: React.FC = () => {
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <div className="animate-fade-in">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-poppins text-white mb-6 leading-tight tracking-tight">
-            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">Thinkzo.ai</span>
+            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
+              <TypewriterText 
+                text="Thinkzo.ai" 
+                speed={150}
+                trigger="immediate"
+              />
+            </span>
           </h1>
           
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
-            <span className="font-semibold text-white drop-shadow-lg">Your vision, our code — supercharged with AI.</span>
+            <span className="font-semibold text-white drop-shadow-lg">
+              <TypewriterText 
+                text="Your vision, our code — supercharged with AI."
+                speed={60}
+                delay={1500}
+              />
+            </span>
           </p>
           
           <p className="text-lg sm:text-xl text-cyan-400 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
-            Smart tech, not sky-high prices.
+            <TypewriterText 
+              text="Smart tech, not sky-high prices."
+              speed={80}
+              delay={3500}
+            />
           </p>
           
           <div className="animate-slide-up">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Brain, Zap, Rocket } from 'lucide-react';
+import TypewriterText from './TypewriterText';
 
 const Features: React.FC = () => {
   const features = [
@@ -31,10 +32,26 @@ const Features: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold font-poppins text-white mb-6 tracking-tight">
-            Powerful <span className="gradient-text">Features</span>
+            <TypewriterText 
+              text="Powerful " 
+              speed={100}
+              className="inline"
+            />
+            <span className="gradient-text">
+              <TypewriterText 
+                text="Features" 
+                speed={100}
+                delay={800}
+                className="inline"
+              />
+            </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto font-light leading-relaxed">
-            Discover the cutting-edge capabilities that make Thinkzo.ai the perfect choice for your AI-powered applications.
+            <TypewriterText 
+              text="Discover the cutting-edge capabilities that make Thinkzo.ai the perfect choice for your AI-powered applications."
+              speed={30}
+              delay={1500}
+            />
           </p>
         </div>
 
@@ -73,11 +90,19 @@ const Features: React.FC = () => {
               </div>
               
               <h3 className="text-2xl font-semibold font-poppins text-white mb-4 text-center tracking-tight">
-                {feature.title}
+                <TypewriterText 
+                  text={feature.title}
+                  speed={80}
+                  delay={index * 500 + 2000}
+                />
               </h3>
               
               <p className="text-gray-300 text-center leading-relaxed font-light">
-                {feature.description}
+                <TypewriterText 
+                  text={feature.description}
+                  speed={25}
+                  delay={index * 500 + 2500}
+                />
               </p>
             </div>
           ))}
