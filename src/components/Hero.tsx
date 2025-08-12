@@ -380,77 +380,80 @@ const Hero: React.FC = () => {
             </button>
           </div>
           
-          {/* AI LLM Companies Scrolling Banner */}
-          <div className="mt-12 w-full">
-            <p className="text-sm text-gray-400 text-center mb-4 font-light">
-              Powered by leading AI technologies
-            </p>
-            <div className="overflow-hidden bg-navy-800/20 backdrop-blur-sm rounded-2xl border border-navy-700/50 py-4">
-              <div className="flex animate-scroll-right-to-left">
-                {/* First set of companies */}
-                <div className="flex items-center space-x-8 min-w-max">
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-white font-semibold text-lg">OpenAI</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-blue-400 font-semibold text-lg">Claude</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-green-400 font-semibold text-lg">Gemini</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-purple-400 font-semibold text-lg">Llama</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-yellow-400 font-semibold text-lg">Mistral</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-red-400 font-semibold text-lg">Cohere</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-cyan-400 font-semibold text-lg">Perplexity</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-orange-400 font-semibold text-lg">Anthropic</span>
-                  </div>
-                </div>
-                
-                {/* Duplicate set for seamless loop */}
-                <div className="flex items-center space-x-8 min-w-max ml-8">
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-white font-semibold text-lg">OpenAI</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-blue-400 font-semibold text-lg">Claude</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-green-400 font-semibold text-lg">Gemini</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-purple-400 font-semibold text-lg">Llama</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-yellow-400 font-semibold text-lg">Mistral</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-red-400 font-semibold text-lg">Cohere</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-cyan-400 font-semibold text-lg">Perplexity</span>
-                  </div>
-                  <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
-                    <span className="text-orange-400 font-semibold text-lg">Anthropic</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
         
         {/* Enhanced scroll indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="w-6 h-10 border-2 border-cyan-400/60 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1 h-3 bg-gradient-to-b from-cyan-400 to-purple-400 rounded-full mt-2 animate-pulse-slow"></div>
+          </div>
+        </div>
+      </div>
+      
+      {/* AI LLM Companies Scrolling Banner */}
+      <div className="absolute bottom-20 left-0 right-0 w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-sm text-gray-400 text-center mb-4 font-light">
+            Powered by leading AI technologies
+          </p>
+          <div className="overflow-hidden bg-navy-800/20 backdrop-blur-sm rounded-2xl border border-navy-700/50 py-4">
+            <div className="flex animate-scroll-right-to-left">
+              {/* First set of companies */}
+              <div className="flex items-center space-x-8 min-w-max">
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-white font-semibold text-lg">OpenAI</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-blue-400 font-semibold text-lg">Claude</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-green-400 font-semibold text-lg">Gemini</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-purple-400 font-semibold text-lg">Llama</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-yellow-400 font-semibold text-lg">Mistral</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-red-400 font-semibold text-lg">Cohere</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-cyan-400 font-semibold text-lg">Perplexity</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-orange-400 font-semibold text-lg">Anthropic</span>
+                </div>
+              </div>
+              
+              {/* Duplicate set for seamless loop */}
+              <div className="flex items-center space-x-8 min-w-max ml-8">
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-white font-semibold text-lg">OpenAI</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-blue-400 font-semibold text-lg">Claude</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-green-400 font-semibold text-lg">Gemini</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-purple-400 font-semibold text-lg">Llama</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-yellow-400 font-semibold text-lg">Mistral</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-red-400 font-semibold text-lg">Cohere</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-cyan-400 font-semibold text-lg">Perplexity</span>
+                </div>
+                <div className="bg-navy-700/30 px-6 py-3 rounded-lg hover:bg-navy-600/40 transition-all duration-300 group">
+                  <span className="text-orange-400 font-semibold text-lg">Anthropic</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
