@@ -32,18 +32,9 @@ const Features: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold font-poppins text-white mb-6 tracking-tight">
-            <TypewriterText 
-              text="Powerful " 
-              speed={100}
-              className="inline"
-            />
+            Powerful{' '}
             <span className="gradient-text">
-              <TypewriterText 
-                text="Features" 
-                speed={100}
-                delay={800}
-                className="inline"
-              />
+              Features
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto font-light leading-relaxed">
@@ -90,19 +81,11 @@ const Features: React.FC = () => {
               </div>
               
               <h3 className="text-2xl font-semibold font-poppins text-white mb-4 text-center tracking-tight">
-                <TypewriterText 
-                  text={feature.title}
-                  speed={80}
-                  delay={index * 500 + 2000}
-                />
+                {feature.title}
               </h3>
               
               <p className="text-gray-300 text-center leading-relaxed font-light">
-                <TypewriterText 
-                  text={feature.description}
-                  speed={25}
-                  delay={index * 500 + 2500}
-                />
+                {feature.description}
               </p>
             </div>
           ))}

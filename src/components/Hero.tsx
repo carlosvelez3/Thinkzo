@@ -348,11 +348,7 @@ const Hero: React.FC = () => {
         <div className="animate-fade-in">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-poppins text-white mb-6 leading-tight tracking-tight">
             <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
-              <TypewriterText 
-                text="Thinkzo.ai" 
-                speed={150}
-                trigger="immediate"
-              />
+              Thinkzo.ai
             </span>
           </h1>
           

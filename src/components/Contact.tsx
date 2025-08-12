@@ -173,18 +173,9 @@ const Contact: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-bold font-poppins text-white mb-6 tracking-tight">
-            <TypewriterText 
-              text="Start Your " 
-              speed={100}
-              className="inline"
-            />
+            Start Your{' '}
             <span className="gradient-text">
-              <TypewriterText 
-                text="AI Project" 
-                speed={100}
-                delay={1000}
-                className="inline"
-              />
+              AI Project
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
