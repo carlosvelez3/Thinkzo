@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import './Pricing.css';
 import { Check, Star } from 'lucide-react';
 import { createCheckoutSession } from '../lib/stripe';
 import TypewriterText from './TypewriterText';
@@ -9,151 +9,6 @@ const Pricing: React.FC = () => {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   useEffect(() => {
-    // Create and inject the IOTA-style synchronized squares animation for pricing section
-    const style = document.createElement('style');
-    style.textContent = `
-      .pricing-iota-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #0b1220 0%, #111833 50%, #0b1220 100%);
-        overflow: hidden;
-      }
-
-      .pricing-iota-grid {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: repeat(10, 1fr);
-        grid-template-rows: repeat(6, 1fr);
-        gap: 3px;
-        padding: 30px;
-        opacity: 0.4;
-      }
-
-      .pricing-iota-square {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        background: rgba(91, 140, 255, 0.06);
-        border: 1px solid rgba(91, 140, 255, 0.12);
-        border-radius: 12px;
-        backdrop-filter: blur(1px);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        animation: pricingIotaWave 10s ease-in-out infinite;
-      }
-
-      .pricing-iota-square::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent, rgba(91, 140, 255, 0.08), transparent);
-        border-radius: 12px;
-        opacity: 0;
-        transition: opacity 0.8s ease;
-      }
-
-      .pricing-iota-square.active::before {
-        opacity: 1;
-      }
-
-      .pricing-iota-square.active {
-        background: rgba(91, 140, 255, 0.12);
-        border-color: rgba(91, 140, 255, 0.25);
-        box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
-        transform: scale(1.08);
-      }
-
-      .pricing-iota-square.pulse {
-        animation: pricingIotaPulse 3s ease-in-out infinite;
-      }
-
-      .pricing-ambient-glow {
-        position: absolute;
-        top: 15%;
-        left: 15%;
-        width: 70%;
-        height: 70%;
-        background: radial-gradient(circle, rgba(91, 140, 255, 0.04) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: pricingAmbientGlow 15s ease-in-out infinite;
-      }
-
-      /* Synchronized wave animation for pricing */
-      @keyframes pricingIotaWave {
-        0%, 100% { 
-          transform: scale(1) translateY(0);
-          opacity: 0.5;
-        }
-        25% { 
-          transform: scale(1.03) translateY(-3px);
-          opacity: 0.7;
-        }
-        50% { 
-          transform: scale(1.06) translateY(-6px);
-          opacity: 0.9;
-        }
-        75% { 
-          transform: scale(1.03) translateY(-3px);
-          opacity: 0.7;
-        }
-      }
-
-      @keyframes pricingIotaPulse {
-        0%, 100% { 
-          transform: scale(1);
-          box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
-        }
-        50% { 
-          transform: scale(1.12);
-          box-shadow: 0 0 30px rgba(91, 140, 255, 0.3);
-        }
-      }
-
-      @keyframes pricingAmbientGlow {
-        0%, 100% { 
-          opacity: 0.4;
-          transform: scale(1);
-        }
-        50% { 
-          opacity: 0.7;
-          transform: scale(1.15);
-        }
-      }
-
-      /* Responsive grid adjustments for pricing */
-      @media (max-width: 768px) {
-        .pricing-iota-grid {
-          grid-template-columns: repeat(6, 1fr);
-          grid-template-rows: repeat(10, 1fr);
-          padding: 20px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .pricing-iota-grid {
-          grid-template-columns: repeat(4, 1fr);
-          grid-template-rows: repeat(15, 1fr);
-          padding: 15px;
-        }
-      }
-
-      /* Center safe area - keep clean for content */
-      .pricing-iota-square:nth-child(n+13):nth-child(-n+48) {
-        opacity: 0.2;
-        animation-duration: 15s;
-      }
-    `;
-    document.head.appendChild(style);
-
     // Create IOTA-style synchronized grid for pricing
     const createPricingIotaGrid = () => {
       const grid = document.getElementById('pricing-iota-grid');
@@ -238,7 +93,6 @@ const Pricing: React.FC = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      document.head.removeChild(style);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -268,8 +122,8 @@ const Pricing: React.FC = () => {
       setupFee: '$25',
       popular: false,
       stripePriceIds: {
-        onetime: 'price_1QdVGJP123456789abcdef01', // TODO: Replace with your actual Stripe Price ID
-        monthly: 'price_1QdVGKP123456789abcdef02'   // TODO: Replace with your actual Stripe Price ID
+        onetime: import.meta.env.VITE_STRIPE_STARTER_ONETIME_PRICE_ID,
+        monthly: import.meta.env.VITE_STRIPE_STARTER_MONTHLY_PRICE_ID
       }
     },
     {
@@ -289,8 +143,8 @@ const Pricing: React.FC = () => {
       setupFee: '$25',
       popular: true,
       stripePriceIds: {
-        onetime: 'price_1QdVGLP123456789abcdef03', // TODO: Replace with your actual Stripe Price ID
-        monthly: 'price_1QdVGMP123456789abcdef04'   // TODO: Replace with your actual Stripe Price ID
+        onetime: import.meta.env.VITE_STRIPE_GROWTH_ONETIME_PRICE_ID,
+        monthly: import.meta.env.VITE_STRIPE_GROWTH_MONTHLY_PRICE_ID
       }
     },
     {
