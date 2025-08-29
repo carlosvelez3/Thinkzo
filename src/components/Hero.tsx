@@ -322,6 +322,10 @@ const Hero: React.FC = () => {
       const grid = document.getElementById('iota-grid');
       if (!grid) return;
       
+     // Get grid boundaries for containment
+     const gridRect = grid.getBoundingClientRect();
+     const gridPadding = 20; // Account for grid padding
+     
       // Create 6-12 simultaneous data transfer signals
       const numSignals = Math.floor(Math.random() * 3) + 4; // Reduced to 4-6 signals
       
@@ -361,13 +365,18 @@ const Hero: React.FC = () => {
           // Get the positions of source and destination squares
           const sourceRect = sourceSquare.getBoundingClientRect();
           const destRect = destSquare.getBoundingClientRect();
-          const gridRect = grid.getBoundingClientRect();
           
           // Calculate relative positions within the grid
-          const startX = sourceRect.left - gridRect.left + sourceRect.width / 2;
-          const startY = sourceRect.top - gridRect.top + sourceRect.height / 2;
-          const endX = destRect.left - gridRect.left + destRect.width / 2;
-          const endY = destRect.top - gridRect.top + destRect.height / 2;
+         let startX = sourceRect.left - gridRect.left + sourceRect.width / 2;
+         let startY = sourceRect.top - gridRect.top + sourceRect.height / 2;
+         let endX = destRect.left - gridRect.left + destRect.width / 2;
+         let endY = destRect.top - gridRect.top + destRect.height / 2;
+         
+         // Ensure positions are within grid boundaries
+         startX = Math.max(gridPadding, Math.min(startX, gridRect.width - gridPadding));
+         startY = Math.max(gridPadding, Math.min(startY, gridRect.height - gridPadding));
+         endX = Math.max(gridPadding, Math.min(endX, gridRect.width - gridPadding));
+         endY = Math.max(gridPadding, Math.min(endY, gridRect.height - gridPadding));
           
           // Create the data transfer signal
           const signal = document.createElement('div');
@@ -381,7 +390,7 @@ const Hero: React.FC = () => {
           grid.appendChild(signal);
           
           // Create more visible code particles along the path
-          createCodeParticles(grid, startX, startY, endX, endY);
+         createCodeParticles(grid, startX, startY, endX, endY, gridRect);
           
           // Highlight source and destination squares
           sourceSquare.classList.add('active');
@@ -401,7 +410,7 @@ const Hero: React.FC = () => {
     };
     
     // Create more visible floating code particles
-    const createCodeParticles = (grid: HTMLElement, startX: number, startY: number, endX: number, endY: number) => {
+   const createCodeParticles = (grid: HTMLElement, startX: number, startY: number, endX: number, endY: number, gridRect: DOMRect) => {
       const codeSnippets = [
         '{ }', '[ ]', '< >', '( )', '=>', '++', '--', '&&', '||', '??',
         'fn', 'AI', 'ML', 'DB', 'API', 'UI', 'UX', 'CSS', 'JS', 'TS',
@@ -410,6 +419,7 @@ const Hero: React.FC = () => {
         '→', '←', '↑', '↓', '⟨⟩', '⟦⟧', '⟪⟫', '⌈⌉', '⌊⌋', '⌜⌝'
       ];
       const numParticles = Math.floor(Math.random() * 2) + 2; // Reduced to 2-3 particles per transfer
+     const gridPadding = 20;
       
       for (let i = 0; i < numParticles; i++) {
         setTimeout(() => {
@@ -422,10 +432,16 @@ const Hero: React.FC = () => {
           
           // Calculate intermediate positions along the path
           const progress = (i + 1) / (numParticles + 1);
-          const particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 30;
-          const particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 30;
-          const particleEndX = particleStartX + (Math.random() - 0.5) * 40;
-          const particleEndY = particleStartY + (Math.random() - 0.5) * 40;
+         let particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 20;
+         let particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 20;
+         let particleEndX = particleStartX + (Math.random() - 0.5) * 25;
+         let particleEndY = particleStartY + (Math.random() - 0.5) * 25;
+         
+         // Ensure particles stay within grid boundaries
+         particleStartX = Math.max(gridPadding, Math.min(particleStartX, gridRect.width - gridPadding));
+         particleStartY = Math.max(gridPadding, Math.min(particleStartY, gridRect.height - gridPadding));
+         particleEndX = Math.max(gridPadding, Math.min(particleEndX, gridRect.width - gridPadding));
+         particleEndY = Math.max(gridPadding, Math.min(particleEndY, gridRect.height - gridPadding));
           
           particle.style.setProperty('--particle-start-x', `${particleStartX}px`);
           particle.style.setProperty('--particle-start-y', `${particleStartY}px`);
