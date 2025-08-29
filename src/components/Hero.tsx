@@ -430,24 +430,41 @@ const Hero: React.FC = () => {
           particle.className = `code-particle ${sizeClass}`;
           particle.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
           
-          // Calculate intermediate positions along the path
-          const progress = (i + 1) / (numParticles + 1);
-         let particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 20;
-         let particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 20;
-         let particleEndX = particleStartX + (Math.random() - 0.5) * 25;
-         let particleEndY = particleStartY + (Math.random() - 0.5) * 25;
+          // Create more dispersed starting positions throughout the grid area
+          const minX = gridPadding + 50;
+          const maxX = gridRect.width - gridPadding - 50;
+          const minY = gridPadding + 50;
+          const maxY = gridRect.height - gridPadding - 50;
+          
+          // Generate random positions across the entire grid area
+          let particleStartX = minX + Math.random() * (maxX - minX);
+          let particleStartY = minY + Math.random() * (maxY - minY);
+          
+          // Create movement towards a different random area
+          let particleEndX = minX + Math.random() * (maxX - minX);
+          let particleEndY = minY + Math.random() * (maxY - minY);
+          
+          // Ensure minimum movement distance to avoid static particles
+          const minDistance = 80;
+          const distance = Math.sqrt(Math.pow(particleEndX - particleStartX, 2) + Math.pow(particleEndY - particleStartY, 2));
+          if (distance < minDistance) {
+            // If too close, create a new end position with guaranteed distance
+            const angle = Math.random() * Math.PI * 2;
+            particleEndX = particleStartX + Math.cos(angle) * (minDistance + Math.random() * 50);
+            particleEndY = particleStartY + Math.sin(angle) * (minDistance + Math.random() * 50);
+          }
          
          // Ensure particles stay within grid boundaries
-         particleStartX = Math.max(gridPadding, Math.min(particleStartX, gridRect.width - gridPadding));
-         particleStartY = Math.max(gridPadding, Math.min(particleStartY, gridRect.height - gridPadding));
-         particleEndX = Math.max(gridPadding, Math.min(particleEndX, gridRect.width - gridPadding));
-         particleEndY = Math.max(gridPadding, Math.min(particleEndY, gridRect.height - gridPadding));
+          particleStartX = Math.max(minX, Math.min(particleStartX, maxX));
+          particleStartY = Math.max(minY, Math.min(particleStartY, maxY));
+          particleEndX = Math.max(minX, Math.min(particleEndX, maxX));
+          particleEndY = Math.max(minY, Math.min(particleEndY, maxY));
           
           particle.style.setProperty('--particle-start-x', `${particleStartX}px`);
           particle.style.setProperty('--particle-start-y', `${particleStartY}px`);
           particle.style.setProperty('--particle-end-x', `${particleEndX}px`);
           particle.style.setProperty('--particle-end-y', `${particleEndY}px`);
-          particle.style.setProperty('--particle-duration', `${2.5 + Math.random() * 1}s`);
+          particle.style.setProperty('--particle-duration', `${3 + Math.random() * 1.5}s`);
           
           grid.appendChild(particle);
           
@@ -456,9 +473,9 @@ const Hero: React.FC = () => {
             if (particle.parentNode) {
               particle.parentNode.removeChild(particle);
             }
-          }, 4500);
+          }, 5500);
           
-        }, i * 300); // Slower, more spaced particle creation
+        }, i * 500); // More spaced particle creation to avoid clustering
       }
     };
 
