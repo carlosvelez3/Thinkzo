@@ -294,7 +294,7 @@ const Hero: React.FC = () => {
         // Then, randomly select 6-8 blocks for special dynamic action
         const squareArray = Array.from(squares);
         const shuffledSquares = squareArray.sort(() => Math.random() - 0.5);
-        const numSpecialBlocks = Math.floor(Math.random() * 3) + 6; // Random number between 6-8
+        const numSpecialBlocks = Math.floor(Math.random() * 2) + 3; // Random number between 3-4
         const selectedSquares = shuffledSquares.slice(0, numSpecialBlocks);
         
         selectedSquares.forEach((square, index) => {
@@ -314,7 +314,7 @@ const Hero: React.FC = () => {
         
         // Create multiple simultaneous data transfer signals
         createDataTransferSignals(squares);
-      }, 8000); // 8-second cycle
+      }, 12000); // 12-second cycle for more professional pacing
     };
     
     // Create multiple simultaneous data transfer animations between squares
@@ -323,7 +323,7 @@ const Hero: React.FC = () => {
       if (!grid) return;
       
       // Create 6-12 simultaneous data transfer signals
-      const numSignals = Math.floor(Math.random() * 7) + 6;
+      const numSignals = Math.floor(Math.random() * 3) + 4; // Reduced to 4-6 signals
       
       // Select one main source square that will send to multiple destinations
       const mainSourceIndex = Math.floor(Math.random() * squares.length);
@@ -403,37 +403,35 @@ const Hero: React.FC = () => {
     // Create more visible floating code particles
     const createCodeParticles = (grid: HTMLElement, startX: number, startY: number, endX: number, endY: number) => {
       const codeSnippets = [
-        'function()', 'const x =', 'if (true)', 'return;', 'async/await', 
-        'AI.process()', '{ data }', '<Component/>', 'useState()', 'useEffect()',
-        'fetch()', 'Promise', 'map()', 'filter()', 'reduce()', 'import',
-        'export', 'class', 'extends', 'super()', 'this.', 'new Date()',
-        'JSON.parse', 'console.log', 'try/catch', 'throw new', 'typeof',
-        '...spread', 'destructure', 'template`', 'arrow =>', 'callback',
-        'event.target', 'document.', 'window.', 'localStorage', 'sessionStorage'
+        '{ }', '[ ]', '< >', '( )', '=>', '++', '--', '&&', '||', '??',
+        'fn', 'AI', 'ML', 'DB', 'API', 'UI', 'UX', 'CSS', 'JS', 'TS',
+        '01', '10', '11', '00', 'if', 'do', 'go', 'run', 'set', 'get',
+        '∞', '∑', '∆', '∇', '∈', '∋', '∀', '∃', '∧', '∨', '¬', '⊕',
+        '→', '←', '↑', '↓', '⟨⟩', '⟦⟧', '⟪⟫', '⌈⌉', '⌊⌋', '⌜⌝'
       ];
-      const numParticles = Math.floor(Math.random() * 5) + 4; // 4-8 particles per transfer
+      const numParticles = Math.floor(Math.random() * 2) + 2; // Reduced to 2-3 particles per transfer
       
       for (let i = 0; i < numParticles; i++) {
         setTimeout(() => {
           const particle = document.createElement('div');
           
           // Randomly assign different sizes and styles
-          const sizeClass = Math.random() < 0.3 ? 'large' : Math.random() < 0.6 ? 'medium' : '';
+          const sizeClass = Math.random() < 0.2 ? 'large' : Math.random() < 0.5 ? 'medium' : '';
           particle.className = `code-particle ${sizeClass}`;
           particle.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
           
           // Calculate intermediate positions along the path
           const progress = (i + 1) / (numParticles + 1);
-          const particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 60;
-          const particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 60;
-          const particleEndX = particleStartX + (Math.random() - 0.5) * 80;
-          const particleEndY = particleStartY + (Math.random() - 0.5) * 80;
+          const particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 30;
+          const particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 30;
+          const particleEndX = particleStartX + (Math.random() - 0.5) * 40;
+          const particleEndY = particleStartY + (Math.random() - 0.5) * 40;
           
           particle.style.setProperty('--particle-start-x', `${particleStartX}px`);
           particle.style.setProperty('--particle-start-y', `${particleStartY}px`);
           particle.style.setProperty('--particle-end-x', `${particleEndX}px`);
           particle.style.setProperty('--particle-end-y', `${particleEndY}px`);
-          particle.style.setProperty('--particle-duration', `${2 + Math.random() * 1.5}s`);
+          particle.style.setProperty('--particle-duration', `${2.5 + Math.random() * 1}s`);
           
           grid.appendChild(particle);
           
@@ -442,9 +440,9 @@ const Hero: React.FC = () => {
             if (particle.parentNode) {
               particle.parentNode.removeChild(particle);
             }
-          }, 4000);
+          }, 4500);
           
-        }, i * 150); // Faster staggered particle creation
+        }, i * 300); // Slower, more spaced particle creation
       }
     };
 
