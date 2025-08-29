@@ -311,7 +311,111 @@ const Hero: React.FC = () => {
             }, 3000);
           }, index * 400); // Stagger the start times by 400ms
         });
+        
+        // Create data transfer signals between random squares
+        createDataTransferSignals(squares);
       }, 8000); // 8-second cycle
+    };
+    
+    // Create data transfer animation between squares
+    const createDataTransferSignals = (squares: NodeListOf<Element>) => {
+      const grid = document.getElementById('iota-grid');
+      if (!grid) return;
+      
+      // Create 2-4 data transfer signals
+      const numSignals = Math.floor(Math.random() * 3) + 2;
+      
+      for (let i = 0; i < numSignals; i++) {
+        setTimeout(() => {
+          // Select random source and destination squares
+          const sourceIndex = Math.floor(Math.random() * squares.length);
+          let destIndex = Math.floor(Math.random() * squares.length);
+          
+          // Ensure source and destination are different
+          while (destIndex === sourceIndex) {
+            destIndex = Math.floor(Math.random() * squares.length);
+          }
+          
+          const sourceSquare = squares[sourceIndex] as HTMLElement;
+          const destSquare = squares[destIndex] as HTMLElement;
+          
+          // Get the positions of source and destination squares
+          const sourceRect = sourceSquare.getBoundingClientRect();
+          const destRect = destSquare.getBoundingClientRect();
+          const gridRect = grid.getBoundingClientRect();
+          
+          // Calculate relative positions within the grid
+          const startX = sourceRect.left - gridRect.left + sourceRect.width / 2;
+          const startY = sourceRect.top - gridRect.top + sourceRect.height / 2;
+          const endX = destRect.left - gridRect.left + destRect.width / 2;
+          const endY = destRect.top - gridRect.top + destRect.height / 2;
+          
+          // Create the data transfer signal
+          const signal = document.createElement('div');
+          signal.className = 'data-transfer-signal';
+          signal.style.setProperty('--start-x', `${startX}px`);
+          signal.style.setProperty('--start-y', `${startY}px`);
+          signal.style.setProperty('--end-x', `${endX}px`);
+          signal.style.setProperty('--end-y', `${endY}px`);
+          signal.style.setProperty('--transfer-duration', `${2 + Math.random() * 2}s`);
+          
+          grid.appendChild(signal);
+          
+          // Create code particles along the path
+          createCodeParticles(grid, startX, startY, endX, endY);
+          
+          // Highlight source and destination squares
+          sourceSquare.classList.add('active');
+          destSquare.classList.add('active');
+          
+          // Remove highlights and signal after animation
+          setTimeout(() => {
+            sourceSquare.classList.remove('active');
+            destSquare.classList.remove('active');
+            if (signal.parentNode) {
+              signal.parentNode.removeChild(signal);
+            }
+          }, 4000);
+          
+        }, i * 1000); // Stagger signal creation
+      }
+    };
+    
+    // Create floating code particles
+    const createCodeParticles = (grid: HTMLElement, startX: number, startY: number, endX: number, endY: number) => {
+      const codeSnippets = ['01', '{}', '<>', '/>', '[]', '()', '&&', '||', '==', '!=', '++', '--'];
+      const numParticles = Math.floor(Math.random() * 3) + 2;
+      
+      for (let i = 0; i < numParticles; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'code-particle';
+          particle.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+          
+          // Calculate intermediate positions along the path
+          const progress = (i + 1) / (numParticles + 1);
+          const particleStartX = startX + (endX - startX) * progress + (Math.random() - 0.5) * 40;
+          const particleStartY = startY + (endY - startY) * progress + (Math.random() - 0.5) * 40;
+          const particleEndX = particleStartX + (Math.random() - 0.5) * 60;
+          const particleEndY = particleStartY + (Math.random() - 0.5) * 60;
+          
+          particle.style.setProperty('--particle-start-x', `${particleStartX}px`);
+          particle.style.setProperty('--particle-start-y', `${particleStartY}px`);
+          particle.style.setProperty('--particle-end-x', `${particleEndX}px`);
+          particle.style.setProperty('--particle-end-y', `${particleEndY}px`);
+          particle.style.setProperty('--particle-duration', `${1.5 + Math.random()}s`);
+          
+          grid.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 2500);
+          
+        }, i * 200); // Stagger particle creation
+      }
     };
 
     // Initialize IOTA animation
