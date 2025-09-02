@@ -59,32 +59,12 @@ const Contact: React.FC = () => {
     // Check if Supabase is properly configured
     if (!import.meta.env.VITE_SUPABASE_URL || 
         !import.meta.env.VITE_SUPABASE_ANON_KEY ||
-        import.meta.env.VITE_SUPABASE_URL === 'https://placeholder.supabase.co' ||
-        import.meta.env.VITE_SUPABASE_ANON_KEY === 'your-anon-key') {
+        import.meta.env.VITE_SUPABASE_ANON_KEY === 'your-anon-key-here') {
       console.warn('⚠️ Supabase not properly configured. Please check your environment variables.');
-      console.warn('Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+      console.warn('Current VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.warn('VITE_SUPABASE_ANON_KEY exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
       alert('Configuration Error: Please contact support. The form cannot be submitted at this time.');
       setIsLoading(false);
-      return;
-    }
-
-    // Fallback for development/demo purposes
-    if (import.meta.env.VITE_SUPABASE_URL === 'https://demo.supabase.co') {
-      console.warn('⚠️ Using demo Supabase configuration, showing success message without actual processing');
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        serviceType: '',
-        budgetRange: '',
-        projectDescription: '',
-        timeFrame: ''
-      });
-      setIsLoading(false);
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
       return;
     }
 
