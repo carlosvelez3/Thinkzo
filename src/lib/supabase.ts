@@ -11,3 +11,5 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY')
   throw new Error('Supabase configuration is required for the application to work')
 }
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
