@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './Pricing.css';
 import { Check, Star } from 'lucide-react';
-import { createCheckoutSession } from '../lib/stripe';
 import TypewriterText from './TypewriterText';
 
 const Pricing: React.FC = () => {
   const [billingType, setBillingType] = useState<'onetime' | 'monthly'>('onetime');
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   useEffect(() => {
     // Create IOTA-style synchronized grid for pricing
@@ -120,11 +118,7 @@ const Pricing: React.FC = () => {
       monthlyPrice: '$49',
       monthlyDuration: '6 months',
       setupFee: '$25',
-      popular: false,
-      stripePriceIds: {
-        onetime: import.meta.env.VITE_STRIPE_STARTER_ONETIME_PRICE_ID,
-        monthly: import.meta.env.VITE_STRIPE_STARTER_MONTHLY_PRICE_ID
-      }
+      popular: false
     },
     {
       name: 'Growth Optimizer',
@@ -141,11 +135,7 @@ const Pricing: React.FC = () => {
       monthlyPrice: '$133',
       monthlyDuration: '6 months',
       setupFee: '$25',
-      popular: true,
-      stripePriceIds: {
-        onetime: import.meta.env.VITE_STRIPE_GROWTH_ONETIME_PRICE_ID,
-        monthly: import.meta.env.VITE_STRIPE_GROWTH_MONTHLY_PRICE_ID
-      }
+      popular: true
     },
     {
       name: 'Elite Automator',
@@ -162,33 +152,13 @@ const Pricing: React.FC = () => {
       monthlyPrice: 'Custom',
       monthlyDuration: '6 months',
       setupFee: '$25',
-      popular: false,
-      stripePriceIds: null // Custom pricing - handle via contact form
+      popular: false
     }
   ];
 
-  const handleChoosePlan = async (plan: typeof plans[0]) => {
-    // Handle custom pricing plans via contact form
-    if (plan.name === 'Elite Automator' || plan.name === 'Starter Launchpad' || plan.name === 'Growth Optimizer' || !plan.stripePriceIds) {
-      scrollToContact();
-      return;
-    }
-
-    // Handle Stripe checkout for standard plans
-    try {
-      setLoadingPlan(plan.name);
-      
-      const priceId = billingType === 'onetime' 
-        ? plan.stripePriceIds.onetime 
-        : plan.stripePriceIds.monthly;
-      
-      await createCheckoutSession(priceId, plan.name);
-    } catch (_error) {
-      console.error('Error creating checkout session:', _error);
-      alert('There was an error processing your request. Please try again or contact us directly.');
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleChoosePlan = (plan: typeof plans[0]) => {
+    // All plans now redirect to contact form for personalized quotes
+    scrollToContact();
   };
 
   return (
@@ -311,14 +281,13 @@ const Pricing: React.FC = () => {
 
               <button
                 onClick={() => handleChoosePlan(plan)}
-                disabled={loadingPlan === plan.name}
                 className={`w-full py-4 px-6 rounded-lg font-semibold transition-all duration-300 ${
                   plan.popular
                     ? 'bg-gradient-to-r from-purple-400/90 via-pink-400/90 to-cyan-400/90 hover:from-purple-500/90 hover:via-pink-500/90 hover:to-cyan-500/90 text-white transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 backdrop-blur-sm'
                     : 'bg-navy-800/90 hover:bg-navy-700/90 text-white border border-navy-600/90 hover:border-cyan-400/90 backdrop-blur-sm'
-                } ${loadingPlan === plan.name ? 'opacity-50 cursor-not-allowed' : ''}`}
+                }`}
               >
-                {loadingPlan === plan.name ? 'Processing...' : 'Get Started'}
+                Get Custom Quote
               </button>
             </div>
           ))}
