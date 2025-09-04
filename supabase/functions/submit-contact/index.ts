@@ -152,13 +152,22 @@ serve(async (req) => {
 
     console.log('✅ Contact message saved to database with ID:', contactData.id);
 
-    // Send email notification if Resend is configured
+    // Send email notification - CRITICAL: Resend API key must be configured
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
     let emailSent = false;
+    let emailError = null;
     
-    if (resendApiKey) {
+    console.log('🔍 Email configuration check:', {
+      hasResendKey: !!resendApiKey,
+      keyPreview: resendApiKey ? `${resendApiKey.substring(0, 8)}...` : 'MISSING'
+    });
+    
+    if (!resendApiKey) {
+      console.error('❌ CRITICAL: RESEND_API_KEY environment variable not set in Supabase');
+      emailError = 'Email service not configured - contact admin';
+    } else {
       try {
-        console.log('📧 Sending email notification...')
+        console.log('📧 Attempting to send email notification to team@thinkzo.ai...')
         
         const resend = new Resend(resendApiKey)
         
@@ -226,6 +235,7 @@ serve(async (req) => {
 </html>
         `.trim()
 
+        console.log('📤 Sending email with Resend API...')
         const emailResult = await resend.emails.send({
           from: 'Thinkzo.ai <onboarding@resend.dev>',
           to: ['team@thinkzo.ai'],
@@ -234,15 +244,26 @@ serve(async (req) => {
           html: emailBody,
         })
 
-        console.log('✅ Email sent successfully:', emailResult.data?.id)
+        if (emailResult.error) {
+          console.error('❌ Resend API error:', emailResult.error)
+          emailError = `Email API error: ${emailResult.error.message}`
+        } else {
+          console.log('✅ Email sent successfully:', {
+            emailId: emailResult.data?.id,
+            recipient: 'team@thinkzo.ai',
+            timestamp: new Date().toISOString()
+          })
+        }
         emailSent = true;
         
       } catch (emailError) {
-        console.error('⚠️ Email sending failed:', emailError)
+        console.error('❌ Email sending failed:', emailError)
+        emailError = emailError instanceof Error ? emailError.message : 'Email delivery failed'
         // Don't throw error - form submission should still succeed even if email fails
       }
     } else {
-      console.log('⚠️ Resend API key not configured, skipping email notification')
+      console.warn('⚠️ RESEND_API_KEY not configured - emails will not be sent')
+      emailError = 'Email service not configured'
     }
 
     // Return success response
@@ -252,7 +273,12 @@ serve(async (req) => {
         message: 'Contact form submitted successfully',
         timestamp: new Date().toISOString(),
         id: contactData.id,
-        emailSent: emailSent
+        emailSent: emailSent,
+        emailError: emailError,
+        debug: {
+          hasResendKey: !!resendApiKey,
+          emailAttempted: !!resendApiKey
+        }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

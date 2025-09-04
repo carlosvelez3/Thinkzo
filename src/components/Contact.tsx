@@ -241,6 +241,16 @@ const Contact: React.FC = () => {
 
       console.log('✅ Form submitted successfully:', result);
 
+      // Check email delivery status
+      if (result.emailError) {
+        console.warn('⚠️ Email notification failed:', result.emailError);
+        // Still show success to user, but log the email issue
+      }
+      
+      if (!result.emailSent) {
+        console.warn('⚠️ Email notification was not sent - check backend configuration');
+      }
+
       // Success state
       setIsSubmitted(true);
       setLastSubmissionTime(now);
